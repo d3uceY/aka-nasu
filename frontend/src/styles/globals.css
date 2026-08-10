@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap');
+
+:root {
+  color-scheme: light;
+
+  /* Palette — playful, warm, pink accents, strong contrast */
+  --bg-top: #fff3e6;
+  --bg-bottom: #ffe9f2;
+  --surface: #fffdfb;
+  --surface-2: #fff5f0;
+  --ink: #33202c;
+  --ink-muted: #8a6a7c;
+  --pink: #f0579e;
+  --pink-dark: #d63a84;
+  --pink-soft: #ffe0ee;
+  --red: #ed1c24;
+  --red-dark: #c3151c;
+  --green: #159447;
+  --border: #f6d3e2;
+  --shadow: 0 24px 48px -24px rgba(200, 90, 130, 0.45);
+  --shadow-sm: 0 8px 20px -12px rgba(200, 90, 130, 0.4);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+
+  font-family: 'Baloo 2', 'Comic Sans MS', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: linear-gradient(160deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--pink-soft);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

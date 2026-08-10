@@ -1,0 +1,612 @@
+/* ===========================================================================
+   App shell & header
+   =========================================================================== */
+.app-shell {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 28px 20px 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.app-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.app-header__mark {
+  font-size: 2.4rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(237, 28, 36, 0.35));
+}
+
+.app-title {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.app-subtitle {
+  margin: 2px 0 0;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+}
+
+/* ===========================================================================
+   Main two-column layout
+   tomato LEFT, content RIGHT on desktop; stacked (tomato on top) when small.
+   =========================================================================== */
+.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px 20px 48px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.timer-column,
+.content-column {
+  min-width: 0;
+}
+
+/* ===========================================================================
+   Cards
+   =========================================================================== */
+.timer-card,
+.todo-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.timer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: stretch;
+}
+
+/* ===========================================================================
+   Timer canvas (the 3D tomato)
+   =========================================================================== */
+.timer-canvas {
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(120% 90% at 50% 8%, #fffdf7 0%, #ffe9d8 55%, #ffd9c4 100%);
+  box-shadow: inset 0 0 0 1px rgba(214, 58, 132, 0.08), var(--shadow-sm);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.timer-canvas:active {
+  cursor: grabbing;
+}
+
+.timer-canvas canvas {
+  display: block;
+  outline: none;
+}
+
+/* ===========================================================================
+   Timer display
+   =========================================================================== */
+.timer-display {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.timer-display__phase {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-muted);
+}
+
+.timer-display__phase--focus {
+  color: var(--red-dark);
+}
+
+.timer-display__phase--shortBreak,
+.timer-display__phase--longBreak {
+  color: var(--green);
+}
+
+.timer-display__time {
+  font-size: clamp(3rem, 10vw, 4.2rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.timer-display__round {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--pink-dark);
+}
+
+.timer-display__status {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  text-transform: capitalize;
+}
+
+/* ===========================================================================
+   Focus duration
+   =========================================================================== */
+.focus-duration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  pointer-events: none;
+}
+
+.focus-duration__label {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.focus-duration__value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.focus-duration__hint {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+/* ===========================================================================
+   Controls
+   =========================================================================== */
+.timer-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+/* ===========================================================================
+   Buttons
+   =========================================================================== */
+.btn {
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font-weight: 700;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition:
+    transform 0.14s ease,
+    background 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.16s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn--primary {
+  background: linear-gradient(180deg, var(--red), var(--red-dark));
+  color: #fff;
+  box-shadow: 0 12px 24px -12px rgba(237, 28, 36, 0.75);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 16px 30px -12px rgba(237, 28, 36, 0.85);
+}
+
+.btn--ghost {
+  background: var(--surface-2);
+  color: var(--ink);
+  border-color: var(--border);
+}
+
+.btn--ghost:hover {
+  background: var(--pink-soft);
+  border-color: var(--pink);
+}
+
+.btn--lg {
+  padding: 13px 34px;
+  font-size: 1.1rem;
+}
+
+.btn--sm {
+  padding: 7px 16px;
+  font-size: 0.9rem;
+}
+
+/* ===========================================================================
+   Settings
+   =========================================================================== */
+.settings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings__panel {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.slider-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-field__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.slider-field__label {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.slider-field__value {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  appearance: none;
+  background: linear-gradient(90deg, var(--pink), var(--pink-dark));
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--pink);
+  box-shadow: 0 4px 10px -4px rgba(214, 58, 132, 0.7);
+  cursor: pointer;
+}
+
+.slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--pink);
+  cursor: pointer;
+}
+
+/* ===========================================================================
+   Todo card / tabs
+   =========================================================================== */
+.todo-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+}
+
+.todo-tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.todo-tab:hover {
+  background: var(--surface-2);
+}
+
+.todo-tab--active {
+  background: var(--pink-soft);
+  color: var(--pink-dark);
+}
+
+/* ===========================================================================
+   Check list
+   =========================================================================== */
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.checklist__add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 8px 6px 16px;
+}
+
+.checklist__add-icon {
+  color: var(--pink);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.checklist__add .field {
+  flex: 1;
+}
+
+.checklist__add .input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 8px 4px;
+  font-size: 0.98rem;
+}
+
+.checklist__add .input::placeholder {
+  color: var(--ink-muted);
+}
+
+.checklist__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.checklist__heading {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+}
+
+.checklist__empty {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.todo-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--pink);
+}
+
+.todo-item__check {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 8px;
+  border: 2px solid var(--pink);
+  background: #fff;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.todo-item__check:hover {
+  transform: scale(1.1);
+}
+
+.todo-item--done .todo-item__check {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.todo-item__text {
+  flex: 1;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.todo-item--done .todo-item__text {
+  color: var(--ink-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--pink);
+  text-decoration-thickness: 2px;
+}
+
+.todo-item__remove {
+  flex: none;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 2px 8px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.todo-item__remove:hover {
+  color: var(--red);
+  background: #ffe3e3;
+}
+
+/* ===========================================================================
+   Daily report
+   =========================================================================== */
+.report {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.report__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.report__stat {
+  background: var(--surface-2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+}
+
+.report__stat strong {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--pink-dark);
+  line-height: 1;
+}
+
+.report__stat span {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.report__line {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--ink);
+  text-align: center;
+}
+
+.report__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report__item {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--ink-muted);
+}
+
+/* ===========================================================================
+   Responsive — tomato moves to the top, content below.
+   =========================================================================== */
+@media (max-width: 880px) {
+  .app-main {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .timer-column {
+    order: 1;
+  }
+
+  .content-column {
+    order: 2;
+  }
+
+  .timer-card,
+  .todo-card {
+    padding: 18px;
+  }
+}
