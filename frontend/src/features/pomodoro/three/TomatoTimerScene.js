@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 import gsap from 'gsap'
 import { GROUND, SEAM, getSeamY, getCrossR } from '../constants/three.js'
 import { createTomatoMaterials } from './materials/tomatoMaterials.js'
@@ -100,16 +99,9 @@ export class TomatoTimerScene {
 
   _buildScene() {
     const scene = new THREE.Scene()
-    // Transparent background — the playful CSS gradient shows through.
+    // Transparent background — the CSS gradient shows through.
+    // No environment map — matches the reference's simple, punchy lighting.
     scene.background = null
-
-    // Soft studio IBL so the glossy plastic gets realistic highlights. Keep it
-    // subtle so it doesn't wash out the dial marks.
-    const pmrem = new THREE.PMREMGenerator(this.renderer)
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
-    scene.environmentIntensity = 0.35
-    pmrem.dispose()
-
     this.scene = scene
   }
 

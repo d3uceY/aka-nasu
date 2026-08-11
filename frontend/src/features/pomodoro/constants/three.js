@@ -1,44 +1,55 @@
 // Tomato pomodoro timer — mechanical kitchen-timer style.
-// The body (lower half) is a static, squashed, lobed sphere with vertex-colored
-// grooves.  The cap (upper half) is a partial sphere that carries a canvas
-// texture with 60 ticks, 12 numerals, and a seam line — everything baked into
-// one map.  The cap, stem, and leaves rotate together as topGroup; the body
-// and pointer stay fixed as staticGroup.
+//
+// The body is a full squashed sphere with 5 lobes via vertex displacement.
+// The cap is a partial sphere (pole → equator) that carries a canvas texture
+// with 60 ticks, 12 numerals, and a seam line.  Both body AND cap use the
+// SAME lobe function — the cap is always 3.5 % larger so it can never clip
+// into the body regardless of lobe strength.  The cap, stem, and leaves
+// rotate together as topGroup; the body and pointer stay fixed as staticGroup.
+//
+// Split at the true equator (CAP_FRACTION = 0) — top HALF is the cap.
 
 export const COLORS = {
-  tomato: 0xd0332f,       // brighter base red (reference match)
+  tomato: 0xd0332f,       // base red
   tomatoGroove: 0x8f1f1f, // darker groove between lobes
-  band: 0x8a1f1f,         // dark backing strip behind ticks
-  seam: 0x4c1010,         // very dark equator groove
+  seam: 0x4c1010,         // very dark equator groove (torus ring)
   stem: 0x2e7d32,
   leaf: 0x256b2a,
-  tick: 0xffffff,
   pointer: 0xffffff,
 }
 
 export const BODY = {
   radius: 1.15,
-  scaleY: 0.82,    // flattening — wider than tall
+  scaleY: 0.82,           // flattening — wider than tall
   lobes: 5,
-  lobeDepth: 0.07,  // radial push at lobe crests
+  lobeDepth: 0.17,         // real volume — lobes should pop
   segments: 64,
 }
 
-// The split between body and cap.  CAP_FRACTION * (radius * scaleY) = where
-// the seam sits on the Y axis.  0.5 puts it halfway up.
-export const CAP_FRACTION = 0.5
+// Cap always sits outside the body.  1.035 = 3.5 % radial clearance.
+export const CAP_CLEARANCE = 1.035
 
-// Derived helpers — not exported, used by objects that need them.
+// 0 = split at equator — top HALF is the textured cap.
+export const CAP_FRACTION = 0
+
+// Lobe bell-curve ends well BEFORE the band starts (band is at 72 % of cap
+// theta).  LOBE_END_FRACTION = BAND.bandTop - 0.14 gives a real margin where
+// the band sits on a perfectly circular cross-section.
+export const LOBE_END_FRACTION = 0.58 // derived: 0.72 - 0.14
+
+// ---- Derived helpers -------------------------------------------------------
 export const getTopY = () => BODY.radius * BODY.scaleY
-export const getSeamY = () => CAP_FRACTION * getTopY()
+export const getSeamY = () => CAP_FRACTION * getTopY()                       // = 0 (equator)
 export const getCapThetaSplit = () => {
   const y0 = getSeamY() / BODY.scaleY
-  return Math.acos(Math.max(-1, Math.min(1, y0 / BODY.radius)))
+  return Math.acos(Math.max(-1, Math.min(1, y0 / BODY.radius)))              // = π/2
 }
-export const getCapRadius = () => BODY.radius * 1.015
+export const getLobeEnd = () => getCapThetaSplit() * LOBE_END_FRACTION
+export const getCapRadius = () => BODY.radius * CAP_CLEARANCE               // 1.15 × 1.035
+export const getCapTopY = () => getCapRadius() * BODY.scaleY                 // top of the cap dome
 export const getCrossR = () => {
   const y0 = getSeamY() / BODY.scaleY
-  return Math.sqrt(Math.max(0, BODY.radius * BODY.radius - y0 * y0))
+  return Math.sqrt(Math.max(0, BODY.radius * BODY.radius - y0 * y0))        // = 1.15
 }
 
 export const SEAM = {
