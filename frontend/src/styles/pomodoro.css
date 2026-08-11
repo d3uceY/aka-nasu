@@ -10,45 +10,30 @@
   overflow: hidden;
 }
 
-/* soft atmospheric glows behind the two columns */
-.app-shell::before,
-.app-shell::after {
+/* one faint kiss of tomato behind the stage — the only atmosphere */
+.app-shell::before {
   content: '';
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-}
-
-.app-shell::before {
-  /* tomato halo, behind the timer stage */
-  width: 46vw;
-  height: 46vw;
-  max-width: 640px;
-  max-height: 640px;
-  left: 0;
-  top: 16%;
+  width: 54vw;
+  height: 54vw;
+  max-width: 700px;
+  max-height: 700px;
+  left: -6%;
+  top: 12%;
   background: radial-gradient(circle at 50% 45%, var(--tomato-glow), transparent 66%);
 }
 
-.app-shell::after {
-  /* leaf whisper, behind the todo panel */
-  width: 36vw;
-  height: 36vw;
-  max-width: 480px;
-  max-height: 480px;
-  right: -4%;
-  bottom: -10%;
-  background: radial-gradient(circle at 50% 50%, var(--leaf-glow), transparent 66%);
-}
-
-/* ---- header ---- */
+/* ---- header: a quiet gallery rail ---- */
 .app-header {
   position: relative;
   z-index: 1;
-  padding: clamp(22px, 4vh, 40px) clamp(24px, 5vw, 64px) 0;
+  padding: clamp(18px, 3.4vh, 32px) clamp(26px, 5vw, 64px) clamp(14px, 2.6vh, 22px);
   display: flex;
   align-items: flex-start;
+  border-bottom: 1px solid var(--line);
   animation: app-header-in 0.9s var(--ease-out) both;
 }
 
@@ -61,41 +46,43 @@
 .app-header__mark {
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   flex: none;
   border-radius: 50%;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: 0 12px 26px -16px rgba(190, 70, 30, 0.55);
+  background: var(--surface-solid);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 10px 22px -18px rgba(43, 33, 27, 0.4);
 }
 
 .app-header__mark svg {
   display: block;
-  filter: drop-shadow(0 6px 10px rgba(232, 68, 46, 0.35));
+  filter: drop-shadow(0 5px 9px rgba(232, 68, 46, 0.28));
 }
 
 .app-title {
   margin: 0;
-  font-size: clamp(1.55rem, 2.6vw, 1.95rem);
-  font-weight: 800;
+  font-family: var(--font-serif);
+  font-size: clamp(1.45rem, 2.3vw, 1.75rem);
+  font-weight: 560;
+  font-variation-settings: 'opsz' 60;
   letter-spacing: -0.02em;
   line-height: 1.05;
 }
 
 .app-title__accent {
-  font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 500;
+  font-weight: 560;
   color: var(--tomato);
 }
 
 .app-subtitle {
-  margin: 3px 0 0;
+  margin: 4px 0 0;
   color: var(--ink-2);
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 0.98rem;
+  font-size: 0.95rem;
+  font-variation-settings: 'opsz' 20;
 }
 
 @keyframes app-header-in {
@@ -117,12 +104,12 @@
   z-index: 1;
   flex: 1;
   width: 100%;
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: clamp(8px, 2vh, 24px) clamp(24px, 5vw, 64px) clamp(24px, 4vh, 44px);
+  padding: clamp(12px, 2.6vh, 26px) clamp(26px, 5vw, 64px) clamp(28px, 4.6vh, 48px);
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-  gap: clamp(28px, 6vw, 72px);
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+  gap: clamp(32px, 6vw, 76px);
   align-items: center;
 }
 
@@ -207,10 +194,10 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.74rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.24em;
   color: var(--ink-2);
 }
 
@@ -229,13 +216,30 @@
 }
 
 .timer-display__time {
-  font-size: clamp(3.6rem, min(13vw, 15vh), 9rem);
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.045em;
-  line-height: 0.9;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: clamp(4rem, min(13vw, 14.5vh), 8.75rem);
+  font-weight: 540;
+  font-variation-settings: 'opsz' 144;
+  line-height: 0.86;
   color: var(--ink);
-  margin-top: 8px;
+  margin-top: 10px;
+}
+
+/* Each glyph sits in a fixed 1ch slot (ch = width of "0") so the monumental
+   serif number never jitters while it ticks — true tabular behaviour without
+   tabular figures in the font. */
+.timer-glyph {
+  display: inline-block;
+  width: 1ch;
+  text-align: center;
+}
+
+.timer-glyph--colon {
+  width: auto;
+  margin: 0 0.08em;
 }
 
 /* while running, the number breathes — slow, warm, alive */
@@ -361,15 +365,15 @@
 }
 
 .btn--ghost {
-  background: var(--surface);
+  background: var(--surface-solid);
   color: var(--ink);
   border-color: var(--line-strong);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 0 rgba(43, 33, 27, 0.05);
 }
 
 .btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(232, 68, 46, 0.42);
+  background: #fff;
+  border-color: rgba(232, 68, 46, 0.4);
   color: var(--tomato-deep);
 }
 
@@ -393,9 +397,8 @@
 
 .settings__toggle {
   appearance: none;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  backdrop-filter: blur(8px);
+  border: 1px solid var(--line-strong);
+  background: var(--surface-solid);
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -403,7 +406,7 @@
   place-items: center;
   cursor: pointer;
   color: var(--ink-2);
-  box-shadow: 0 8px 20px -12px rgba(190, 70, 30, 0.4);
+  box-shadow: 0 8px 18px -14px rgba(43, 33, 27, 0.35);
   transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
 
@@ -443,8 +446,7 @@
   right: 0;
   z-index: 3;
   width: 300px;
-  background: rgba(255, 253, 249, 0.94);
-  backdrop-filter: blur(18px);
+  background: var(--surface-solid);
   border: 1px solid var(--line);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-pop);
@@ -594,7 +596,6 @@
    =========================================================================== */
 .todo-card {
   background: var(--surface);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-card);
@@ -649,7 +650,7 @@
   align-self: flex-start;
   gap: 4px;
   padding: 4px;
-  background: rgba(51, 22, 12, 0.05);
+  background: rgba(43, 33, 27, 0.05);
   border-radius: 999px;
   margin-bottom: 20px;
 }
@@ -672,9 +673,9 @@
 }
 
 .todo-tab--active {
-  background: #fff;
+  background: var(--surface-solid);
   color: var(--ink);
-  box-shadow: 0 4px 14px -6px rgba(51, 22, 12, 0.28);
+  box-shadow: 0 4px 14px -8px rgba(43, 33, 27, 0.22);
 }
 
 .todo-tab__content {
@@ -697,11 +698,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.7);
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 5px 6px 5px 10px;
-  box-shadow: 0 8px 20px -18px rgba(51, 22, 12, 0.4);
+  box-shadow: 0 8px 18px -20px rgba(43, 33, 27, 0.4);
   transition: border-color 0.24s var(--ease-out), box-shadow 0.24s var(--ease-out);
 }
 
@@ -802,7 +803,7 @@
 }
 
 .todo-item:hover {
-  background: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .todo-item__check {
@@ -894,7 +895,7 @@
 }
 
 .report__stat {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.75);
   border: 1px solid var(--line);
   border-radius: var(--r-md);
   padding: 20px 16px;
@@ -903,10 +904,11 @@
 
 .report__stat strong {
   display: block;
+  font-family: var(--font-serif);
   font-size: 2.4rem;
-  font-weight: 800;
+  font-weight: 540;
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
 .report__stat--focus strong {
@@ -952,7 +954,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.75);
   border: 1px solid var(--line);
   border-radius: var(--r-sm);
   padding: 9px 12px;
@@ -984,8 +986,7 @@
     overflow: visible;
   }
 
-  .app-shell::before,
-  .app-shell::after {
+  .app-shell::before {
     display: none;
   }
 

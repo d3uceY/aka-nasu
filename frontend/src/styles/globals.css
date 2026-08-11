@@ -1,57 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Instrument+Sans:wght@400;500;600;700&display=swap');
 
 /* ===========================================================================
    Aka Nasu — design tokens
-   Minimal + playful. Warm tomato-field palette. One ripe red, one leaf green,
-   and a lot of cream. Typography is the architecture: Baloo 2 for the playful
-   display voice, Fraunces italic for the quiet editorial accent.
+   "Tomato on paper": a gallery-white studio wall where the tomato is the single
+   living red object. Near-white warm paper, warm ink, and ONE ripe tomato
+   accent. Leaf green is a state color only — the break phase — never
+   decoration. Typography: Fraunces (editorial serif) for the roaring timer
+   number and quiet accents, Instrument Sans for precise, readable UI.
    =========================================================================== */
 :root {
   color-scheme: light;
 
-  /* ---- warm field ---- */
-  --cream-0: #fffaf4;
-  --cream-1: #fff3e6;
-  --cream-2: #ffe7d1;
+  /* ---- paper: warm gallery white, never sterile #fff ---- */
+  --paper-0: #fcfbf9;
+  --paper-1: #f5f3ef;
+  --paper-2: #ece9e3;
 
-  /* ---- ink (never pure black) ---- */
-  --ink: #33160c;
-  --ink-2: #8a5c4b;
-  --ink-3: #b69383;
+  /* ---- ink: warm, never pure black ---- */
+  --ink: #2b211b;
+  --ink-2: #6e615a;
+  --ink-3: #7d7066;
 
-  /* ---- signature: ripe tomato ---- */
+  /* ---- signature: one ripe tomato ---- */
   --tomato: #e8442e;
   --tomato-deep: #c5361f;
-  --tomato-wash: #ffe1d2;
-  --tomato-glow: rgba(232, 68, 46, 0.15);
+  --tomato-wash: #fbe9e3;
+  --tomato-glow: rgba(232, 68, 46, 0.09);
 
-  /* ---- companion: leaf ---- */
+  /* ---- break state only: leaf ---- */
   --leaf: #2f9e54;
   --leaf-deep: #1f7039;
-  --leaf-wash: #dff3e5;
-  --leaf-glow: rgba(47, 158, 84, 0.13);
+  --leaf-wash: #e7f3ea;
+  --leaf-glow: rgba(47, 158, 84, 0.08);
 
   /* ---- surfaces & lines ---- */
-  --line: rgba(51, 22, 12, 0.1);
-  --line-strong: rgba(51, 22, 12, 0.18);
-  --surface: rgba(255, 253, 249, 0.6);
+  --line: rgba(43, 33, 27, 0.08);
+  --line-strong: rgba(43, 33, 27, 0.15);
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-solid: #ffffff;
 
-  --shadow-card: 0 1px 0 rgba(51, 22, 12, 0.03), 0 24px 48px -32px rgba(190, 70, 30, 0.35);
-  --shadow-pop: 0 24px 50px -22px rgba(190, 70, 30, 0.4);
+  --shadow-card: 0 1px 0 rgba(43, 33, 27, 0.04), 0 32px 64px -44px rgba(43, 33, 27, 0.32);
+  --shadow-pop: 0 28px 60px -26px rgba(43, 33, 27, 0.35);
 
   /* ---- radii ---- */
-  --r-lg: 30px;
-  --r-md: 18px;
-  --r-sm: 13px;
+  --r-lg: 26px;
+  --r-md: 16px;
+  --r-sm: 12px;
 
   /* ---- motion: custom curves only, never `ease`/`linear` ---- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* a gentle physical spring — soft overshoot, never a tacky bounce */
+  --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
 
-  --font-display: 'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
+  --font-ui: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
   --font-serif: 'Fraunces', Georgia, serif;
 
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   line-height: 1.5;
   font-weight: 500;
 }
@@ -76,11 +80,10 @@ body,
 body {
   margin: 0;
   color: var(--ink);
-  /* Atmosphere: warm sun at the top-right, a soft leaf field at the bottom-left. */
+  /* Whitish paper with a faint kiss of tomato behind the stage. */
   background:
-    radial-gradient(52% 44% at 84% -8%, rgba(255, 199, 158, 0.55), transparent 62%),
-    radial-gradient(48% 42% at 8% 112%, rgba(186, 240, 205, 0.4), transparent 60%),
-    linear-gradient(163deg, var(--cream-0) 0%, var(--cream-1) 52%, var(--cream-2) 100%);
+    radial-gradient(54% 46% at 78% -12%, var(--tomato-glow), transparent 62%),
+    linear-gradient(168deg, var(--paper-0) 0%, var(--paper-1) 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -103,7 +106,7 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(232, 68, 46, 0.38);
+  outline: 2.5px solid rgba(232, 68, 46, 0.42);
   outline-offset: 3px;
   border-radius: 8px;
 }
