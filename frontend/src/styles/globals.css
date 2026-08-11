@@ -60,6 +60,11 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  /* Nothing in this app should be highlightable. */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 html,
