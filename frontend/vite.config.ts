@@ -8,4 +8,9 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+    // Bind to IPv4 loopback. Vite's default ("localhost") can resolve to ::1,
+    // but Wails dev mode proxies to 127.0.0.1, causing connection refused errors.
+    host: '127.0.0.1',
+  },
 })

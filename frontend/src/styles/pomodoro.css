@@ -1,16 +1,55 @@
 /* ===========================================================================
-   App shell & header
+   Aka Nasu — app shell & header
+   Minimal stage: the tomato floats, the number roars, everything else whispers.
    =========================================================================== */
 .app-shell {
-  min-height: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
 
+/* soft atmospheric glows behind the two columns */
+.app-shell::before,
+.app-shell::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-shell::before {
+  /* tomato halo, behind the timer stage */
+  width: 46vw;
+  height: 46vw;
+  max-width: 640px;
+  max-height: 640px;
+  left: 0;
+  top: 16%;
+  background: radial-gradient(circle at 50% 45%, var(--tomato-glow), transparent 66%);
+}
+
+.app-shell::after {
+  /* leaf whisper, behind the todo panel */
+  width: 36vw;
+  height: 36vw;
+  max-width: 480px;
+  max-height: 480px;
+  right: -4%;
+  bottom: -10%;
+  background: radial-gradient(circle at 50% 50%, var(--leaf-glow), transparent 66%);
+}
+
+/* ---- header ---- */
 .app-header {
-  padding: 28px 20px 8px;
+  position: relative;
+  z-index: 1;
+  padding: clamp(22px, 4vh, 40px) clamp(24px, 5vw, 64px) 0;
   display: flex;
-  justify-content: center;
+  align-items: flex-start;
+  animation: app-header-in 0.9s var(--ease-out) both;
 }
 
 .app-header__inner {
@@ -20,39 +59,71 @@
 }
 
 .app-header__mark {
-  font-size: 2.4rem;
-  line-height: 1;
-  filter: drop-shadow(0 4px 8px rgba(237, 28, 36, 0.35));
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 26px -16px rgba(190, 70, 30, 0.55);
+}
+
+.app-header__mark svg {
+  display: block;
+  filter: drop-shadow(0 6px 10px rgba(232, 68, 46, 0.35));
 }
 
 .app-title {
   margin: 0;
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-size: clamp(1.55rem, 2.6vw, 1.95rem);
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.05;
 }
 
+.app-title__accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--tomato);
+}
+
 .app-subtitle {
-  margin: 2px 0 0;
-  color: var(--ink-muted);
-  font-size: 0.95rem;
+  margin: 3px 0 0;
+  color: var(--ink-2);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.98rem;
+}
+
+@keyframes app-header-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ===========================================================================
-   Main two-column layout
-   tomato LEFT, content RIGHT on desktop; stacked (tomato on top) when small.
+   Main layout — two composed columns, vertically centered like a still life
    =========================================================================== */
 .app-main {
+  position: relative;
+  z-index: 1;
   flex: 1;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 20px 20px 48px;
+  padding: clamp(8px, 2vh, 24px) clamp(24px, 5vw, 64px) clamp(24px, 4vh, 44px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  gap: 28px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: clamp(28px, 6vw, 72px);
+  align-items: center;
 }
 
 .timer-column,
@@ -61,37 +132,50 @@
 }
 
 /* ===========================================================================
-   Cards
+   Timer stage — no card, the tomato floats on the page
    =========================================================================== */
-.timer-card,
-.todo-card {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  padding: 24px;
-}
-
-.timer-card {
+.timer-stage {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ===========================================================================
-   Timer canvas (the 3D tomato)
-   =========================================================================== */
-.timer-canvas {
-  width: 100%;
-  max-width: 460px;
+/* settings gear, tucked in the top-right of the stage */
+.timer-stage__tools {
+  position: absolute;
+  top: -8px;
+  right: 2px;
+  z-index: 3;
+}
+
+/* the halo the tomato floats in */
+.tomato-halo {
+  position: relative;
+  width: min(100%, 460px, 48vh);
   aspect-ratio: 1 / 1;
   margin: 0 auto;
-  border-radius: var(--radius-md);
-  background:
-    radial-gradient(120% 90% at 50% 8%, #fffdf7 0%, #ffe9d8 55%, #ffd9c4 100%);
-  box-shadow: inset 0 0 0 1px rgba(214, 58, 132, 0.08), var(--shadow-sm);
-  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.tomato-halo::before {
+  content: '';
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, var(--tomato-glow) 0%, rgba(255, 255, 255, 0) 68%);
+  z-index: 0;
+}
+
+.timer-canvas {
+  position: relative;
+  z-index: 1;
+  width: 94%;
+  height: 94%;
+  border-radius: 50%;
+  background: transparent;
   cursor: grab;
   touch-action: none;
 }
@@ -106,184 +190,294 @@
 }
 
 /* ===========================================================================
-   Timer display
+   Timer display — the roaring number
    =========================================================================== */
 .timer-display {
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(-60px, -8vh, -24px);
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
   pointer-events: none;
 }
 
 .timer-display__phase {
-  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--ink-muted);
+  letter-spacing: 0.26em;
+  color: var(--ink-2);
 }
 
-.timer-display__phase--focus {
-  color: var(--red-dark);
+.timer-display__phase::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tomato);
+  transition: background 0.4s var(--ease-out);
 }
 
-.timer-display__phase--shortBreak,
-.timer-display__phase--longBreak {
-  color: var(--green);
+.timer-stage[data-phase='shortBreak'] .timer-display__phase::before,
+.timer-stage[data-phase='longBreak'] .timer-display__phase::before {
+  background: var(--leaf);
 }
 
 .timer-display__time {
-  font-size: clamp(3rem, 10vw, 4.2rem);
+  font-size: clamp(3.6rem, min(13vw, 15vh), 9rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  line-height: 1;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
   color: var(--ink);
+  margin-top: 8px;
+}
+
+/* while running, the number breathes — slow, warm, alive */
+.timer-stage[data-status='running'] .timer-display__time {
+  animation: time-breathe 3.4s var(--ease-out) infinite;
+}
+
+@keyframes time-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.012);
+  }
+}
+
+.timer-display__meta {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.94rem;
+  color: var(--ink-2);
+}
+
+.timer-display__meta .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  opacity: 0.7;
 }
 
 .timer-display__round {
-  font-size: 1.05rem;
   font-weight: 700;
-  color: var(--pink-dark);
+  color: var(--ink);
 }
 
-.timer-display__status {
-  font-size: 0.78rem;
-  color: var(--ink-muted);
-  text-transform: capitalize;
+.timer-display__hint {
+  margin: 12px 0 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  color: var(--ink-3);
+  text-align: center;
 }
 
 /* ===========================================================================
-   Focus duration
+   Focus duration — quiet meta line
    =========================================================================== */
 .focus-duration {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: 6px;
   pointer-events: none;
 }
 
 .focus-duration__label {
-  font-size: 0.75rem;
-  color: var(--ink-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  color: var(--ink-3);
 }
 
 .focus-duration__value {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--ink);
-}
-
-.focus-duration__hint {
-  font-size: 0.85rem;
-  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===========================================================================
    Controls
    =========================================================================== */
 .timer-controls {
+  position: relative;
+  z-index: 2;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 6px;
+  margin-top: clamp(22px, 4vh, 36px);
 }
 
 /* ===========================================================================
-   Buttons
+   Buttons — pill language, spring physics.
+   The magnetic pull is applied to `transform` by JS; `scale` stays free for
+   the press feedback so the two never fight.
    =========================================================================== */
 .btn {
+  position: relative;
   border-radius: 999px;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   font-weight: 700;
-  padding: 10px 20px;
+  padding: 11px 22px;
   cursor: pointer;
+  will-change: transform;
   transition:
-    transform 0.14s ease,
-    background 0.16s ease,
-    box-shadow 0.16s ease,
-    color 0.16s ease;
-}
-
-.btn:hover {
-  transform: translateY(-2px) scale(1.02);
+    background 0.24s var(--ease-out),
+    box-shadow 0.24s var(--ease-out),
+    color 0.2s var(--ease-out),
+    border-color 0.24s var(--ease-out);
 }
 
 .btn:active {
-  transform: translateY(0) scale(0.97);
+  scale: 0.95;
 }
 
 .btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
-  transform: none;
+  scale: 1 !important;
 }
 
 .btn--primary {
-  background: linear-gradient(180deg, var(--red), var(--red-dark));
+  background: linear-gradient(180deg, var(--tomato) 0%, var(--tomato-deep) 100%);
   color: #fff;
-  box-shadow: 0 12px 24px -12px rgba(237, 28, 36, 0.75);
+  box-shadow: 0 14px 28px -14px rgba(197, 54, 31, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-.btn--primary:hover {
-  box-shadow: 0 16px 30px -12px rgba(237, 28, 36, 0.85);
+.timer-stage[data-phase='shortBreak'] .btn--primary,
+.timer-stage[data-phase='longBreak'] .btn--primary {
+  background: linear-gradient(180deg, var(--leaf) 0%, var(--leaf-deep) 100%);
+  box-shadow: 0 14px 28px -14px rgba(31, 112, 57, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .btn--ghost {
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--ink);
-  border-color: var(--border);
+  border-color: var(--line-strong);
+  backdrop-filter: blur(8px);
 }
 
 .btn--ghost:hover {
-  background: var(--pink-soft);
-  border-color: var(--pink);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(232, 68, 46, 0.42);
+  color: var(--tomato-deep);
 }
 
 .btn--lg {
-  padding: 13px 34px;
-  font-size: 1.1rem;
+  padding: 15px 42px;
+  font-size: 1.18rem;
+  min-width: 178px;
 }
 
 .btn--sm {
   padding: 7px 16px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 /* ===========================================================================
-   Settings
+   Settings — gear toggle + frosted popover
    =========================================================================== */
 .settings {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
+  position: relative;
 }
 
-.settings__panel {
-  width: 100%;
-  max-width: 420px;
-  background: var(--surface-2);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
+.settings__toggle {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--ink-2);
+  box-shadow: 0 8px 20px -12px rgba(190, 70, 30, 0.4);
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+}
+
+.settings__toggle:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.settings__toggle-icon {
+  transition: transform 0.5s var(--ease-out);
+}
+
+.settings__toggle:hover .settings__toggle-icon {
+  transform: rotate(90deg);
+}
+
+.settings__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  background: transparent;
+  border: none;
+  cursor: default;
+  transition: opacity 0.28s var(--ease-out);
+}
+
+.settings__scrim[data-open='true'] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settings__popover {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  z-index: 3;
+  width: 300px;
+  background: rgba(255, 253, 249, 0.94);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-pop);
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  box-shadow: var(--shadow-sm);
+  gap: 18px;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition: opacity 0.28s var(--ease-out), transform 0.28s var(--ease-out);
+}
+
+.settings__popover[data-open='true'] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.settings__title {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ink-3);
 }
 
 .slider-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .slider-field__head {
@@ -298,29 +492,46 @@
 }
 
 .slider-field__value {
-  font-size: 0.85rem;
-  color: var(--ink-muted);
+  font-size: 0.82rem;
+  color: var(--ink-2);
   font-variant-numeric: tabular-nums;
+  font-family: var(--font-serif);
+  font-style: italic;
 }
 
 .slider {
   width: 100%;
-  height: 8px;
+  height: 6px;
   border-radius: 999px;
   appearance: none;
-  background: linear-gradient(90deg, var(--pink), var(--pink-dark));
+  background: linear-gradient(90deg, var(--tomato-wash), var(--tomato));
   outline: none;
+}
+
+.timer-stage[data-phase='shortBreak'] .slider,
+.timer-stage[data-phase='longBreak'] .slider {
+  background: linear-gradient(90deg, var(--leaf-wash), var(--leaf));
 }
 
 .slider::-webkit-slider-thumb {
   appearance: none;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: #fff;
-  border: 3px solid var(--pink);
-  box-shadow: 0 4px 10px -4px rgba(214, 58, 132, 0.7);
+  border: 3px solid var(--tomato);
+  box-shadow: 0 4px 10px -4px rgba(197, 54, 31, 0.6);
   cursor: pointer;
+  transition: transform 0.18s var(--ease-spring);
+}
+
+.timer-stage[data-phase='shortBreak'] .slider::-webkit-slider-thumb,
+.timer-stage[data-phase='longBreak'] .slider::-webkit-slider-thumb {
+  border-color: var(--leaf);
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
 }
 
 .slider:disabled {
@@ -331,51 +542,146 @@
 .toggle {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.95rem;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
   user-select: none;
 }
 
+/* custom pill switch */
 .toggle input {
-  width: 20px;
-  height: 20px;
-  accent-color: var(--pink);
+  appearance: none;
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(51, 22, 12, 0.14);
+  position: relative;
   cursor: pointer;
+  transition: background 0.24s var(--ease-out);
+  flex: none;
+}
+
+.toggle input::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(51, 22, 12, 0.25);
+  transition: transform 0.24s var(--ease-spring);
+}
+
+.toggle input:checked {
+  background: var(--tomato);
+}
+
+.toggle input:checked::after {
+  transform: translateX(16px);
+}
+
+.toggle input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ===========================================================================
-   Todo card / tabs
+   Todo panel — frosted card, calm and organized
    =========================================================================== */
-.todo-tabs {
+.todo-card {
+  background: var(--surface);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  padding: clamp(22px, 3vw, 32px);
   display: flex;
-  gap: 6px;
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 10px;
-  margin-bottom: 18px;
+  flex-direction: column;
+  min-height: 0;
+  max-height: min(76vh, 640px);
+  overflow: hidden;
+  animation: todo-card-in 0.9s var(--ease-out) 0.15s both;
+}
+
+@keyframes todo-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.todo-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.todo-card__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.todo-card__date {
+  font-size: 0.84rem;
+  color: var(--ink-3);
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+/* segmented tabs */
+.todo-tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(51, 22, 12, 0.05);
+  border-radius: 999px;
+  margin-bottom: 20px;
 }
 
 .todo-tab {
   appearance: none;
   border: none;
   background: transparent;
-  padding: 8px 16px;
+  padding: 7px 18px;
   border-radius: 999px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: var(--ink-muted);
+  color: var(--ink-2);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.22s var(--ease-out), color 0.22s var(--ease-out), box-shadow 0.22s var(--ease-out);
 }
 
 .todo-tab:hover {
-  background: var(--surface-2);
+  color: var(--ink);
 }
 
 .todo-tab--active {
-  background: var(--pink-soft);
-  color: var(--pink-dark);
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 4px 14px -6px rgba(51, 22, 12, 0.28);
+}
+
+.todo-tab__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 /* ===========================================================================
@@ -384,24 +690,40 @@
 .checklist {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 }
 
 .checklist__add {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--surface-2);
-  border: 2px solid var(--border);
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 6px 8px 6px 16px;
+  padding: 5px 6px 5px 10px;
+  box-shadow: 0 8px 20px -18px rgba(51, 22, 12, 0.4);
+  transition: border-color 0.24s var(--ease-out), box-shadow 0.24s var(--ease-out);
+}
+
+.checklist__add:focus-within {
+  border-color: rgba(232, 68, 46, 0.45);
+  box-shadow: 0 0 0 4px rgba(232, 68, 46, 0.08);
 }
 
 .checklist__add-icon {
-  color: var(--pink);
-  font-size: 1.3rem;
-  font-weight: 800;
-  line-height: 1;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--tomato-wash);
+  color: var(--tomato-deep);
+  transition: transform 0.4s var(--ease-spring);
+}
+
+.checklist__add:focus-within .checklist__add-icon {
+  transform: rotate(90deg);
 }
 
 .checklist__add .field {
@@ -413,35 +735,52 @@
   border: none;
   background: transparent;
   outline: none;
-  padding: 8px 4px;
+  padding: 9px 4px;
   font-size: 0.98rem;
 }
 
 .checklist__add .input::placeholder {
-  color: var(--ink-muted);
+  color: var(--ink-3);
 }
 
 .checklist__group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .checklist__heading {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--ink-muted);
+  letter-spacing: 0.18em;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checklist__heading::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tomato);
+}
+
+.checklist__group--done .checklist__heading::before {
+  background: var(--leaf);
 }
 
 .checklist__empty {
   margin: 0;
-  color: var(--ink-muted);
-  font-size: 0.92rem;
+  color: var(--ink-3);
+  font-size: 0.95rem;
+  font-family: var(--font-serif);
+  font-style: italic;
   text-align: center;
-  padding: 12px 0;
+  padding: 18px 0;
 }
 
 .todo-list {
@@ -450,62 +789,61 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .todo-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  border-radius: var(--r-sm);
+  padding: 9px 10px;
+  transition: background 0.2s var(--ease-out);
 }
 
 .todo-item:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-  border-color: var(--pink);
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .todo-item__check {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   flex: none;
-  border-radius: 8px;
-  border: 2px solid var(--pink);
-  background: #fff;
-  color: #fff;
-  font-size: 0.95rem;
+  border-radius: 50%;
+  border: 2px solid var(--ink-3);
+  background: transparent;
+  color: transparent;
+  font-size: 0.82rem;
   font-weight: 800;
   line-height: 1;
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: background 0.15s ease, transform 0.12s ease;
+  transition: background 0.22s var(--ease-out), border-color 0.22s var(--ease-out), color 0.22s var(--ease-out), transform 0.18s var(--ease-spring);
 }
 
 .todo-item__check:hover {
-  transform: scale(1.1);
+  border-color: var(--leaf);
+  transform: scale(1.12);
 }
 
 .todo-item--done .todo-item__check {
-  background: var(--green);
-  border-color: var(--green);
+  background: var(--leaf);
+  border-color: var(--leaf);
+  color: #fff;
 }
 
 .todo-item__text {
   flex: 1;
   font-size: 1rem;
   overflow-wrap: anywhere;
+  transition: color 0.2s var(--ease-out);
 }
 
 .todo-item--done .todo-item__text {
-  color: var(--ink-muted);
+  color: var(--ink-3);
   text-decoration: line-through;
-  text-decoration-color: var(--pink);
+  text-decoration-color: rgba(47, 158, 84, 0.5);
   text-decoration-thickness: 2px;
 }
 
@@ -514,18 +852,30 @@
   appearance: none;
   border: none;
   background: transparent;
-  color: var(--ink-muted);
-  font-size: 1.2rem;
+  color: var(--ink-3);
+  font-size: 1.1rem;
   font-weight: 700;
+  line-height: 1;
   cursor: pointer;
-  border-radius: 8px;
-  padding: 2px 8px;
-  transition: color 0.15s ease, background 0.15s ease;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: translateX(4px);
+  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out), color 0.2s var(--ease-out), background 0.2s var(--ease-out);
+}
+
+.todo-item:hover .todo-item__remove,
+.todo-item__remove:focus-visible {
+  opacity: 1;
+  transform: none;
 }
 
 .todo-item__remove:hover {
-  color: var(--red);
-  background: #ffe3e3;
+  color: var(--tomato);
+  background: var(--tomato-wash);
 }
 
 /* ===========================================================================
@@ -534,7 +884,7 @@
 .report {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .report__stats {
@@ -544,31 +894,49 @@
 }
 
 .report__stat {
-  background: var(--surface-2);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 20px 16px;
   text-align: center;
 }
 
 .report__stat strong {
   display: block;
-  font-size: 2rem;
+  font-size: 2.4rem;
   font-weight: 800;
-  color: var(--pink-dark);
   line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.report__stat--focus strong {
+  color: var(--tomato);
+}
+
+.report__stat--tasks strong {
+  color: var(--leaf);
 }
 
 .report__stat span {
-  font-size: 0.85rem;
-  color: var(--ink-muted);
+  font-size: 0.78rem;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .report__line {
   margin: 0;
   font-size: 1.05rem;
-  color: var(--ink);
+  color: var(--ink-2);
   text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+.report__tomato {
+  display: inline-flex;
+  vertical-align: -4px;
+  margin-right: 7px;
 }
 
 .report__list {
@@ -581,20 +949,50 @@
 }
 
 .report__item {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  color: var(--ink-muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+
+.report__item::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 2px;
+  background: var(--leaf);
+  transform: rotate(45deg);
 }
 
 /* ===========================================================================
    Responsive — tomato moves to the top, content below.
    =========================================================================== */
 @media (max-width: 880px) {
+  body {
+    overflow: auto;
+  }
+
+  .app-shell {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  .app-shell::before,
+  .app-shell::after {
+    display: none;
+  }
+
   .app-main {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 24px;
+    align-items: start;
   }
 
   .timer-column {
@@ -605,8 +1003,12 @@
     order: 2;
   }
 
-  .timer-card,
+  .timer-stage__tools {
+    top: 0;
+    right: 0;
+  }
+
   .todo-card {
-    padding: 18px;
+    max-height: none;
   }
 }

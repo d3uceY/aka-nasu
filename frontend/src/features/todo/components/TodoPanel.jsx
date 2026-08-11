@@ -7,11 +7,19 @@ const TABS = [
   { id: 'report', label: 'Daily report' },
 ]
 
+function todayLabel() {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+}
+
 export function TodoPanel() {
   const [tab, setTab] = useState('checklist')
 
   return (
     <div className="todo-card">
+      <div className="todo-card__head">
+        <h2 className="todo-card__title">Today</h2>
+        <span className="todo-card__date">{todayLabel()}</span>
+      </div>
       <div className="todo-tabs" role="tablist" aria-label="Plan tabs">
         {TABS.map((t) => (
           <button

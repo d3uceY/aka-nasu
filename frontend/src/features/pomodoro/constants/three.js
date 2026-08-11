@@ -10,11 +10,11 @@
 // Split at the true equator (CAP_FRACTION = 0) — top HALF is the cap.
 
 export const COLORS = {
-  tomato: 0xd0332f,       // base red
-  tomatoGroove: 0x8f1f1f, // darker groove between lobes
-  seam: 0x4c1010,         // very dark equator groove (torus ring)
-  stem: 0x2e7d32,
-  leaf: 0x256b2a,
+  tomato: 0xe8442e,       // ripe signature red (matches --tomato)
+  tomatoGroove: 0x9c2c1c, // darker groove between lobes
+  seam: 0x4a0f0c,         // very dark equator groove (torus ring)
+  stem: 0x2f9e54,
+  leaf: 0x25904a,
   pointer: 0xffffff,
 }
 

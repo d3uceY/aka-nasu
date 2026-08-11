@@ -324,6 +324,11 @@ export class TomatoTimerScene {
     this.timerGroup.position.y = Math.sin(this._elapsed * 1.3) * 0.012
     this.shadowPlane.scale.setScalar(1 + Math.sin(this._elapsed * 1.3) * 0.02)
 
+    // Cozy light breathing — a slow, warm shimmer that never distracts.
+    const breathe = Math.sin(this._elapsed * 0.9)
+    this.lights.key.intensity = this.lights.keyBase + breathe * 0.06
+    this.lights.rim.intensity = this.lights.rimBase + Math.sin(this._elapsed * 0.9 + 1.3) * 0.05
+
     this.renderer.render(this.scene, this.camera)
     this._raf = requestAnimationFrame(this._loop)
   }

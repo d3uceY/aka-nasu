@@ -3,6 +3,23 @@ import { Button } from '../../../components/ui/Button.jsx'
 import { Input } from '../../../components/ui/Input.jsx'
 import { todoStore, useTodos } from '../state/todoStore.js'
 
+function PlusIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M8 2.5v11M2.5 8h11" />
+    </svg>
+  )
+}
+
 export function CheckListTab() {
   const todos = useTodos()
   const [draft, setDraft] = useState('')
@@ -20,7 +37,7 @@ export function CheckListTab() {
     <div className="checklist">
       <form className="checklist__add" onSubmit={submit}>
         <span className="checklist__add-icon" aria-hidden="true">
-          ⊕
+          <PlusIcon />
         </span>
         <Input
           aria-label="What are you going to do today?"
@@ -36,7 +53,7 @@ export function CheckListTab() {
       <section className="checklist__group">
         <h3 className="checklist__heading">To-do</h3>
         {open.length === 0 && (
-          <p className="checklist__empty">Nothing here — add a task above 🍅</p>
+          <p className="checklist__empty">Nothing planted yet — add a seed above.</p>
         )}
         <ul className="todo-list">
           {open.map((t) => (
@@ -46,7 +63,7 @@ export function CheckListTab() {
       </section>
 
       {done.length > 0 && (
-        <section className="checklist__group">
+        <section className="checklist__group checklist__group--done">
           <h3 className="checklist__heading">Done</h3>
           <ul className="todo-list">
             {done.map((t) => (
@@ -68,7 +85,7 @@ function TodoRow({ todo }) {
         aria-label={todo.done ? 'Mark as not done' : 'Mark as done'}
         onClick={() => todoStore.toggle(todo.id)}
       >
-        {todo.done ? '✓' : ''}
+        ✓
       </button>
       <span className="todo-item__text">{todo.text}</span>
       <button
@@ -77,7 +94,7 @@ function TodoRow({ todo }) {
         aria-label="Remove task"
         onClick={() => todoStore.remove(todo.id)}
       >
-        —
+        ×
       </button>
     </li>
   )

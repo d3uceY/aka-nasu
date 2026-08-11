@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "build:dev": "vite build --minify false --mode development",
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
