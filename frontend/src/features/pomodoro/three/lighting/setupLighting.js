@@ -1,34 +1,34 @@
 import * as THREE from 'three'
 
-// Friendly warm studio lighting for the pomodoro timer.
-//
-// The page sits on a soft cream → peach gradient, so the tomato is lit with
-// warm, diffused light instead of harsh white studio lights:
-//   • HemisphereLight — a gentle warm sky → terracotta ground gradient that
-//     wraps cozy color around the whole dome (no flat white ambient).
-//   • Key — a warm "afternoon sun" from the upper right/front.
-//   • Bounce — a low warm fill from below/front that opens the shadow side so
-//     the lobe grooves stay soft and readable instead of going black.
-//   • Rim — a peachy kicker from behind/left that gently separates the tomato
-//     from the background.
-// Intensities stay modest; the renderer's ACES tone mapping rounds them off.
+// Dramatic side lighting for the pomodoro timer — the tomato is lit from the
+// right at mid-height so the direction reads immediately:
+//   • HemisphereLight — a very low warm sky → terracotta gradient. Just enough
+//     to keep the shadow side from going pitch black, dim on purpose so the
+//     side key stays the obvious star.
+//   • Key — the showpiece: a strong warm side light that rakes across the
+//     right lobe faces, leaving the far side to fall into clear shadow.
+//   • Bounce — a faint warm lift from below/front that keeps the front lobe
+//     grooves readable without flattening the contrast.
+//   • Rim — a peachy kicker from behind/left that gives the dark side a soft
+//     edge so the tomato still reads as a full sphere.
+// The bright key vs. dark fill is what makes the side light unmistakable.
 export function setupLighting(scene) {
-  // Soft sky → ground gradient (cozy warm fill, no flat ambient).
-  const hemi = new THREE.HemisphereLight(0xfff3dd, 0xd98a6b, 0.7)
+  // Faint sky → ground gradient (deliberately low, so the shadow side reads dark).
+  const hemi = new THREE.HemisphereLight(0xfff3dd, 0xd98a6b, 0.22)
   scene.add(hemi)
 
-  // Warm key — like afternoon sun from the upper right/front.
-  const key = new THREE.DirectionalLight(0xffe9c9, 1.0)
-  key.position.set(3, 5, 4)
+  // Strong side key — warm sun from the right at tomato mid-height.
+  const key = new THREE.DirectionalLight(0xffe9c9, 2.6)
+  key.position.set(4.6, 1.0, 1.0)
   scene.add(key)
 
-  // Warm bounce from below/front — lifts the under-shadows, keeps grooves soft.
-  const bounce = new THREE.DirectionalLight(0xffb48f, 0.45)
+  // Faint bounce from below/front — opens the front grooves a touch.
+  const bounce = new THREE.DirectionalLight(0xffb48f, 0.28)
   bounce.position.set(0, -1.8, 2.6)
   scene.add(bounce)
 
-  // Peachy rim from behind/left — gentle separation from the background.
-  const rim = new THREE.DirectionalLight(0xffd9c2, 0.45)
+  // Peachy rim from behind/left — soft edge on the shadow side.
+  const rim = new THREE.DirectionalLight(0xffd9c2, 0.5)
   rim.position.set(-4, 2.4, -3.2)
   scene.add(rim)
 
