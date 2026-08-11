@@ -1,12 +1,12 @@
 import * as THREE from 'three'
 
-// Dramatic side lighting for the pomodoro timer — the tomato is lit from the
-// right at mid-height so the direction reads immediately:
+// Dramatic angled lighting for the pomodoro timer — the tomato is lit from
+// 45° off the right at mid-height so the direction reads immediately:
 //   • HemisphereLight — a very low warm sky → terracotta gradient. Just enough
 //     to keep the shadow side from going pitch black, dim on purpose so the
-//     side key stays the obvious star.
-//   • Key — the showpiece: a strong warm side light that rakes across the
-//     right lobe faces, leaving the far side to fall into clear shadow.
+//     key stays the obvious star.
+//   • Key — the showpiece: a strong warm light raking across the right-front
+//     lobe faces, leaving the far side to fall into clear shadow.
 //   • Bounce — a faint warm lift from below/front that keeps the front lobe
 //     grooves readable without flattening the contrast.
 //   • Rim — a peachy kicker from behind/left that gives the dark side a soft
@@ -17,9 +17,10 @@ export function setupLighting(scene) {
   const hemi = new THREE.HemisphereLight(0xfff3dd, 0xd98a6b, 0.22)
   scene.add(hemi)
 
-  // Strong side key — warm sun from the right at tomato mid-height.
+  // Strong key — warm sun from 45° off the right (halfway between the side
+  // and the front, at tomato mid-height), so the lobe faces read clearly.
   const key = new THREE.DirectionalLight(0xffe9c9, 2.6)
-  key.position.set(4.6, 1.0, 1.0)
+  key.position.set(3.2, 1.0, 3.2)
   scene.add(key)
 
   // Faint bounce from below/front — opens the front grooves a touch.
