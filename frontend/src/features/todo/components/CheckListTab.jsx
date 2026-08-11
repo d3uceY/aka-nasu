@@ -53,7 +53,7 @@ export function CheckListTab() {
       <section className="checklist__group">
         <h3 className="checklist__heading">To-do</h3>
         {open.length === 0 && (
-          <p className="checklist__empty">Nothing planted yet — add a seed above.</p>
+          <p className="checklist__empty">Nothing planted yet. Add a seed above.</p>
         )}
         <ul className="todo-list">
           {open.map((t) => (

@@ -25,11 +25,11 @@ export function DailyReportTab() {
             <span className="report__tomato" aria-hidden="true">
               <TomatoMark size={18} />
             </span>
-            {sessionsCompleted} {sessionsCompleted > 1 ? 'tomatoes' : 'tomato'} of focus today —
+            {sessionsCompleted} {sessionsCompleted > 1 ? 'tomatoes' : 'tomato'} of focus today,
             lovely and ripe.
           </>
         ) : (
-          'Nothing ripe yet — let a focus run finish.'
+          'Nothing ripe yet. Let a focus run finish.'
         )}
       </p>
       {done.length > 0 && (

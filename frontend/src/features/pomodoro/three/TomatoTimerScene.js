@@ -92,7 +92,7 @@ export class TomatoTimerScene {
     el.style.display = 'block'
     el.style.touchAction = 'none'
     el.tabIndex = 0
-    el.setAttribute('aria-label', 'Tomato timer dial — drag, scroll, or use arrow keys to set the focus length')
+    el.setAttribute('aria-label', 'Tomato timer dial: drag, scroll, or use arrow keys to set the focus length')
     this.container.appendChild(el)
     this.renderer = renderer
   }
