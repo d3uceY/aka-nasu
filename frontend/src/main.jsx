@@ -6,6 +6,8 @@ import { pomodoroStore } from './features/pomodoro/state/pomodoroStore.js'
 import { todoStore } from './features/todo/state/todoStore.js'
 import './styles/globals.css'
 import './styles/pomodoro.css'
+import './styles/intro.css'
+import './styles/mini.css'
 
 // Seed both stores from the persisted config as soon as it's available.
 loadAppState()

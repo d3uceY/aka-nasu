@@ -1,0 +1,79 @@
+/* ===========================================================================
+   App intro — the opening brand moment.
+   The tomato and wordmark arrive at the centre of the screen, the wordmark
+   departs, and the tomato flies to its seat in the app. GSAP owns the motion
+   (see AppIntro.jsx); this file owns the resting composition.
+   =========================================================================== */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  /* block interaction beneath while the intro plays */
+  pointer-events: auto;
+}
+
+.intro__backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(54% 46% at 78% -12%, var(--tomato-glow), transparent 62%),
+    linear-gradient(168deg, var(--paper-0) 0%, var(--paper-1) 100%);
+}
+
+.intro__center {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.intro__lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  will-change: transform, opacity, filter;
+}
+
+.intro__mark {
+  filter: drop-shadow(0 12px 22px rgba(232, 68, 46, 0.28));
+}
+
+.intro__wordmark {
+  margin: 16px 0 0;
+  font-family: var(--font-serif);
+  font-weight: 560;
+  font-size: clamp(3rem, 9vw, 4.75rem);
+  font-variation-settings: 'opsz' 60;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  color: var(--ink);
+}
+
+.intro__wordmark em {
+  font-style: italic;
+  color: var(--tomato);
+}
+
+.intro__sub {
+  margin: 14px 0 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+/* the 3D tomato, sized by JS and scaled to its app seat at flight time */
+.intro__tomato {
+  position: relative;
+  width: var(--intro-size, 320px);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  margin-top: -10px;
+  will-change: transform, opacity;
+}

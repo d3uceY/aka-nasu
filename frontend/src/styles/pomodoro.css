@@ -1,6 +1,9 @@
 /* ===========================================================================
-   Aka Nasu — app shell & header
+   Aka Nasu — app shell
    Minimal stage: the tomato floats, the number roars, everything else whispers.
+   The brand header is gone — identity lives in the opening intro and the
+   mini-timer bar. The shell fades out briefly while swapping window modes so
+   the native resize + layout swap never show a squished frame.
    =========================================================================== */
 .app-shell {
   height: 100%;
@@ -8,6 +11,11 @@
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  transition: opacity 0.24s var(--ease-out);
+}
+
+.app-shell--switching {
+  opacity: 0;
 }
 
 /* one faint kiss of tomato behind the stage — the only atmosphere */
@@ -24,76 +32,6 @@
   left: -6%;
   top: 12%;
   background: radial-gradient(circle at 50% 45%, var(--tomato-glow), transparent 66%);
-}
-
-/* ---- header: a quiet gallery rail ---- */
-.app-header {
-  position: relative;
-  z-index: 1;
-  padding: clamp(18px, 3.4vh, 32px) clamp(26px, 5vw, 64px) clamp(14px, 2.6vh, 22px);
-  display: flex;
-  align-items: flex-start;
-  border-bottom: 1px solid var(--line);
-  animation: app-header-in 0.9s var(--ease-out) both;
-}
-
-.app-header__inner {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.app-header__mark {
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  flex: none;
-  border-radius: 50%;
-  background: var(--surface-solid);
-  border: 1px solid var(--line-strong);
-  box-shadow: 0 10px 22px -18px rgba(43, 33, 27, 0.4);
-}
-
-.app-header__mark svg {
-  display: block;
-  filter: drop-shadow(0 5px 9px rgba(232, 68, 46, 0.28));
-}
-
-.app-title {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(1.45rem, 2.3vw, 1.75rem);
-  font-weight: 560;
-  font-variation-settings: 'opsz' 60;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-}
-
-.app-title__accent {
-  font-style: italic;
-  font-weight: 560;
-  color: var(--tomato);
-}
-
-.app-subtitle {
-  margin: 4px 0 0;
-  color: var(--ink-2);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.95rem;
-  font-variation-settings: 'opsz' 20;
-}
-
-@keyframes app-header-in {
-  from {
-    opacity: 0;
-    transform: translateY(-14px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 /* ===========================================================================
@@ -129,12 +67,17 @@
   justify-content: center;
 }
 
-/* settings gear, tucked in the top-right of the stage */
+/* tool cluster (mini-mode + settings gear), tucked in the top-right of the
+   stage. Animated opacity-only in PomodoroTimer — a transform here would
+   become the containing block for the settings scrim. */
 .timer-stage__tools {
   position: absolute;
   top: -8px;
   right: 2px;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* the halo the tomato floats in */

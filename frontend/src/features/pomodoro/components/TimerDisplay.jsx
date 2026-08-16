@@ -30,8 +30,8 @@ const STATUS_HINTS = {
 
 /** Each glyph sits in a fixed 1ch slot (ch = width of "0") so the monumental
  *  serif number stays perfectly still while it ticks — true tabular behaviour
- *  without needing tabular figures in the font. */
-function TimeSlots({ text }) {
+ *  without needing tabular figures in the font. Shared with the mini timer. */
+export function TimeSlots({ text }) {
   return text.split('').map((ch, i) =>
     ch === ':' ? (
       <span className="timer-glyph timer-glyph--colon" key={i}>

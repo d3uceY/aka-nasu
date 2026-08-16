@@ -1,0 +1,185 @@
+/* ===========================================================================
+   Mini timer window — the always-on-top compact mode.
+   The top rail is the frameless drag handle (Wails `--wails-draggable: drag`);
+   interactive children opt out with `--wails-draggable: no-drag` in JSX.
+   =========================================================================== */
+.mini-window {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+  background:
+    radial-gradient(58% 40% at 50% 28%, var(--tomato-glow), transparent 64%),
+    linear-gradient(168deg, var(--paper-0) 0%, var(--paper-1) 100%);
+  will-change: transform, opacity;
+}
+
+/* ---- drag rail ---- */
+.mini-window__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px 8px 14px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.mini-window__bar:active {
+  cursor: grabbing;
+}
+
+.mini-window__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.mini-window__phase {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.mini-window__phase::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tomato);
+  transition: background 0.4s var(--ease-out);
+}
+
+.mini-window[data-phase='shortBreak'] .mini-window__phase::before,
+.mini-window[data-phase='longBreak'] .mini-window__phase::before {
+  background: var(--leaf);
+}
+
+.mini-window__exit {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: var(--surface-solid);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink-2);
+  cursor: pointer;
+  flex: none;
+  transition:
+    color 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out),
+    transform 0.18s var(--ease-spring);
+}
+
+.mini-window__exit:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  transform: scale(1.08);
+}
+
+/* ---- body ---- */
+.mini-window__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 14px 16px;
+}
+
+.mini-window__tomato {
+  position: relative;
+  width: min(100%, 150px);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+}
+
+/* compact roaring number — same tabular 1ch slots, smaller scale */
+.mini-window__time {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--font-serif);
+  font-size: 2.55rem;
+  font-weight: 540;
+  font-variation-settings: 'opsz' 96;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.mini-window[data-status='running'] .mini-window__time {
+  animation: time-breathe 3.4s var(--ease-out) infinite;
+}
+
+/* ---- controls ---- */
+.mini-window__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.mini-window__start {
+  min-width: 96px;
+}
+
+.mini-window__ctl {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+}
+
+/* ===========================================================================
+   Mini-mode button — the "shrink to a mini" pill tucked beside the gear.
+   =========================================================================== */
+.mini-mode-btn {
+  appearance: none;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-solid);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--ink-2);
+  box-shadow: 0 8px 18px -14px rgba(43, 33, 27, 0.35);
+  transition:
+    background 0.2s var(--ease-out),
+    color 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out),
+    transform 0.18s var(--ease-spring);
+}
+
+.mini-mode-btn:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  transform: scale(1.06);
+}
+
+@media (max-width: 880px) {
+  .mini-window__bar {
+    padding-top: 10px;
+  }
+
+  .mini-window__body {
+    padding-bottom: 18px;
+  }
+}

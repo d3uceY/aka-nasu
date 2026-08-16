@@ -8,6 +8,7 @@ import { TimerCanvas } from './TimerCanvas.jsx'
 import { TimerDisplay } from './TimerDisplay.jsx'
 import { TimerControls } from './TimerControls.jsx'
 import { TimerSettings } from './TimerSettings.jsx'
+import { MiniModeButton } from './MiniModeButton.jsx'
 
 gsap.registerPlugin(useGSAP)
 
@@ -69,6 +70,7 @@ export function PomodoroTimer() {
       data-status={status}
     >
       <div className="timer-stage__tools">
+        <MiniModeButton />
         <TimerSettings actions={actions} />
       </div>
       <div className="tomato-halo">
