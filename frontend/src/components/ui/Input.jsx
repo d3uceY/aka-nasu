@@ -1,12 +1,7 @@
-export function Input({ label, id, className = '', ...props }) {
+export function Input({ className = '', ...props }) {
   return (
     <div className="field">
-      {label && (
-        <label className="field__label" htmlFor={id}>
-          {label}
-        </label>
-      )}
-      <input id={id} className={`input ${className}`.trim()} {...props} />
+      <input className={`input ${className}`.trim()} {...props} />
     </div>
   )
 }

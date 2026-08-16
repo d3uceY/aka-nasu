@@ -3,13 +3,6 @@ import { COLORS } from '../../constants/three.js'
 
 // Shared PBR materials for every visible part of the timer.
 export function createTomatoMaterials() {
-  // Body uses vertex colors — this is a fallback for any uncolored geometry.
-  const tomato = new THREE.MeshStandardMaterial({
-    color: COLORS.tomato,
-    roughness: 0.55,
-    metalness: 0.02,
-  })
-
   // Vertex-colored body — roughness tuned for a slightly waxy tomato skin.
   const bodyVertex = new THREE.MeshStandardMaterial({
     vertexColors: true,
@@ -42,5 +35,5 @@ export function createTomatoMaterials() {
     metalness: 0,
   })
 
-  return { tomato, bodyVertex, seam, stem, leaf, pointer }
+  return { bodyVertex, seam, stem, leaf, pointer }
 }

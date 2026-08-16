@@ -10,8 +10,3 @@ export function durationFor(phase, settings) {
       return settings.focusMinutes * 60_000
   }
 }
-
-export function progress({ remainingMs, totalMs }) {
-  if (!totalMs) return 0
-  return Math.min(1, Math.max(0, remainingMs / totalMs))
-}

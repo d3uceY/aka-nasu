@@ -10,6 +10,11 @@ function emit() {
   for (const listener of listeners) listener()
 }
 
+function apply(list) {
+  todos = list
+  emit()
+}
+
 export const todoStore = {
   getTodos: () => todos,
   subscribe(listener) {
@@ -17,34 +22,18 @@ export const todoStore = {
     return () => listeners.delete(listener)
   },
   load(list) {
-    todos = Array.isArray(list) ? list : []
-    emit()
+    apply(Array.isArray(list) ? list : [])
   },
   add(text) {
     const value = text.trim()
     if (!value) return
-    addTodo(value)
-      .then((list) => {
-        todos = list
-        emit()
-      })
-      .catch(() => {})
+    addTodo(value).then(apply).catch(() => {})
   },
   toggle(id) {
-    toggleTodo(id)
-      .then((list) => {
-        todos = list
-        emit()
-      })
-      .catch(() => {})
+    toggleTodo(id).then(apply).catch(() => {})
   },
   remove(id) {
-    removeTodo(id)
-      .then((list) => {
-        todos = list
-        emit()
-      })
-      .catch(() => {})
+    removeTodo(id).then(apply).catch(() => {})
   },
 }
 

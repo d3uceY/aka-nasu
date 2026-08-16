@@ -8,7 +8,3 @@ export function formatTime(ms) {
   const seconds = totalSeconds % 60
   return `${pad(minutes)}:${pad(seconds)}`
 }
-
-export function formatMinutes(minutes) {
-  return `${Math.round(minutes)} min`
-}

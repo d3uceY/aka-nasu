@@ -1,6 +1,6 @@
 import { AppLayout } from './components/layout/AppLayout.jsx'
-import { PomodoroTimer } from './features/pomodoro/index.js'
-import { TodoPanel } from './features/todo/index.js'
+import { PomodoroTimer } from './features/pomodoro/components/PomodoroTimer.jsx'
+import { TodoPanel } from './features/todo/components/TodoPanel.jsx'
 
 export default function App() {
   return (
