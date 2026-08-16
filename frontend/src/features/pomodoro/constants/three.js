@@ -1,16 +1,16 @@
-// Tomato pomodoro timer — mechanical kitchen-timer style.
+// Tomato pomodoro timer, mechanical kitchen-timer style.
 //
 // The body is a full squashed sphere with 5 lobes via vertex displacement.
 // The cap is a partial sphere (pole → equator) that carries a canvas texture
 // with 60 ticks, 12 numerals, and a seam line.  Both body AND cap use the
-// SAME lobe function — the cap is always 3.5 % larger so it can never clip
+// SAME lobe function. The cap is always 3.5 % larger so it can never clip
 // into the body regardless of lobe strength.  The cap, stem, and leaves
 // rotate together as topGroup; the body and pointer stay fixed as staticGroup.
 //
-// Split at the true equator (CAP_FRACTION = 0) — top HALF is the cap.
+// Split at the true equator (CAP_FRACTION = 0): the top HALF is the cap.
 
 export const COLORS = {
-  tomato: 0xe8442e,       // ripe signature red (matches --tomato)
+  tomato: 0xe8442e,       // ripe red (matches --tomato)
   tomatoGroove: 0x9c2c1c, // darker groove between lobes
   seam: 0x4a0f0c,         // very dark equator groove (torus ring)
   stem: 0x2f9e54,
@@ -20,16 +20,16 @@ export const COLORS = {
 
 export const BODY = {
   radius: 1.15,
-  scaleY: 0.82,           // flattening — wider than tall
+  scaleY: 0.82,           // flattened: wider than tall
   lobes: 5,
-  lobeDepth: 0.17,         // real volume — lobes should pop
+  lobeDepth: 0.17,         // enough depth that lobes read clearly
   segments: 64,
 }
 
 // Cap always sits outside the body.  1.035 = 3.5 % radial clearance.
 export const CAP_CLEARANCE = 1.035
 
-// 0 = split at equator — top HALF is the textured cap.
+// 0 = split at the equator; the top HALF is the textured cap.
 export const CAP_FRACTION = 0
 
 // Lobe bell-curve ends well BEFORE the band starts (band is at 72 % of cap
@@ -85,7 +85,7 @@ export const BAND = {
   seamPx: 7,           // height of the baked seam line
   minorH: 0.55,        // minor tick height as fraction of band height
   majorH: 0.92,        // major tick height as fraction of band height
-  wrapMargin: 50,       // px — duplicate near-edge elements for seamless wrap
+  wrapMargin: 50,       // px; duplicate near-edge elements so the wrap is smooth
   labels: ['0', '55', '50', '45', '40', '35', '30', '25', '20', '15', '10', '5'],
   // "0" sits at tick index 15 → u=0.25 → world +Z (front), then clockwise
   zeroTickIndex: 15,

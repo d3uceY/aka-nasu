@@ -2,13 +2,13 @@ import * as THREE from 'three'
 import { BODY, getLobeEnd } from '../../constants/three.js'
 
 // ---------------------------------------------------------------------------
-// Shared lobe math — used identically by both the body and the cap so the
+// Shared lobe math, used identically by both the body and the cap so the
 // cap is always a strict superset of the body's radius (no clipping).
 //
 // The lobe amplitude follows a bell curve across phi ∈ [0, LOBE_END]:
 //   0 at the crown (phi=0) → peaks at LOBE_END/2 → 0 at LOBE_END
 // Beyond LOBE_END (which is well above the band), amplitude is hard-clamped
-// to 0 — the band and everything below it are perfectly circular.
+// to 0. The band and everything below it are perfectly circular.
 // ---------------------------------------------------------------------------
 
 const LOBE_END = getLobeEnd()

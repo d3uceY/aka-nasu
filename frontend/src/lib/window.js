@@ -3,7 +3,7 @@ import { Screens, Window } from '@wailsio/runtime'
 // Thin wrapper over the Wails v3 window runtime for the mini-timer mode.
 //
 // Every call is guarded so the app still runs in a plain browser (Vite dev
-// preview), where the Wails bridge is absent — the native calls are skipped
+// preview), where the Wails bridge is absent. The native calls are skipped
 // and the UI layout still swaps, so the feature stays testable in the browser.
 
 export const MINI_SIZE = { width: 264, height: 352 }

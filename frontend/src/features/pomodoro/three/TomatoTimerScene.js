@@ -26,11 +26,11 @@ import {
 // The mechanical pomodoro kitchen timer: a fixed lower tomato body with a
 // white pointer, and a rotating upper cap (textured with band, ticks, and
 // numerals) that carries the stem and calyx leaves.  Turning the cap winds
-// the timer — the pointer on the static body always points to the current
+// the timer. The pointer on the static body always points to the current
 // minute on the rotating band beneath it.
 //
 // Every frame it *pulls* the target minute from `getDialMinute()` and eases
-// the cap toward it (smooth, frame-rate independent — no setInterval). Manual
+// the cap toward it (smooth and frame-rate independent, no setInterval). Manual
 // drag / wheel / keyboard rotation is only allowed while `getInteractionEnabled()`
 // returns true (idle), and the cap springs/snaps to the nearest minute on
 // release, reporting the new focus length via `onDialChange`.
@@ -101,8 +101,8 @@ export class TomatoTimerScene {
 
   _buildScene() {
     const scene = new THREE.Scene()
-    // Transparent background — the CSS gradient shows through.
-    // No environment map — matches the reference's simple, punchy lighting.
+    // Transparent background: the CSS gradient shows through.
+    // No environment map; matches the reference's simple, punchy lighting.
     scene.background = null
     this.scene = scene
   }
@@ -240,7 +240,7 @@ export class TomatoTimerScene {
       ease: 'back.out(1.5)',
     })
     this._lastTickMinute = snapped
-    // The dial springs into place — ratchet as it starts to spin, then the
+    // The dial springs into place: ratchet as it starts to spin, then the
     // clunk as it clicks onto the minute (spin first, clunk after). The tick
     // is skipped for a dead-center release (no real rotation).
     this._snapTween.eventCallback('onStart', () => {
@@ -342,12 +342,12 @@ export class TomatoTimerScene {
 
     this.topGroup.rotation.y = THREE.MathUtils.degToRad(normalizeDegrees(this.currentDeg))
 
-    // Playful idle life: gentle bob + breathing contact shadow.
+    // Idle life: a slow bob plus a breathing contact shadow.
     this._elapsed += dt
     this.timerGroup.position.y = Math.sin(this._elapsed * 1.3) * 0.012
     this.shadowPlane.scale.setScalar(1 + Math.sin(this._elapsed * 1.3) * 0.02)
 
-    // Cozy light breathing — a slow, warm shimmer that never distracts.
+    // Slow light breathing: a warm shimmer that never distracts.
     const breathe = Math.sin(this._elapsed * 0.9)
     this.lights.key.intensity = this.lights.keyBase + breathe * 0.06
     this.lights.rim.intensity = this.lights.rimBase + Math.sin(this._elapsed * 0.9 + 1.3) * 0.05

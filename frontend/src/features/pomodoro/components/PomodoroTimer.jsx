@@ -28,12 +28,11 @@ export function PomodoroTimer() {
     () => {
       const mm = gsap.matchMedia()
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        // Choreographed entrance — nothing appears at once:
-        // the gear peeks in, the tomato rises and settles, the number pops,
-        // then the controls cascade up.
+        // Staggered entrance: the gear peeks in, the tomato rises and settles,
+        // the number pops, then the controls cascade up.
         const tl = gsap.timeline()
-        // opacity only — a transform here would become the containing block for
-        // the settings scrim and break outside-click-to-close.
+        // Opacity only. A transform here would become the containing block
+        // for the settings scrim and break outside-click-to-close.
         tl.from('.timer-stage__tools', { opacity: 0, duration: 0.5, delay: 0.3 })
           .from(
             '.tomato-halo',

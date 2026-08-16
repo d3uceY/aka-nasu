@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { POINTER, getSeamY, getCrossR } from '../../constants/three.js'
 
 // Small, crisp white triangle at the front (+Z), sitting just above the
-// equator seam.  Fixed to staticGroup — never rotates with the cap.
+// equator seam.  Fixed to staticGroup, so it never rotates with the cap.
 export function createPointer(materials) {
   const { width, height } = POINTER
   const shape = new THREE.Shape()

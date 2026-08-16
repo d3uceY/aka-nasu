@@ -9,9 +9,15 @@ import (
 	"aka-nasu/backend/stats"
 	"aka-nasu/backend/timer"
 	"aka-nasu/backend/todos"
+	"aka-nasu/backend/version"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
+
+// Version is the current release of the app. It's exposed to the frontend
+// through the version service bindings so the UI can check GitHub for newer
+// releases and offer to download them.
+const Version = "0.1.0"
 
 // Wails uses Go's `embed` package to embed the built frontend into the binary.
 // See https://pkg.go.dev/embed for more information.
@@ -35,6 +41,7 @@ func main() {
 			application.NewService(todos.NewService(store)),
 			application.NewService(stats.NewService(store)),
 			application.NewService(timer.NewService(store)),
+			application.NewService(version.NewService(Version)),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),

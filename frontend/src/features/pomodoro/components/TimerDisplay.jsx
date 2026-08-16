@@ -3,33 +3,33 @@ import { formatTime } from '../utils/formatTime.js'
 import { PHASE_LABELS, PHASES } from '../constants/timer.js'
 import { FocusDuration } from './FocusDuration.jsx'
 
-/** The caption under the number never unmounts — it swaps copy in place per
+/** The caption under the number never unmounts. It swaps copy in place per
  *  state (nowrap + centred in CSS), so the controls below never jump when
  *  text shows up or disappears on start / pause / skip. Each copy is kept
  *  short enough to always sit on a single line. */
 const STATUS_HINTS = {
   [PHASES.FOCUS]: {
     idle: 'spin the tomato to set your focus',
-    running: 'in session — keep the flow',
-    paused: 'paused — take a breath',
+    running: 'in session, keep the flow',
+    paused: 'paused, take a breath',
     finished: 'session complete',
   },
   [PHASES.SHORT_BREAK]: {
     idle: 'the tomato is resting',
-    running: 'in session — enjoy the rest',
-    paused: 'paused — take a breath',
+    running: 'in session, enjoy the rest',
+    paused: 'paused, take a breath',
     finished: 'break complete',
   },
   [PHASES.LONG_BREAK]: {
     idle: 'the tomato is resting',
-    running: 'in session — enjoy the rest',
-    paused: 'paused — take a breath',
+    running: 'in session, enjoy the rest',
+    paused: 'paused, take a breath',
     finished: 'break complete',
   },
 }
 
 /** Each glyph sits in a fixed 1ch slot (ch = width of "0") so the monumental
- *  serif number stays perfectly still while it ticks — true tabular behaviour
+ *  serif number stays perfectly still while it ticks. True tabular behaviour
  *  without needing tabular figures in the font. Shared with the mini timer. */
 export function TimeSlots({ text }) {
   return text.split('').map((ch, i) =>

@@ -3,7 +3,7 @@ import { COLORS } from '../../constants/three.js'
 
 // Shared PBR materials for every visible part of the timer.
 export function createTomatoMaterials() {
-  // Vertex-colored body — roughness tuned for a slightly waxy tomato skin.
+  // Vertex-colored body with roughness tuned for a slightly waxy tomato skin.
   const bodyVertex = new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.55,

@@ -1,6 +1,6 @@
 // Pointer drag on the dial. Horizontal movement rotates the lower dial around
 // Y; the dial follows the pointer with damping applied by the scene's own
-// animation loop. Only the dial moves — the tomato stays put.
+// animation loop. Only the dial moves; the tomato stays put.
 export function attachDialDrag({ domElement, enabled, onDragStart, onRotate, onDragEnd }) {
   let dragging = false
   let pointerId = null

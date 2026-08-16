@@ -14,7 +14,7 @@ import { applyLobes } from './lobeMath.js'
 
 export function createCap(_materials) {
   const capRadius = getCapRadius()
-  const thetaSplit = getCapThetaSplit() // π/2 — equator
+  const thetaSplit = getCapThetaSplit() // π/2 (equator)
 
   // ---- build the canvas texture -------------------------------------------
   const { texW, texH, bandTop, seamPx, minorH, majorH, wrapMargin, labels, zeroTickIndex } = BAND

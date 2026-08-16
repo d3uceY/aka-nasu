@@ -2,7 +2,7 @@ import { useSyncExternalStore } from 'react'
 
 // App-level UI state: which window layout is showing and whether the intro
 // brand animation has already played. The native window driver (resize,
-// frameless, always-on-top) lives in lib/window.js — this store only tracks
+// frameless, always-on-top) lives in lib/window.js. This store only tracks
 // intent so components re-render when the layout swaps.
 let state = {
   mode: 'full', // 'full' | 'mini'

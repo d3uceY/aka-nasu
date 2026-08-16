@@ -2,11 +2,29 @@ import * as SettingsService from '../../bindings/aka-nasu/backend/settings/servi
 import * as TodoService from '../../bindings/aka-nasu/backend/todos/service.js'
 import * as StatsService from '../../bindings/aka-nasu/backend/stats/service.js'
 import * as TimerService from '../../bindings/aka-nasu/backend/timer/service.js'
+import * as VersionService from '../../bindings/aka-nasu/backend/version/service.js'
 
-// Thin wrapper over the generated Wails bindings. Errors surface in the
-// console and callers keep running on defaults.
+// True when a native Wails bridge is present. In a plain browser (Vite
+// preview) there's no bridge, so binding calls would just 404 against the
+// dev server. Browser preview then runs on defaults instead.
+function hasBridge() {
+  return Boolean(
+    window.chrome?.webview?.postMessage ||
+      window.webkit?.messageHandlers?.['external']?.postMessage ||
+      window.wails?.invoke,
+  )
+}
+
+// Shape the stores can load when the bridge is absent. Each store merges
+// these over its own defaults, so an empty shell is all they need.
+const BROWSER_DEFAULTS = { settings: {}, timer: {}, todos: [], stats: {} }
+
+function resolve(value) {
+  return Promise.resolve(value)
+}
 
 export async function loadAppState() {
+  if (!hasBridge()) return BROWSER_DEFAULTS
   const [settings, timer, todos, stats] = await Promise.all([
     SettingsService.GetSettings(),
     TimerService.GetTimerState(),
@@ -16,9 +34,17 @@ export async function loadAppState() {
   return { settings, timer, todos, stats }
 }
 
-export const saveSettings = (settings) => SettingsService.UpdateSettings(settings)
-export const saveTimer = (state) => TimerService.UpdateTimerState(state)
-export const saveStats = (stats) => StatsService.UpdateStats(stats)
-export const addTodo = (text) => TodoService.AddTodo(text)
-export const toggleTodo = (id) => TodoService.ToggleTodo(id)
-export const removeTodo = (id) => TodoService.RemoveTodo(id)
+export async function getAppVersion() {
+  if (!hasBridge()) return null
+  return VersionService.GetVersion()
+}
+
+export const saveSettings = (settings) =>
+  hasBridge() ? SettingsService.UpdateSettings(settings) : resolve(settings)
+export const saveTimer = (state) =>
+  hasBridge() ? TimerService.UpdateTimerState(state) : resolve(state)
+export const saveStats = (stats) =>
+  hasBridge() ? StatsService.UpdateStats(stats) : resolve(stats)
+export const addTodo = (text) => (hasBridge() ? TodoService.AddTodo(text) : resolve([]))
+export const toggleTodo = (id) => (hasBridge() ? TodoService.ToggleTodo(id) : resolve([]))
+export const removeTodo = (id) => (hasBridge() ? TodoService.RemoveTodo(id) : resolve([]))

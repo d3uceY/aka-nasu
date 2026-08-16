@@ -1,5 +1,5 @@
 /* ===========================================================================
-   Mini timer window — the always-on-top compact mode.
+   Mini timer window: the always-on-top compact mode.
    The top rail is the frameless drag handle (Wails `--wails-draggable: drag`);
    interactive children opt out with `--wails-draggable: no-drag` in JSX.
    =========================================================================== */
@@ -109,7 +109,7 @@
   place-items: center;
 }
 
-/* compact roaring number — same tabular 1ch slots, smaller scale */
+/* compact roaring number, same tabular 1ch slots, smaller scale */
 .mini-window__time {
   display: flex;
   align-items: baseline;
@@ -147,7 +147,7 @@
 }
 
 /* ===========================================================================
-   Mini-mode button — the "shrink to a mini" pill tucked beside the gear.
+   Mini-mode button: the "shrink to a mini" pill tucked beside the gear.
    =========================================================================== */
 .mini-mode-btn {
   appearance: none;

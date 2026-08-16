@@ -2,14 +2,14 @@ import * as THREE from 'three'
 import { BODY, COLORS, getCapThetaSplit } from '../../constants/three.js'
 import { lobeAmount, applyLobes } from './lobeMath.js'
 
-// Lower portion of a squashed sphere — from the equator down to the south
+// Lower portion of a squashed sphere, from the equator down to the south
 // pole.  The cap covers the top half and is always 3.5 % larger, so no body
 // vertices can ever poke through.  Lobes are strongest in the upper-middle,
 // fade to zero well above the band, and are zero at the equator and below.
 // Vertex colours make the groove valleys read as darker creases.
 export function createTomatoLobes(materials) {
   const { radius, scaleY, lobeDepth, segments } = BODY
-  const thetaSplit = getCapThetaSplit() // π/2 — equator
+  const thetaSplit = getCapThetaSplit() // π/2 (equator)
 
   // Partial sphere: theta from equator down to south pole.
   const geo = new THREE.SphereGeometry(
@@ -28,7 +28,7 @@ export function createTomatoLobes(materials) {
   mesh.castShadow = true
   mesh.name = 'tomatoBody'
 
-  // Vertex colours — derive from the same lobeAmount used for displacement.
+  // Vertex colours derive from the same lobeAmount used for displacement.
   const pos = geo.attributes.position
   const vcolors = new Float32Array(pos.count * 3)
   const baseColor = new THREE.Color(COLORS.tomato)

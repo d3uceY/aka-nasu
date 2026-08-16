@@ -1,7 +1,7 @@
 /* ===========================================================================
-   Aka Nasu — app shell
+   Aka Nasu: app shell
    Minimal stage: the tomato floats, the number roars, everything else whispers.
-   The brand header is gone — identity lives in the opening intro and the
+   The brand header is gone. Identity lives in the opening intro and the
    mini-timer bar. The shell fades out briefly while swapping window modes so
    the native resize + layout swap never show a squished frame.
    =========================================================================== */
@@ -18,7 +18,7 @@
   opacity: 0;
 }
 
-/* one faint kiss of tomato behind the stage — the only atmosphere */
+/* one faint kiss of tomato behind the stage, the only atmosphere */
 .app-shell::before {
   content: '';
   position: absolute;
@@ -35,7 +35,7 @@
 }
 
 /* ===========================================================================
-   Main layout — two composed columns, vertically centered like a still life
+   Main layout: two composed columns, vertically centered like a still life
    =========================================================================== */
 .app-main {
   position: relative;
@@ -57,7 +57,7 @@
 }
 
 /* ===========================================================================
-   Timer stage — no card, the tomato floats on the page
+   Timer stage: no card, the tomato floats on the page
    =========================================================================== */
 .timer-stage {
   position: relative;
@@ -68,7 +68,7 @@
 }
 
 /* tool cluster (mini-mode + settings gear), tucked in the top-right of the
-   stage. Animated opacity-only in PomodoroTimer — a transform here would
+   stage. Animated opacity-only in PomodoroTimer; a transform here would
    become the containing block for the settings scrim. */
 .timer-stage__tools {
   position: absolute;
@@ -120,7 +120,7 @@
 }
 
 /* ===========================================================================
-   Timer display — the roaring number
+   Timer display: the roaring number
    =========================================================================== */
 .timer-display {
   position: relative;
@@ -142,7 +142,7 @@
   text-transform: uppercase;
   letter-spacing: 0.24em;
   color: var(--ink-2);
-  /* phase copy swaps in place (Focus -> Short break) — never wrap, so the
+  /* phase copy swaps in place (Focus -> Short break). Never wrap, so the
      label keeps its single line and nothing below it jumps */
   white-space: nowrap;
 }
@@ -175,7 +175,7 @@
 }
 
 /* Each glyph sits in a fixed 1ch slot (ch = width of "0") so the monumental
-   serif number never jitters while it ticks — true tabular behaviour without
+   serif number never jitters while it ticks. True tabular behaviour without
    tabular figures in the font. */
 .timer-glyph {
   display: inline-block;
@@ -188,7 +188,7 @@
   margin: 0 0.08em;
 }
 
-/* while running, the number breathes — slow, warm, alive */
+/* while running, the number breathes: slow, warm, alive */
 .timer-stage[data-status='running'] .timer-display__time {
   animation: time-breathe 3.4s var(--ease-out) infinite;
 }
@@ -210,7 +210,7 @@
   gap: 12px;
   font-size: 0.94rem;
   color: var(--ink-2);
-  /* Round + focus duration never wrap on narrow screens — one line always */
+  /* Round + focus duration never wrap on narrow screens; one line always */
   white-space: nowrap;
 }
 
@@ -227,7 +227,7 @@
   color: var(--ink);
 }
 
-/* The status caption is always mounted — it swaps copy in place (keyed in
+/* The status caption is always mounted. It swaps copy in place (keyed in
    JS) so the controls below never jump when text shows up or disappears on
    start / pause / skip. nowrap + centred means a swap only changes width,
    never height. */
@@ -257,7 +257,7 @@
 }
 
 /* ===========================================================================
-   Focus duration — quiet meta line
+   Focus duration: quiet meta line
    =========================================================================== */
 .focus-duration {
   display: flex;
@@ -292,7 +292,7 @@
 }
 
 /* ===========================================================================
-   Buttons — pill language, spring physics.
+   Buttons: pill language, spring physics.
    The magnetic pull is applied to `transform` by JS; `scale` stays free for
    the press feedback so the two never fight.
    =========================================================================== */
@@ -358,7 +358,7 @@
 }
 
 /* ===========================================================================
-   Settings — gear toggle + frosted popover
+   Settings: gear toggle + frosted popover
    =========================================================================== */
 .settings {
   position: relative;
@@ -561,7 +561,7 @@
 }
 
 /* ===========================================================================
-   Todo panel — frosted card, calm and organized
+   Todo panel: frosted card, calm and organized
    =========================================================================== */
 .todo-card {
   background: var(--surface);
@@ -769,13 +769,13 @@
   background: var(--leaf);
 }
 
-/* done empty state — quieter, one line, on-theme */
+/* done empty state: quieter, one line, on-theme */
 .checklist__done-empty {
   font-size: 0.88rem;
   padding: 14px 0;
 }
 
-/* The empty caption and its list share one grid cell — whichever is taller
+/* The empty caption and its list share one grid cell; whichever is taller
    sizes the slot, so adding/removing the first item cross-fades in place and
    the section below never jumps. */
 .checklist__stack {
@@ -1023,7 +1023,7 @@
 }
 
 /* ===========================================================================
-   Responsive — tomato moves to the top, content below.
+   Responsive: tomato moves to the top, content below.
    =========================================================================== */
 @media (max-width: 880px) {
   body {

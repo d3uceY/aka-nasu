@@ -4,7 +4,7 @@ import { pomodoroStore } from '../state/pomodoroStore.js'
 import { dialMinuteFor } from '../utils/timerMath.js'
 
 // Only treat a dial change as a real "spin" when it moves more than a few
-// degrees — pause/resume freeze the dial exactly, so they won't qualify.
+// degrees. Pause/resume freeze the dial exactly, so they won't qualify.
 const SPIN_EPSILON_MIN = 0.05
 
 // Applies an action and reports whether the 3D dial actually spun from its
@@ -32,10 +32,10 @@ export function TimerControls({ status, actions }) {
 
   function handleTransport() {
     if (running) {
-      // Pause freezes the dial in place — no spin, no sound.
+      // Pause freezes the dial in place: no spin, no sound.
       if (dialSpun(() => actions.pause())) playSound('gearClick')
     } else if (status === 'paused') {
-      // Resume continues from the same spot — no spin, no sound.
+      // Resume continues from the same spot: no spin, no sound.
       if (dialSpun(() => actions.start())) playSound('gearClick')
     } else {
       // Start: a fresh session doesn't move the dial, but the click confirms

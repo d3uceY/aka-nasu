@@ -2,7 +2,7 @@ import { playSound } from '../../../utils/audio.js'
 import { enterMiniMode } from '../../../lib/window.js'
 import { uiStore } from '../../../state/uiStore.js'
 
-// A square receding into the bottom-right corner — "shrink me to a mini".
+// A square receding into the bottom-right corner: "shrink me to a mini".
 function MiniIcon() {
   return (
     <svg
