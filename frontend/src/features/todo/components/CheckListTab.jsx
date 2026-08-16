@@ -54,26 +54,37 @@ export function CheckListTab() {
 
       <section className="checklist__group">
         <h3 className="checklist__heading">To-do</h3>
-        {open.length === 0 && (
-          <p className="checklist__empty">Nothing planted yet. Add a seed above.</p>
-        )}
-        <ul className="todo-list">
-          {open.map((t) => (
-            <TodoRow key={t.id} todo={t} />
-          ))}
-        </ul>
+        <div className="checklist__stack">
+          <p
+            className={`checklist__empty${open.length === 0 ? '' : ' is-collapsed'}`}
+            aria-hidden={open.length > 0}
+          >
+            Nothing planted yet. Add a seed above.
+          </p>
+          <ul className="todo-list">
+            {open.map((t) => (
+              <TodoRow key={t.id} todo={t} />
+            ))}
+          </ul>
+        </div>
       </section>
 
-      {done.length > 0 && (
-        <section className="checklist__group checklist__group--done">
-          <h3 className="checklist__heading">Done</h3>
+      <section className="checklist__group checklist__group--done">
+        <h3 className="checklist__heading">Done</h3>
+        <div className="checklist__stack">
+          <p
+            className={`checklist__empty checklist__done-empty${done.length === 0 ? '' : ' is-collapsed'}`}
+            aria-hidden={done.length > 0}
+          >
+            Nothing harvested yet.
+          </p>
           <ul className="todo-list">
             {done.map((t) => (
               <TodoRow key={t.id} todo={t} />
             ))}
           </ul>
-        </section>
-      )}
+        </div>
+      </section>
     </div>
   )
 }

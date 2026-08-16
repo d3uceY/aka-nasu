@@ -199,6 +199,9 @@
   text-transform: uppercase;
   letter-spacing: 0.24em;
   color: var(--ink-2);
+  /* phase copy swaps in place (Focus -> Short break) — never wrap, so the
+     label keeps its single line and nothing below it jumps */
+  white-space: nowrap;
 }
 
 .timer-display__phase::before {
@@ -264,6 +267,8 @@
   gap: 12px;
   font-size: 0.94rem;
   color: var(--ink-2);
+  /* Round + focus duration never wrap on narrow screens — one line always */
+  white-space: nowrap;
 }
 
 .timer-display__meta .dot {
@@ -279,13 +284,33 @@
   color: var(--ink);
 }
 
+/* The status caption is always mounted — it swaps copy in place (keyed in
+   JS) so the controls below never jump when text shows up or disappears on
+   start / pause / skip. nowrap + centred means a swap only changes width,
+   never height. */
 .timer-display__hint {
   margin: 12px 0 0;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 0.92rem;
+  line-height: 1.5;
   color: var(--ink-3);
   text-align: center;
+  white-space: nowrap;
+  animation: hint-swap 0.55s var(--ease-out);
+}
+
+@keyframes hint-swap {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
 }
 
 /* ===========================================================================
@@ -296,6 +321,7 @@
   align-items: center;
   gap: 6px;
   pointer-events: none;
+  white-space: nowrap;
 }
 
 .focus-duration__label {
@@ -683,6 +709,32 @@
   min-height: 0;
   overflow-y: auto;
   padding-right: 4px;
+  /* reserve the gutter so a scrollbar appearing/disappearing never reflows
+     the rows beside it */
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(43, 33, 27, 0.18) transparent;
+}
+
+.todo-tab__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.todo-tab__content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.todo-tab__content::-webkit-scrollbar-thumb {
+  background: rgba(43, 33, 27, 0.16);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.todo-tab__content::-webkit-scrollbar-thumb:hover {
+  background: rgba(43, 33, 27, 0.3);
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 /* ===========================================================================
@@ -774,6 +826,25 @@
   background: var(--leaf);
 }
 
+/* done empty state — quieter, one line, on-theme */
+.checklist__done-empty {
+  font-size: 0.88rem;
+  padding: 14px 0;
+}
+
+/* The empty caption and its list share one grid cell — whichever is taller
+   sizes the slot, so adding/removing the first item cross-fades in place and
+   the section below never jumps. */
+.checklist__stack {
+  display: grid;
+  min-width: 0;
+}
+
+.checklist__stack > * {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
 .checklist__empty {
   margin: 0;
   color: var(--ink-3);
@@ -782,6 +853,24 @@
   font-style: italic;
   text-align: center;
   padding: 18px 0;
+  animation: empty-in 0.4s var(--ease-out);
+}
+
+@keyframes empty-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.checklist__empty.is-collapsed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  animation: none;
+  transition: opacity 0.28s var(--ease-out), visibility 0s linear 0.28s;
 }
 
 .todo-list {
@@ -800,6 +889,18 @@
   border-radius: var(--r-sm);
   padding: 9px 10px;
   transition: background 0.2s var(--ease-out);
+  animation: todo-in 0.32s var(--ease-out);
+}
+
+@keyframes todo-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .todo-item:hover {
@@ -933,6 +1034,12 @@
   text-align: center;
   font-family: var(--font-serif);
   font-style: italic;
+  /* reserve two lines so the summary never jumps between one and two lines
+     as the copy swaps between “nothing ripe” and “N tomatoes of focus” */
+  min-height: 3em;
+  display: grid;
+  place-items: center;
+  text-wrap: balance;
 }
 
 .report__tomato {

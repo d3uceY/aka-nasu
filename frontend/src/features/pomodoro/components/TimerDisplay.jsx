@@ -1,7 +1,32 @@
 import { usePomodoroStore } from '../state/pomodoroStore.js'
 import { formatTime } from '../utils/formatTime.js'
-import { PHASE_LABELS } from '../constants/timer.js'
+import { PHASE_LABELS, PHASES } from '../constants/timer.js'
 import { FocusDuration } from './FocusDuration.jsx'
+
+/** The caption under the number never unmounts — it swaps copy in place per
+ *  state (nowrap + centred in CSS), so the controls below never jump when
+ *  text shows up or disappears on start / pause / skip. Each copy is kept
+ *  short enough to always sit on a single line. */
+const STATUS_HINTS = {
+  [PHASES.FOCUS]: {
+    idle: 'spin the tomato to set your focus',
+    running: 'in session — keep the flow',
+    paused: 'paused — take a breath',
+    finished: 'session complete',
+  },
+  [PHASES.SHORT_BREAK]: {
+    idle: 'the tomato is resting',
+    running: 'in session — enjoy the rest',
+    paused: 'paused — take a breath',
+    finished: 'break complete',
+  },
+  [PHASES.LONG_BREAK]: {
+    idle: 'the tomato is resting',
+    running: 'in session — enjoy the rest',
+    paused: 'paused — take a breath',
+    finished: 'break complete',
+  },
+}
 
 /** Each glyph sits in a fixed 1ch slot (ch = width of "0") so the monumental
  *  serif number stays perfectly still while it ticks — true tabular behaviour
@@ -25,6 +50,7 @@ export function TimerDisplay() {
   const remainingMs = usePomodoroStore((s) => s.remainingMs)
   const status = usePomodoroStore((s) => s.status)
   const round = usePomodoroStore((s) => s.round)
+  const hint = STATUS_HINTS[phase]?.[status] ?? STATUS_HINTS[phase]?.idle
 
   return (
     <div className="timer-display">
@@ -37,9 +63,9 @@ export function TimerDisplay() {
         <span className="dot" aria-hidden="true" />
         <FocusDuration />
       </div>
-      {status === 'idle' && (
-        <p className="timer-display__hint">spin the tomato to set your focus</p>
-      )}
+      <p key={hint} className="timer-display__hint" aria-live="polite">
+        {hint}
+      </p>
     </div>
   )
 }
