@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { CheckListTab } from './CheckListTab.jsx'
 import { DailyReportTab } from './DailyReportTab.jsx'
+import { playSound } from '../../../utils/audio.js'
 
 const TABS = [
   { id: 'checklist', label: 'Check list' },
@@ -28,7 +29,10 @@ export function TodoPanel() {
             type="button"
             aria-selected={tab === t.id}
             className={`todo-tab ${tab === t.id ? 'todo-tab--active' : ''}`}
-            onClick={() => setTab(t.id)}
+            onClick={() => {
+              setTab(t.id)
+              playSound('swish')
+            }}
           >
             {t.label}
           </button>

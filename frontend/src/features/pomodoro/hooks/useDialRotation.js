@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react'
 import { TIMER } from '../constants/timer.js'
 import { pomodoroActions, usePomodoroStore } from '../state/pomodoroStore.js'
+import { dialMinuteFor } from '../utils/timerMath.js'
 
 // Bridges the 3D dial to the pomodoro store.
 // The scene *pulls* the target minute each frame via getDialMinute (smooth
@@ -18,13 +19,7 @@ export function useDialRotation() {
   focusMinutesRef.current = focusMinutes
 
   const getDialMinute = useCallback(() => {
-    const s = statusRef.current
-    // running / paused / finished: show the remaining time (fractional minutes
-    // give a smooth sweep); idle: rest at the selected focus length.
-    if (s === 'running' || s === 'paused' || s === 'finished') {
-      return remainingMsRef.current / 60000
-    }
-    return focusMinutesRef.current
+    return dialMinuteFor(statusRef.current, remainingMsRef.current, focusMinutesRef.current)
   }, [])
 
   const getInteractionEnabled = useCallback(() => statusRef.current === 'idle', [])

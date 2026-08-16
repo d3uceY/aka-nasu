@@ -1,16 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { pomodoroActions, usePomodoroStore } from '../state/pomodoroStore.js'
 import { useTimer } from './useTimer.js'
-
-function playCompleteSound() {
-  try {
-    const audio = new Audio('/sounds/complete.mp3')
-    audio.volume = 0.6
-    audio.play().catch(() => {})
-  } catch {
-    /* audio not available */
-  }
-}
+import { playSound } from '../../../utils/audio.js'
 
 export function usePomodoro({ onComplete } = {}) {
   useTimer()
@@ -22,7 +13,7 @@ export function usePomodoro({ onComplete } = {}) {
   useEffect(() => {
     if (prevStatus.current === 'running' && status === 'finished') {
       pomodoroActions.completePhase()
-      playCompleteSound()
+      playSound('complete')
       onCompleteRef.current?.()
     }
     prevStatus.current = status

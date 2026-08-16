@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS = {
   longBreakInterval: 4, // long break every N completed focus sessions
   autoStartBreaks: true,
   autoStartFocus: false,
+  soundEnabled: true,
 }
 
 export const TIMER = {

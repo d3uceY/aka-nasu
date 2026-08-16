@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import gsap from 'gsap'
+import { playSound } from '../../../utils/audio.js'
 import { GROUND, SEAM, getSeamY, getCrossR } from '../constants/three.js'
 import { createTomatoMaterials } from './materials/tomatoMaterials.js'
 import { setupLighting } from './lighting/setupLighting.js'
@@ -58,6 +59,7 @@ export class TomatoTimerScene {
 
     this.targetDeg = minutesToDegrees(this.getDialMinute())
     this.currentDeg = this.targetDeg
+    this._lastTickMinute = Math.round(this.getDialMinute())
     this._interacting = false
     this._elapsed = 0
     this._snapTween = null
@@ -190,6 +192,7 @@ export class TomatoTimerScene {
       onRotate: (deg) => {
         if (!this.getInteractionEnabled()) return
         this._setTargetDeg(this.currentDeg + deg)
+        this._tickOnMinuteChange()
       },
       onDragEnd: () => this._endDrag(),
     })
@@ -216,6 +219,7 @@ export class TomatoTimerScene {
 
   _userRotate(deg) {
     if (!this.getInteractionEnabled()) return
+    playSound('dialRatchetTick')
     const from = this.targetDeg
     const to = from + shortestAngleDeg(from, from + deg)
     this._snapTween?.kill?.()
@@ -235,11 +239,30 @@ export class TomatoTimerScene {
       duration,
       ease: 'back.out(1.5)',
     })
+    this._lastTickMinute = snapped
+    // The dial springs into place — ratchet as it starts to spin, then the
+    // clunk as it clicks onto the minute (spin first, clunk after). The tick
+    // is skipped for a dead-center release (no real rotation).
+    this._snapTween.eventCallback('onStart', () => {
+      if (dist > 0.5) playSound('dialRatchetTick')
+    })
+    this._snapTween.eventCallback('onComplete', () => {
+      playSound('clickIntoPlace')
+    })
     this.onDialChange(snapped)
   }
 
   minuteUnderPointer() {
     return normalizeDegrees(this.targetDeg) / DEGREES_PER_MINUTE // 0..60
+  }
+
+  // Plays one ratchet tick each time the pointer crosses a whole minute while
+  // the dial is being dragged (wheel/keyboard steps tick in _userRotate).
+  _tickOnMinuteChange() {
+    const minute = Math.round(this.minuteUnderPointer())
+    if (minute === this._lastTickMinute) return
+    this._lastTickMinute = minute
+    playSound('dialRatchetTick')
   }
 
   _notify() {

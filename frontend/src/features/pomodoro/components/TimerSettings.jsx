@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Slider } from '../../../components/ui/Slider.jsx'
 import { usePomodoroStore } from '../state/pomodoroStore.js'
+import { playSound } from '../../../utils/audio.js'
 
 function GearIcon() {
   return (
@@ -37,7 +38,10 @@ export function TimerSettings({ actions }) {
         className="settings__toggle"
         aria-label="Timer settings"
         aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setOpen((v) => !v)
+          playSound('gearClick')
+        }}
       >
         <GearIcon />
       </button>
@@ -47,7 +51,10 @@ export function TimerSettings({ actions }) {
         tabIndex={-1}
         aria-hidden="true"
         data-open={open}
-        onClick={() => setOpen(false)}
+        onClick={() => {
+          setOpen(false)
+          playSound('gearClick')
+        }}
       />
       <div
         className="settings__popover"
@@ -62,7 +69,10 @@ export function TimerSettings({ actions }) {
           min={1}
           max={60}
           disabled={locked}
-          onChange={(v) => actions.setSettings({ focusMinutes: v })}
+          onChange={(v) => {
+            playSound('dialRatchetTick')
+            actions.setSettings({ focusMinutes: v })
+          }}
         />
         <Slider
           label="Short break"
@@ -70,7 +80,10 @@ export function TimerSettings({ actions }) {
           min={1}
           max={30}
           disabled={locked}
-          onChange={(v) => actions.setSettings({ shortBreakMinutes: v })}
+          onChange={(v) => {
+            playSound('dialRatchetTick')
+            actions.setSettings({ shortBreakMinutes: v })
+          }}
         />
         <Slider
           label="Long break"
@@ -78,7 +91,10 @@ export function TimerSettings({ actions }) {
           min={5}
           max={60}
           disabled={locked}
-          onChange={(v) => actions.setSettings({ longBreakMinutes: v })}
+          onChange={(v) => {
+            playSound('dialRatchetTick')
+            actions.setSettings({ longBreakMinutes: v })
+          }}
         />
         <p className="settings__title">Automation</p>
         <label className="toggle">
@@ -87,7 +103,10 @@ export function TimerSettings({ actions }) {
             type="checkbox"
             checked={settings.autoStartBreaks}
             disabled={locked}
-            onChange={(e) => actions.setSettings({ autoStartBreaks: e.target.checked })}
+            onChange={(e) => {
+              playSound('gearClick')
+              actions.setSettings({ autoStartBreaks: e.target.checked })
+            }}
           />
         </label>
         <label className="toggle">
@@ -96,7 +115,20 @@ export function TimerSettings({ actions }) {
             type="checkbox"
             checked={settings.autoStartFocus}
             disabled={locked}
-            onChange={(e) => actions.setSettings({ autoStartFocus: e.target.checked })}
+            onChange={(e) => {
+              playSound('gearClick')
+              actions.setSettings({ autoStartFocus: e.target.checked })
+            }}
+          />
+        </label>
+        <p className="settings__title">Sound</p>
+        <label className="toggle">
+          <span>Play sounds</span>
+          <input
+            type="checkbox"
+            checked={settings.soundEnabled}
+            disabled={locked}
+            onChange={(e) => actions.setSettings({ soundEnabled: e.target.checked })}
           />
         </label>
       </div>

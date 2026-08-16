@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '../../../components/ui/Button.jsx'
 import { Input } from '../../../components/ui/Input.jsx'
 import { todoStore, useTodos } from '../state/todoStore.js'
+import { playSound } from '../../../utils/audio.js'
 
 function PlusIcon() {
   return (
@@ -31,6 +32,7 @@ export function CheckListTab() {
     e.preventDefault()
     todoStore.add(draft)
     setDraft('')
+    playSound('pop')
   }
 
   return (
@@ -83,7 +85,10 @@ function TodoRow({ todo }) {
         type="button"
         className="todo-item__check"
         aria-label={todo.done ? 'Mark as not done' : 'Mark as done'}
-        onClick={() => todoStore.toggle(todo.id)}
+        onClick={() => {
+          if (!todo.done) playSound('ding')
+          todoStore.toggle(todo.id)
+        }}
       >
         ✓
       </button>
@@ -92,7 +97,10 @@ function TodoRow({ todo }) {
         type="button"
         className="todo-item__remove"
         aria-label="Remove task"
-        onClick={() => todoStore.remove(todo.id)}
+        onClick={() => {
+          playSound('swish')
+          todoStore.remove(todo.id)
+        }}
       >
         ×
       </button>
