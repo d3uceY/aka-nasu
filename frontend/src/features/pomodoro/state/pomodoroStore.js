@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import { DEFAULT_SETTINGS, PHASES, TIMER } from '../constants/timer.js'
 import { durationFor } from '../utils/timerMath.js'
+import { saveSettings, saveTimer, saveStats } from '../../../lib/backend.js'
 
 function initialState() {
   return {
@@ -18,6 +19,10 @@ function initialState() {
 let state = initialState()
 const listeners = new Set()
 
+// A running timer ticks every 250ms; throttle config writes to ~1/sec.
+let lastTimerSave = 0
+const TIMER_SAVE_MS = 1000
+
 function set(next) {
   state = { ...state, ...next }
   emit()
@@ -25,6 +30,14 @@ function set(next) {
 
 function emit() {
   for (const listener of listeners) listener()
+}
+
+function persistTimer(immediate = false) {
+  const now = Date.now()
+  if (!immediate && now - lastTimerSave < TIMER_SAVE_MS) return
+  lastTimerSave = now
+  const { phase, status, remainingMs, totalMs } = state
+  saveTimer({ phase, status, remainingMs, totalMs }).catch(() => {})
 }
 
 export const pomodoroStore = {
@@ -38,6 +51,24 @@ export const pomodoroStore = {
     state = initialState()
     emit()
   },
+  load({ settings, timer, stats }) {
+    const mergedSettings = { ...DEFAULT_SETTINGS, ...settings }
+    const phase = PHASES[timer?.phase] ? timer.phase : PHASES.FOCUS
+    const totalMs = timer?.totalMs > 0 ? timer.totalMs : durationFor(phase, mergedSettings)
+    const remainingMs = Math.max(0, Math.min(timer?.remainingMs ?? totalMs, totalMs))
+    set({
+      settings: mergedSettings,
+      phase,
+      // A finished phase can't be resumed; anything else (incl. running)
+      // is restored so the timer picks up where it left off.
+      status: timer?.status === 'finished' ? 'idle' : timer?.status || 'idle',
+      remainingMs,
+      totalMs,
+      sessionsCompleted: stats?.sessionsCompleted ?? 0,
+      round: stats?.round ?? 1,
+      lastCompletedAt: stats?.lastCompletedAt ?? null,
+    })
+  },
 }
 
 export function usePomodoroStore(selector) {
@@ -50,41 +81,50 @@ export const pomodoroActions = {
     if (state.remainingMs <= 0) {
       const totalMs = durationFor(state.phase, state.settings)
       set({ remainingMs: totalMs, totalMs, status: 'running' })
+      persistTimer(true)
       return
     }
     set({ status: 'running' })
+    persistTimer(true)
   },
 
   pause() {
     set({ status: 'paused' })
+    persistTimer(true)
   },
 
   reset() {
     const totalMs = durationFor(state.phase, state.settings)
     set({ status: 'idle', remainingMs: totalMs, totalMs })
+    persistTimer(true)
   },
 
   skip() {
     const nextPhase = state.phase === PHASES.FOCUS ? PHASES.SHORT_BREAK : PHASES.FOCUS
     const totalMs = durationFor(nextPhase, state.settings)
     set({ phase: nextPhase, remainingMs: totalMs, totalMs, status: 'idle' })
+    persistTimer(true)
   },
 
   setPhase(phase) {
     const totalMs = durationFor(phase, state.settings)
     set({ phase, remainingMs: totalMs, totalMs, status: 'idle' })
+    persistTimer(true)
   },
 
   setSettings(patch) {
     const settings = { ...state.settings, ...patch }
     const totalMs = durationFor(state.phase, settings)
     set({ settings, remainingMs: totalMs, totalMs, status: 'idle' })
+    saveSettings(settings).catch(() => {})
+    persistTimer(true)
   },
 
   tick() {
     if (state.status !== 'running') return
     const remainingMs = Math.max(0, state.remainingMs - TIMER.tickMs)
     set(remainingMs <= 0 ? { remainingMs: 0, status: 'finished' } : { remainingMs })
+    persistTimer()
   },
 
   completePhase() {
@@ -116,5 +156,11 @@ export const pomodoroActions = {
       status: autoStart ? 'running' : 'idle',
       lastCompletedAt: Date.now(),
     })
+    persistTimer(true)
+    saveStats({
+      sessionsCompleted: state.sessionsCompleted,
+      round: state.round,
+      lastCompletedAt: state.lastCompletedAt,
+    }).catch(() => {})
   },
 }

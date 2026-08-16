@@ -1,0 +1,61 @@
+// Package config holds the persisted application state and the JSON file store.
+package config
+
+// Config is the entire persisted app state, mirrored one-to-one as JSON.
+type Config struct {
+	Settings Settings    `json:"settings"`
+	Timer    TimerState  `json:"timer"`
+	Todos    []Todo      `json:"todos"`
+	Stats    Stats       `json:"stats"`
+}
+
+// Settings are the timer durations and automation toggles.
+type Settings struct {
+	FocusMinutes      int  `json:"focusMinutes"`
+	ShortBreakMinutes int  `json:"shortBreakMinutes"`
+	LongBreakMinutes  int  `json:"longBreakMinutes"`
+	LongBreakInterval int  `json:"longBreakInterval"`
+	AutoStartBreaks   bool `json:"autoStartBreaks"`
+	AutoStartFocus    bool `json:"autoStartFocus"`
+}
+
+// TimerState is the live timer position, persisted so it resumes after restart.
+type TimerState struct {
+	Phase       string `json:"phase"`       // focus | shortBreak | longBreak
+	Status      string `json:"status"`      // idle | running | paused | finished
+	RemainingMs int64  `json:"remainingMs"`
+	TotalMs     int64  `json:"totalMs"`
+}
+
+// Todo is a single daily checklist item.
+type Todo struct {
+	ID        string `json:"id"`
+	Text      string `json:"text"`
+	Done      bool   `json:"done"`
+	CreatedAt int64  `json:"createdAt"`
+}
+
+// Stats feed the daily report (pomodoros completed, round number).
+type Stats struct {
+	SessionsCompleted int   `json:"sessionsCompleted"`
+	Round             int   `json:"round"`
+	LastCompletedAt   int64 `json:"lastCompletedAt"`
+}
+
+// DefaultConfig is what a brand-new install starts with.
+func DefaultConfig() Config {
+	const focus = int64(25 * 60 * 1000)
+	return Config{
+		Settings: Settings{
+			FocusMinutes:      25,
+			ShortBreakMinutes: 5,
+			LongBreakMinutes:  15,
+			LongBreakInterval: 4,
+			AutoStartBreaks:   true,
+			AutoStartFocus:    false,
+		},
+		Timer: TimerState{Phase: "focus", Status: "idle", RemainingMs: focus, TotalMs: focus},
+		Todos: []Todo{},
+		Stats: Stats{Round: 1},
+	}
+}

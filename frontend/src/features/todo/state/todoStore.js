@@ -1,36 +1,10 @@
 import { useSyncExternalStore } from 'react'
+import { addTodo, toggleTodo, removeTodo } from '../../../lib/backend.js'
 
-const STORAGE_KEY = 'tomato-clock.todos.v1'
-
-function uid() {
-  return typeof crypto !== 'undefined' && crypto.randomUUID
-    ? crypto.randomUUID()
-    : `t-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-}
-
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed)) return parsed
-    }
-  } catch {
-    /* ignore corrupted storage */
-  }
-  return []
-}
-
-let todos = load()
+// The backend owns the list; every mutation replaces local state with the
+// returned list so the store always mirrors the config file.
+let todos = []
 const listeners = new Set()
-
-function persist() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-  } catch {
-    /* storage unavailable */
-  }
-}
 
 function emit() {
   for (const listener of listeners) listener()
@@ -42,22 +16,35 @@ export const todoStore = {
     listeners.add(listener)
     return () => listeners.delete(listener)
   },
+  load(list) {
+    todos = Array.isArray(list) ? list : []
+    emit()
+  },
   add(text) {
     const value = text.trim()
     if (!value) return
-    todos = [{ id: uid(), text: value, done: false, createdAt: Date.now() }, ...todos]
-    persist()
-    emit()
+    addTodo(value)
+      .then((list) => {
+        todos = list
+        emit()
+      })
+      .catch(() => {})
   },
   toggle(id) {
-    todos = todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
-    persist()
-    emit()
+    toggleTodo(id)
+      .then((list) => {
+        todos = list
+        emit()
+      })
+      .catch(() => {})
   },
   remove(id) {
-    todos = todos.filter((t) => t.id !== id)
-    persist()
-    emit()
+    removeTodo(id)
+      .then((list) => {
+        todos = list
+        emit()
+      })
+      .catch(() => {})
   },
 }
 

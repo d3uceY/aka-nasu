@@ -1,4 +1,4 @@
-module changeme
+module aka-nasu
 
 go 1.25.0
 
