@@ -25,6 +25,11 @@ async function safe(fn) {
 }
 
 export async function enterMiniMode() {
+  // Normalise the window before shrinking it. Wails' SetSize is a no-op while
+  // the window is fullscreen, and resizing a maximised window leaves the
+  // webview surface unpainted (a blank white window). Restore() clears every
+  // enlarged state — fullscreen, maximised, minimised — before the resize.
+  await safe(() => Window.Restore())
   savedWindow = {
     size: await safe(() => Window.Size()),
     position: await safe(() => Window.Position()),
