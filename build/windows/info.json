@@ -5,11 +5,11 @@
 	"info": {
 		"0000": {
 			"ProductVersion": "0.1.0",
-			"CompanyName": "My Company",
-			"FileDescription": "A aka-nasu application",
-			"LegalCopyright": "© 2026, My Company",
-			"ProductName": "My Product",
-			"Comments": "This is a comment"
+			"CompanyName": "d3uceY",
+			"FileDescription": "aka-nasu — a minimal 3D tomato focus timer",
+			"LegalCopyright": "© 2026 d3uceY",
+			"ProductName": "aka-nasu",
+			"Comments": "Built using Wails (https://wails.io)"
 		}
 	}
 }

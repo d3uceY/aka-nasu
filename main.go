@@ -17,7 +17,10 @@ import (
 // Version is the current release of the app. It's exposed to the frontend
 // through the version service bindings so the UI can check GitHub for newer
 // releases and offer to download them.
-const Version = "0.1.0"
+//
+// It's a var (not a const) so the release pipeline can stamp the tagged
+// version into the binary with `-ldflags "-X main.Version=vX.Y.Z"`.
+var Version = "0.1.0"
 
 // Wails uses Go's `embed` package to embed the built frontend into the binary.
 // See https://pkg.go.dev/embed for more information.

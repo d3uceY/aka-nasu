@@ -1,13 +1,13 @@
 [Desktop Entry]
 Version=1.0
-Name=My Product
-Comment=A aka-nasu application
+Name=aka-nasu
+Comment=A minimal 3D tomato focus timer
 # The Exec line includes %u to pass the URL to the application
-Exec=/usr/local/bin/aka-nasu.exe %u
+Exec=/usr/local/bin/aka-nasu %u
 Terminal=false
 Type=Application
-Icon=aka-nasu.exe
+Icon=aka-nasu
 Categories=Utility;
-StartupWMClass=aka-nasu.exe
+StartupWMClass=aka-nasu
 
  

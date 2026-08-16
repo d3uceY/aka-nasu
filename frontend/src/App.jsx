@@ -4,6 +4,7 @@ import { PomodoroTimer } from './features/pomodoro/components/PomodoroTimer.jsx'
 import { MiniTimer } from './features/pomodoro/components/MiniTimer.jsx'
 import { TodoPanel } from './features/todo/components/TodoPanel.jsx'
 import { UpdateModal } from './features/update/components/UpdateModal.jsx'
+import { VersionBadge } from './components/ui/VersionBadge.jsx'
 import { useUIStore } from './state/uiStore.js'
 
 export default function App() {
@@ -16,14 +17,17 @@ export default function App() {
         {mode === 'mini' ? (
           <MiniTimer />
         ) : (
-          <AppLayout>
-            <section className="timer-column">
-              <PomodoroTimer />
-            </section>
-            <section className="content-column">
-              <TodoPanel />
-            </section>
-          </AppLayout>
+          <>
+            <AppLayout>
+              <section className="timer-column">
+                <PomodoroTimer />
+              </section>
+              <section className="content-column">
+                <TodoPanel />
+              </section>
+            </AppLayout>
+            <VersionBadge />
+          </>
         )}
       </div>
       {mode === 'full' && !introDone && <AppIntro />}

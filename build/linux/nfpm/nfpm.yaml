@@ -3,26 +3,26 @@
 #
 # The lines below are called `modelines`. See `:help modeline`
 
-name: "aka-nasu.exe"
+name: "aka-nasu"
 arch: ${GOARCH}
 platform: "linux"
 version: "0.1.0"
 section: "default"
 priority: "extra"
-maintainer: ${GIT_COMMITTER_NAME} <${GIT_COMMITTER_EMAIL}>
-description: "A aka-nasu application"
-vendor: "My Company"
-homepage: "https://wails.io"
+maintainer: "d3uceY <d3ucey@users.noreply.github.com>"
+description: "A minimal 3D tomato focus timer. aka nasu (赤茄子) is the Japanese word for tomato."
+vendor: "d3uceY"
+homepage: "https://github.com/d3uceY/aka-nasu"
 license: "MIT"
 release: "1"
 
 contents:
-  - src: "./bin/aka-nasu.exe"
-    dst: "/usr/local/bin/aka-nasu.exe"
+  - src: "./bin/aka-nasu"
+    dst: "/usr/local/bin/aka-nasu"
   - src: "./build/appicon.png"
-    dst: "/usr/share/icons/hicolor/128x128/apps/aka-nasu.exe.png"
-  - src: "./build/linux/aka-nasu.exe.desktop"
-    dst: "/usr/share/applications/aka-nasu.exe.desktop"
+    dst: "/usr/share/icons/hicolor/128x128/apps/aka-nasu.png"
+  - src: "./build/linux/aka-nasu.desktop"
+    dst: "/usr/share/applications/aka-nasu.desktop"
 
 # Default dependencies for the GTK4 + WebKitGTK 6.0 stack (Ubuntu 24.04+ / Debian 13+)
 depends:
