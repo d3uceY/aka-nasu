@@ -6,7 +6,7 @@
 name: "aka-nasu"
 arch: ${GOARCH}
 platform: "linux"
-version: "0.1.0"
+version: "0.1.1"
 section: "default"
 priority: "extra"
 maintainer: "d3uceY <d3ucey@users.noreply.github.com>"

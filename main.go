@@ -20,7 +20,7 @@ import (
 //
 // It's a var (not a const) so the release pipeline can stamp the tagged
 // version into the binary with `-ldflags "-X main.Version=vX.Y.Z"`.
-var Version = "0.1.0"
+var Version = "0.1.1"
 
 // Wails uses Go's `embed` package to embed the built frontend into the binary.
 // See https://pkg.go.dev/embed for more information.
