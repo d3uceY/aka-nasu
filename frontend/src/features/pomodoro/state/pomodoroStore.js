@@ -23,6 +23,11 @@ const listeners = new Set()
 let lastTimerSave = 0
 const TIMER_SAVE_MS = 1000
 
+// Settings writes (sliders + dial) fire continuously while dragging; coalesce
+// them into one flush shortly after the last change.
+let settingsSaveTimer = null
+const SETTINGS_SAVE_MS = 250
+
 function set(next) {
   state = { ...state, ...next }
   emit()
@@ -38,6 +43,19 @@ function persistTimer(immediate = false) {
   lastTimerSave = now
   const { phase, status, remainingMs, totalMs } = state
   saveTimer({ phase, status, remainingMs, totalMs }).catch(() => {})
+}
+
+// Trailing debounce for settings + idle-timer writes. Reads the latest state
+// when it fires, so a pending flush never writes stale values.
+function scheduleSettingsSave() {
+  clearTimeout(settingsSaveTimer)
+  settingsSaveTimer = setTimeout(() => {
+    const { settings, phase, status, remainingMs, totalMs } = state
+    saveSettings(settings).catch(() => {})
+    saveTimer({ phase, status, remainingMs, totalMs }).catch(() => {})
+    // ponytail: a setting changed <250ms before quitting can be lost; flush
+    // on app-close instead if that ever matters.
+  }, SETTINGS_SAVE_MS)
 }
 
 export const pomodoroStore = {
@@ -116,8 +134,7 @@ export const pomodoroActions = {
     const settings = { ...state.settings, ...patch }
     const totalMs = durationFor(state.phase, settings)
     set({ settings, remainingMs: totalMs, totalMs, status: 'idle' })
-    saveSettings(settings).catch(() => {})
-    persistTimer(true)
+    scheduleSettingsSave()
   },
 
   tick() {
