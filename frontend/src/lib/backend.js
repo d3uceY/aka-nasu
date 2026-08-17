@@ -3,6 +3,7 @@ import * as TodoService from '../../bindings/aka-nasu/backend/todos/service.js'
 import * as StatsService from '../../bindings/aka-nasu/backend/stats/service.js'
 import * as TimerService from '../../bindings/aka-nasu/backend/timer/service.js'
 import * as VersionService from '../../bindings/aka-nasu/backend/version/service.js'
+import * as NotifyService from '../../bindings/aka-nasu/backend/notify/service.js'
 
 // True when a native Wails bridge is present. In a plain browser (Vite
 // preview) there's no bridge, so binding calls would just 404 against the
@@ -48,3 +49,20 @@ export const saveStats = (stats) =>
 export const addTodo = (text) => (hasBridge() ? TodoService.AddTodo(text) : resolve([]))
 export const toggleTodo = (id) => (hasBridge() ? TodoService.ToggleTodo(id) : resolve([]))
 export const removeTodo = (id) => (hasBridge() ? TodoService.RemoveTodo(id) : resolve([]))
+
+// Native OS notification for a finished phase. The Go side (backend/notify)
+// queues the send onto a contained worker goroutine, so this resolves
+// immediately and can never block or crash the app. Fire-and-forget here too:
+// a notification failure must never bubble into the timer flow. In a plain
+// browser (no Wails bridge) it's a no-op.
+const PHASE_NOTIFY = {
+  focus: { title: 'Focus complete', body: 'Time for a break.' },
+  shortBreak: { title: 'Break over', body: 'Back to focus.' },
+  longBreak: { title: 'Break over', body: 'Back to focus.' },
+}
+
+export function notifyPhaseComplete(phase) {
+  if (!hasBridge()) return
+  const copy = PHASE_NOTIFY[phase] ?? PHASE_NOTIFY.focus
+  NotifyService.Send(copy.title, copy.body).catch(() => {})
+}

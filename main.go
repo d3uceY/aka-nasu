@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"aka-nasu/backend/config"
+	"aka-nasu/backend/notify"
 	"aka-nasu/backend/settings"
 	"aka-nasu/backend/stats"
 	"aka-nasu/backend/timer"
@@ -45,6 +46,11 @@ func main() {
 			application.NewService(stats.NewService(store)),
 			application.NewService(timer.NewService(store)),
 			application.NewService(version.NewService(Version)),
+			// Native OS notifications for phase completion. Best-effort and
+			// crash-proof: sends are queued to a contained worker goroutine
+			// (see backend/notify) so the toast library can never stall or
+			// kill the app.
+			application.NewService(notify.NewService()),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
