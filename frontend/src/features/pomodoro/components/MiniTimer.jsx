@@ -11,6 +11,7 @@ import { useDialRotation } from '../hooks/useDialRotation.js'
 import { usePomodoroStore } from '../state/pomodoroStore.js'
 import { PHASE_LABELS } from '../constants/timer.js'
 import { formatTime } from '../utils/formatTime.js'
+import { dialSpun } from '../utils/dialSpun.js'
 import { TimeSlots } from './TimerDisplay.jsx'
 import { TimerCanvas } from './TimerCanvas.jsx'
 
@@ -123,9 +124,11 @@ export function MiniTimer() {
   }
 
   function handleTransport() {
-    playSound('gearClick')
-    if (running) actions.pause()
-    else actions.start()
+    // Only sound off if the dial actually travels: pause/resume freeze the
+    // dial, and a fresh idle start parks it where it already is.
+    if (dialSpun(() => (running ? actions.pause() : actions.start()))) {
+      playSound('gearClick')
+    }
   }
 
   return (

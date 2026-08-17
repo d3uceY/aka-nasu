@@ -1,31 +1,6 @@
 import { Button } from '../../../components/ui/Button.jsx'
 import { playSound } from '../../../utils/audio.js'
-import { pomodoroStore } from '../state/pomodoroStore.js'
-import { dialMinuteFor } from '../utils/timerMath.js'
-
-// Only treat a dial change as a real "spin" when it moves more than a few
-// degrees. Pause/resume freeze the dial exactly, so they won't qualify.
-const SPIN_EPSILON_MIN = 0.05
-
-// Applies an action and reports whether the 3D dial actually spun from its
-// previous position to its new one (using the same dialMinuteFor logic the
-// scene pulls from every frame).
-function dialSpun(apply) {
-  const before = pomodoroStore.getState()
-  const beforeMinute = dialMinuteFor(
-    before.status,
-    before.remainingMs,
-    before.settings.focusMinutes,
-  )
-  apply()
-  const after = pomodoroStore.getState()
-  const afterMinute = dialMinuteFor(
-    after.status,
-    after.remainingMs,
-    after.settings.focusMinutes,
-  )
-  return Math.abs(afterMinute - beforeMinute) >= SPIN_EPSILON_MIN
-}
+import { dialSpun } from '../utils/dialSpun.js'
 
 export function TimerControls({ status, actions }) {
   const running = status === 'running'
@@ -38,10 +13,11 @@ export function TimerControls({ status, actions }) {
       // Resume continues from the same spot: no spin, no sound.
       if (dialSpun(() => actions.start())) playSound('gearClick')
     } else {
-      // Start: a fresh session doesn't move the dial, but the click confirms
-      // the session is beginning.
-      playSound('gearClick')
-      actions.start()
+      // Start: only sound off if the dial actually travels to the running
+      // position (e.g. a finished phase spinning back up to the focus length).
+      // A fresh idle start keeps the dial parked where it already is, so
+      // there's nothing to announce.
+      if (dialSpun(() => actions.start())) playSound('gearClick')
     }
   }
 
