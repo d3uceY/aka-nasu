@@ -5,7 +5,7 @@
 export const SOUND_FILES = {
   complete: '/sounds/complete.mp3',
   dialRatchetTick: '/sounds/dial-ratchet-tick.mp3',
-  clickIntoPlace: '/sounds/click-into-place.mp3',
+  clickIntoPlace: '/sounds/click-into-place.wav',
   resetSpring: '/sounds/reset-spring.mp3',
   gearClick: '/sounds/gear-click.mp3',
   pop: '/sounds/pop.mp3',
@@ -16,7 +16,7 @@ export const SOUND_FILES = {
 export const SOUND_VOLUMES = {
   complete: 1,
   dialRatchetTick: 1,
-  clickIntoPlace: 1,
+  clickIntoPlace: 0.3,
   resetSpring: 1,
   gearClick: 1,
   pop: 1,
