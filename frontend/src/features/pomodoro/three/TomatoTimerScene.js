@@ -219,7 +219,7 @@ export class TomatoTimerScene {
 
   _userRotate(deg) {
     if (!this.getInteractionEnabled()) return
-    playSound('dialRatchetTick')
+    playSound('dialRatchetTick', 50)
     const from = this.targetDeg
     const to = from + shortestAngleDeg(from, from + deg)
     this._snapTween?.kill?.()
@@ -244,7 +244,7 @@ export class TomatoTimerScene {
     // clunk as it clicks onto the minute (spin first, clunk after). The tick
     // is skipped for a dead-center release (no real rotation).
     this._snapTween.eventCallback('onStart', () => {
-      if (dist > 0.5) playSound('dialRatchetTick')
+      if (dist > 0.5) playSound('dialRatchetTick', 50)
     })
     this._snapTween.eventCallback('onComplete', () => {
       playSound('clickIntoPlace')
@@ -262,7 +262,7 @@ export class TomatoTimerScene {
     const minute = Math.round(this.minuteUnderPointer())
     if (minute === this._lastTickMinute) return
     this._lastTickMinute = minute
-    playSound('dialRatchetTick')
+    playSound('dialRatchetTick', 50)
   }
 
   _notify() {

@@ -70,7 +70,7 @@ export function TimerSettings({ actions }) {
           max={60}
           disabled={locked}
           onChange={(v) => {
-            playSound('dialRatchetTick')
+            playSound('dialRatchetTick', 50)
             actions.setSettings({ focusMinutes: v })
           }}
         />
@@ -81,7 +81,7 @@ export function TimerSettings({ actions }) {
           max={30}
           disabled={locked}
           onChange={(v) => {
-            playSound('dialRatchetTick')
+            playSound('dialRatchetTick', 50)
             actions.setSettings({ shortBreakMinutes: v })
           }}
         />
@@ -92,7 +92,7 @@ export function TimerSettings({ actions }) {
           max={60}
           disabled={locked}
           onChange={(v) => {
-            playSound('dialRatchetTick')
+            playSound('dialRatchetTick', 50)
             actions.setSettings({ longBreakMinutes: v })
           }}
         />

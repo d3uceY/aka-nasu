@@ -53,8 +53,6 @@ function scheduleSettingsSave() {
     const { settings, phase, status, remainingMs, totalMs } = state
     saveSettings(settings).catch(() => {})
     saveTimer({ phase, status, remainingMs, totalMs }).catch(() => {})
-    // ponytail: a setting changed <250ms before quitting can be lost; flush
-    // on app-close instead if that ever matters.
   }, SETTINGS_SAVE_MS)
 }
 
