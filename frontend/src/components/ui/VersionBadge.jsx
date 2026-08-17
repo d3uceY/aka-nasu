@@ -45,8 +45,8 @@ export function VersionBadge() {
       type="button"
       className="version-badge"
       onClick={() => openExternal(GITHUB_URL)}
-      title="Aka Nasu by d3uceY — open GitHub profile"
-      aria-label={`Aka Nasu v${version}, by d3uceY — open GitHub profile`}
+      title="Aka Nasu by d3uceY - open GitHub profile"
+      aria-label={`Aka Nasu v${version}, by d3uceY - open GitHub profile`}
     >
       <GithubMark size={12} />
       <span>v{version}</span>
