@@ -31,7 +31,6 @@ export function TodoPanel() {
             className={`todo-tab ${tab === t.id ? 'todo-tab--active' : ''}`}
             onClick={() => {
               setTab(t.id)
-              playSound('swish')
             }}
           >
             {t.label}
