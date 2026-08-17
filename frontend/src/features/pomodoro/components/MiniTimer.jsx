@@ -131,6 +131,10 @@ export function MiniTimer() {
     }
   }
 
+  function handleSkip() {
+    if (dialSpun(() => actions.skip())) playSound('resetSpring')
+  }
+
   return (
     <div className="mini-window" ref={rootRef} data-phase={phase} data-status={status}>
       <header
@@ -182,10 +186,7 @@ export function MiniTimer() {
             variant="ghost"
             size="sm"
             className="mini-window__ctl"
-            onClick={() => {
-              playSound('resetSpring')
-              actions.skip()
-            }}
+            onClick={handleSkip}
             aria-label="Skip phase"
             title="Skip"
           >
