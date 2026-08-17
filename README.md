@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.png" width="96" height="96" alt="Aka Nasu logo: a flat red tomato with a green calyx" />
+  <img src="assets/banner.svg" width="100%" alt="Aka Nasu — a pomodoro focus timer for the desktop. A flat red tomato on warm gallery paper, the wordmark, and 50-minute focus rounds with 10-minute breaks." />
 </p>
 
 # Aka Nasu · トマトの時計

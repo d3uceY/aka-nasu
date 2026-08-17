@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" fill="none" role="img" aria-labelledby="title desc">
+  <!--
+    Aka Nasu README banner · "Tomato on paper"
+    Warm gallery white, warm ink, ONE ripe tomato accent. Leaf green appears
+    only as the break-phase state color (the 10 min break pill). Fraunces is
+    the voice, Instrument Sans the workhorse. Tokens match frontend globals.css.
+  -->
+  <title id="title">Aka Nasu · トマトの時計</title>
+  <desc id="desc">Aka Nasu — a pomodoro focus timer for the desktop. A flat red tomato on warm gallery paper, the wordmark, and 50-minute focus rounds with 10-minute breaks.</desc>
+
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&amp;family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap');
+      .ui    { font-family: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif; }
+      .serif { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; }
+      .ink   { fill: #2b211b; }
+      .ink2  { fill: #6e615a; }
+      .ink3  { fill: #7d7066; }
+    </style>
+
+    <!-- paper: warm gallery white, never sterile #fff -->
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fcfbf9"/>
+      <stop offset="1" stop-color="#f5f3ef"/>
+    </linearGradient>
+
+    <!-- one faint kiss of tomato behind the stage -->
+    <radialGradient id="glow" cx="0.82" cy="0.02" r="0.85">
+      <stop offset="0" stop-color="rgba(232,68,46,0.10)"/>
+      <stop offset="1" stop-color="rgba(232,68,46,0)"/>
+    </radialGradient>
+
+    <!-- ripe body: light crown to deep base -->
+    <radialGradient id="tomatoBody" cx="0.34" cy="0.26" r="0.95">
+      <stop offset="0" stop-color="#f0613f"/>
+      <stop offset="0.5" stop-color="#e8442e"/>
+      <stop offset="1" stop-color="#c5361f"/>
+    </radialGradient>
+
+    <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+  </defs>
+
+  <!-- ===================== paper ===================== -->
+  <rect width="1280" height="360" fill="url(#paper)"/>
+  <rect width="1280" height="360" fill="url(#glow)"/>
+  <!-- hairline card frame -->
+  <rect x="1" y="1" width="1278" height="358" fill="none" stroke="rgba(43,33,27,0.10)" stroke-width="1.5"/>
+
+  <!-- ghost of the roaring timer, the app's signature number -->
+  <text class="serif" x="1250" y="314" text-anchor="end" font-size="300" font-weight="540" fill="rgba(43,33,27,0.045)">50:00</text>
+
+  <!-- ===================== the tomato ===================== -->
+  <ellipse cx="180" cy="268" rx="92" ry="16" fill="rgba(43,33,27,0.12)" filter="url(#soft)"/>
+
+  <g transform="translate(180 185) scale(5) translate(-20 -22.8)">
+    <!-- calyx -->
+    <g fill="#2f9e54">
+      <ellipse cx="20" cy="10.4" rx="2.6" ry="5.4" transform="rotate(-42 20 10.4)"/>
+      <ellipse cx="20" cy="10.2" rx="2.5" ry="5.7" transform="rotate(-12 20 10.2)"/>
+      <ellipse cx="20" cy="10" rx="2.3" ry="5.9" transform="rotate(12 20 10)"/>
+      <ellipse cx="20" cy="10.4" rx="2.6" ry="5.4" transform="rotate(42 20 10.4)"/>
+    </g>
+    <rect x="18.6" y="4.4" width="2.8" height="4.6" rx="1.4" fill="#1f7039"/>
+    <!-- body -->
+    <path d="M20 35.6C9.5 35.6 4.4 28.6 4.4 20.3 4.4 13.7 7.9 10 11.6 10c2.7 0 5.2 1.3 8.4 1.3s5.7-1.3 8.4-1.3C32.1 10 35.6 13.7 35.6 20.3c0 8.3-5.1 15.3-15.6 15.3z" fill="url(#tomatoBody)"/>
+    <!-- shy highlights -->
+    <ellipse cx="13.2" cy="17.8" rx="3.4" ry="4.8" fill="rgba(255,255,255,0.4)" transform="rotate(-24 13.2 17.8)"/>
+    <ellipse cx="26.4" cy="13.6" rx="1.7" ry="2.5" fill="rgba(255,255,255,0.28)" transform="rotate(-16 26.4 13.6)"/>
+  </g>
+
+  <!-- ===================== wordmark ===================== -->
+  <text class="serif ink" x="430" y="120" font-size="68" font-weight="560">
+    <tspan>Aka </tspan><tspan font-style="italic">Nasu</tspan>
+  </text>
+
+  <!-- tagline -->
+  <text class="serif ink2" x="432" y="163" font-size="26">トマトの時計 <tspan font-style="italic">· the tomato clock</tspan></text>
+
+  <!-- hairline divider -->
+  <line x1="430" y1="198" x2="1240" y2="198" stroke="rgba(43,33,27,0.10)" stroke-width="1.5"/>
+
+  <!-- description -->
+  <text class="ui ink2" x="430" y="232" font-size="23" font-weight="500">A pomodoro focus timer for the desktop.</text>
+
+  <!-- ===================== pills ===================== -->
+  <g>
+    <!-- focus pill -->
+    <rect x="430" y="257" width="190" height="46" rx="23" fill="#ffffff" stroke="rgba(43,33,27,0.08)"/>
+    <circle cx="456" cy="280" r="7" fill="#e8442e"/>
+    <text class="ui ink" x="472" y="286" font-size="18" font-weight="600">50 min focus</text>
+
+    <!-- break pill: leaf is a state color only -->
+    <rect x="636" y="257" width="190" height="46" rx="23" fill="#ffffff" stroke="rgba(43,33,27,0.08)"/>
+    <circle cx="662" cy="280" r="7" fill="#2f9e54"/>
+    <text class="ui ink" x="678" y="286" font-size="18" font-weight="600">10 min break</text>
+
+    <!-- rounds pill -->
+    <rect x="842" y="257" width="190" height="46" rx="23" fill="#ffffff" stroke="rgba(43,33,27,0.08)"/>
+    <circle cx="868" cy="280" r="7" fill="#2b211b"/>
+    <text class="ui ink" x="884" y="286" font-size="18" font-weight="600">4 rounds</text>
+  </g>
+
+  <!-- garden copy -->
+  <text class="serif ink3" x="430" y="334" font-size="19" font-style="italic">Spin the tomato. Set your own times.</text>
+</svg>
