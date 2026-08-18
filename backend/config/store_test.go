@@ -36,3 +36,18 @@ func TestStoreCreatesAndPersists(t *testing.T) {
 		t.Fatalf("change did not persist, focusMinutes=%d", got)
 	}
 }
+
+func TestOldConfigDefaultsSoundVolumeToOne(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	// A config written before soundVolume existed has no such key.
+	if err := os.WriteFile(path, []byte(`{"settings":{"focusMinutes":25,"soundEnabled":true}}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	s, err := newStore(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := s.Snapshot().Settings.SoundVolume; got != 1 {
+		t.Fatalf("old config should load at full volume, soundVolume=%v", got)
+	}
+}

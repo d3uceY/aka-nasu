@@ -19,9 +19,9 @@ afterEach(() => {
 })
 
 describe('TimerSettings', () => {
-  it('renders the three duration sliders', () => {
+  it('renders the three duration sliders plus the volume slider', () => {
     render(<TimerSettings />)
-    expect(screen.getAllByRole('slider')).toHaveLength(3)
+    expect(screen.getAllByRole('slider')).toHaveLength(4)
   })
 
   it('toggles the popover via the gear', () => {

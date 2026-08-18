@@ -6,7 +6,7 @@
 import { Create as $Create } from "@wailsio/runtime";
 
 /**
- * Settings are the timer durations and automation toggles.
+ * Settings are the timer durations, automation toggles, and sound volume.
  */
 export class Settings {
     "focusMinutes": number;
@@ -15,6 +15,7 @@ export class Settings {
     "longBreakInterval": number;
     "autoStartBreaks": boolean;
     "autoStartFocus": boolean;
+    "soundVolume": number;
 
     /** Creates a new Settings instance. */
     constructor($$source: Partial<Settings> = {}) {
@@ -35,6 +36,9 @@ export class Settings {
         }
         if (!("autoStartFocus" in $$source)) {
             this["autoStartFocus"] = false;
+        }
+        if (!("soundVolume" in $$source)) {
+            this["soundVolume"] = 0;
         }
 
         Object.assign(this, $$source);

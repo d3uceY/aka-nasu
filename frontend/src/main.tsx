@@ -11,6 +11,10 @@ import './styles/intro.css'
 import './styles/mini.css'
 import './features/update/update.css'
 
+// Suppress the webview's default right-click menu (Inspect, reload, etc.) —
+// the app owns all its context actions.
+window.addEventListener('contextmenu', (e) => e.preventDefault())
+
 // Seed both stores from the persisted config as soon as it's available.
 loadAppState()
   .then((state) => {

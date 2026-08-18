@@ -23,6 +23,11 @@ function setSoundEnabled(value: boolean): void {
   pomodoroStore.set({ settings })
 }
 
+function setSoundVolume(value: number): void {
+  const settings = { ...pomodoroStore.getState().settings, soundVolume: value }
+  pomodoroStore.set({ settings })
+}
+
 beforeEach(() => {
   created.length = 0
   pomodoroStore.reset()
@@ -49,6 +54,15 @@ describe('audio', () => {
   it('honours per-sound volume', () => {
     playSound('clickIntoPlace')
     expect(created[0].volume).toBe(0.3)
+  })
+
+  it('scales every sound by the global volume', () => {
+    setSoundVolume(0.5)
+    playSound('complete')
+    expect(created[0].volume).toBe(0.5)
+    setSoundVolume(0)
+    playSound('clickIntoPlace')
+    expect(created[1].volume).toBe(0)
   })
 
   it('does nothing when the toggle is off', () => {

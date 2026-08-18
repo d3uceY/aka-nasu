@@ -131,6 +131,16 @@ export function TimerSettings() {
             onChange={(e) => pomodoroActions.setSettings({ soundEnabled: e.target.checked })}
           />
         </label>
+        <Slider
+          label="Volume"
+          value={Math.round(settings.soundVolume * 100)}
+          min={0}
+          max={100}
+          step={5}
+          unit="%"
+          disabled={locked}
+          onChange={(v) => pomodoroActions.setSettings({ soundVolume: v / 100 })}
+        />
       </div>
     </section>
   )

@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: PomodoroSettings = {
   autoStartBreaks: true,
   autoStartFocus: false,
   soundEnabled: true,
+  soundVolume: .8,
 }
 
 export const TIMER = {

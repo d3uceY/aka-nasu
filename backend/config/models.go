@@ -14,14 +14,15 @@ type Config struct {
 	Stats Stats       `json:"stats"`
 }
 
-// Settings are the timer durations and automation toggles.
+// Settings are the timer durations, automation toggles, and sound volume.
 type Settings struct {
-	FocusMinutes      int  `json:"focusMinutes"`
-	ShortBreakMinutes int  `json:"shortBreakMinutes"`
-	LongBreakMinutes  int  `json:"longBreakMinutes"`
-	LongBreakInterval int  `json:"longBreakInterval"`
-	AutoStartBreaks   bool `json:"autoStartBreaks"`
-	AutoStartFocus    bool `json:"autoStartFocus"`
+	FocusMinutes      int     `json:"focusMinutes"`
+	ShortBreakMinutes int     `json:"shortBreakMinutes"`
+	LongBreakMinutes  int     `json:"longBreakMinutes"`
+	LongBreakInterval int     `json:"longBreakInterval"`
+	AutoStartBreaks   bool    `json:"autoStartBreaks"`
+	AutoStartFocus    bool    `json:"autoStartFocus"`
+	SoundVolume float64 `json:"soundVolume"`
 }
 
 // TimerState is the live timer position.
@@ -60,6 +61,7 @@ func DefaultConfig() Config {
 			LongBreakInterval: 4,
 			AutoStartBreaks:   true,
 			AutoStartFocus:    false,
+			SoundVolume:       0.8,
 		},
 		Timer: TimerState{Phase: "focus", Status: "idle", RemainingMs: focus, TotalMs: focus},
 		Todos: []Todo{},

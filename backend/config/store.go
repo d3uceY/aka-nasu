@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -40,7 +41,14 @@ func (s *Store) load() error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(data, &s.cfg)
+	if err := json.Unmarshal(data, &s.cfg); err != nil {
+		return err
+	}
+	// Pre-soundVolume configs parse as 0 (muted); keep their prior full-volume behavior.
+	if !bytes.Contains(data, []byte(`"soundVolume"`)) {
+		s.cfg.Settings.SoundVolume = 0.8
+	}
+	return nil
 }
 
 // write persists cfg atomically (temp file + rename).
