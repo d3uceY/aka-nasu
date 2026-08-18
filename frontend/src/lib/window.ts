@@ -6,7 +6,7 @@ import { Screens, System, Window } from '@wailsio/runtime'
 // so the mini card keeps its opaque background there.
 export const supportsTransparentMini = !System.IsLinux()
 
-export const MAX_SIZE_FOR_MINI = { width: 264, height: 325 }
+export const MAX_SIZE_FOR_MINI = { width: 264, height: 400 }
 export const MINI_SIZE_FOR_FULL = { width: 600, height: 600 }
 
 // Gap between the mini window and the screen edge.
