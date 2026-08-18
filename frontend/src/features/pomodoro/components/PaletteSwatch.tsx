@@ -27,7 +27,7 @@ export function PaletteSwatch({ palette, selected, disabled, onSelect }: Palette
       aria-label={palette.name}
       disabled={disabled}
       onClick={() => {
-        playSound('gearClick')
+        playSound('pop')
         onSelect()
       }}
     >
