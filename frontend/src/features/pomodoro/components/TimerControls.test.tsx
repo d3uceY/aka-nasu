@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { TimerControls } from './TimerControls.jsx'
-import type { PomodoroActions } from '../types.js'
+import { pomodoroActions } from '../state/pomodoroStore.js'
 
 vi.mock('../../../lib/backend.js', () => ({
   saveSettings: vi.fn(() => Promise.resolve()),
@@ -9,45 +9,54 @@ vi.mock('../../../lib/backend.js', () => ({
   saveStats: vi.fn(() => Promise.resolve()),
 }))
 
-function makeActions(): PomodoroActions {
+vi.mock('../state/pomodoroStore.js', async () => {
+  const actual = await vi.importActual<typeof import('../state/pomodoroStore.js')>(
+    '../state/pomodoroStore.js',
+  )
   return {
-    start: vi.fn(),
-    pause: vi.fn(),
-    reset: vi.fn(),
-    skip: vi.fn(),
-    setPhase: vi.fn(),
-    setSettings: vi.fn(),
+    ...actual,
+    pomodoroActions: {
+      start: vi.fn(),
+      pause: vi.fn(),
+      reset: vi.fn(),
+      skip: vi.fn(),
+      setPhase: vi.fn(),
+      setSettings: vi.fn(),
+      tick: vi.fn(),
+      completePhase: vi.fn(),
+    },
   }
-}
+})
+
+beforeEach(() => {
+  vi.clearAllMocks()
+})
 
 describe('TimerControls', () => {
   it('shows Start and disables Reset when idle', () => {
-    render(<TimerControls status="idle" actions={makeActions()} />)
+    render(<TimerControls status="idle" />)
     expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reset' })).toBeDisabled()
   })
 
   it('shows Pause and calls pause while running', () => {
-    const actions = makeActions()
-    render(<TimerControls status="running" actions={actions} />)
+    render(<TimerControls status="running" />)
     fireEvent.click(screen.getByRole('button', { name: 'Pause' }))
-    expect(actions.pause).toHaveBeenCalled()
+    expect(pomodoroActions.pause).toHaveBeenCalled()
     expect(screen.getByRole('button', { name: 'Reset' })).toBeEnabled()
   })
 
   it('shows Resume and calls start while paused', () => {
-    const actions = makeActions()
-    render(<TimerControls status="paused" actions={actions} />)
+    render(<TimerControls status="paused" />)
     fireEvent.click(screen.getByRole('button', { name: 'Resume' }))
-    expect(actions.start).toHaveBeenCalled()
+    expect(pomodoroActions.start).toHaveBeenCalled()
   })
 
   it('calls reset and skip', () => {
-    const actions = makeActions()
-    render(<TimerControls status="running" actions={actions} />)
+    render(<TimerControls status="running" />)
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }))
     fireEvent.click(screen.getByRole('button', { name: 'Skip' }))
-    expect(actions.reset).toHaveBeenCalled()
-    expect(actions.skip).toHaveBeenCalled()
+    expect(pomodoroActions.reset).toHaveBeenCalled()
+    expect(pomodoroActions.skip).toHaveBeenCalled()
   })
 })

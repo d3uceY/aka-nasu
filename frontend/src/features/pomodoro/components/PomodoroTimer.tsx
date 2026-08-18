@@ -21,7 +21,7 @@ export function PomodoroTimer() {
   const status = usePomodoroStore((s) => s.status)
 
   const dial = useDialRotation()
-  const { actions } = usePomodoro({
+  usePomodoro({
     onComplete: () => sceneRef.current?.pulse(),
   })
 
@@ -69,13 +69,13 @@ export function PomodoroTimer() {
     >
       <div className="timer-stage__tools">
         <MiniModeButton />
-        <TimerSettings actions={actions} />
+        <TimerSettings />
       </div>
       <div className="tomato-halo">
         <TimerCanvas config={dial} onSceneReady={(s) => (sceneRef.current = s)} />
       </div>
       <TimerDisplay />
-      <TimerControls status={status} actions={actions} />
+      <TimerControls status={status} />
     </div>
   )
 }

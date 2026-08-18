@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { createStore, useStore } from '../../../lib/createStore.js'
 import { DEFAULT_SETTINGS, PHASES } from '../constants/timer.js'
 import { durationFor } from '../utils/timerMath.js'
 import { saveSettings, saveTimer, saveStats } from '../../../lib/backend.js'
@@ -7,7 +7,6 @@ import type {
   Phase,
   PomodoroSettings,
   PomodoroState,
-  StorePomodoroActions,
   TimerStatus,
 } from '../types.js'
 
@@ -27,8 +26,7 @@ function initialState(): PomodoroState {
   }
 }
 
-let state: PomodoroState = initialState()
-const listeners = new Set<() => void>()
+const base = createStore<PomodoroState>(initialState)
 
 // A running timer ticks every 250ms; throttle config writes to ~1/sec.
 let lastTimerSave = 0
@@ -38,20 +36,11 @@ const TIMER_SAVE_MS = 1000
 let settingsSaveTimer: number | undefined
 const SETTINGS_SAVE_MS = 250
 
-function set(next: Partial<PomodoroState>): void {
-  state = { ...state, ...next }
-  emit()
-}
-
-function emit(): void {
-  for (const listener of listeners) listener()
-}
-
 function persistTimer(immediate = false): void {
   const now = Date.now()
   if (!immediate && now - lastTimerSave < TIMER_SAVE_MS) return
   lastTimerSave = now
-  const { phase, status, remainingMs, totalMs } = state
+  const { phase, status, remainingMs, totalMs } = base.getState()
   saveTimer({ phase, status, remainingMs, totalMs }).catch(() => {})
 }
 
@@ -59,23 +48,14 @@ function persistTimer(immediate = false): void {
 function scheduleSettingsSave(): void {
   clearTimeout(settingsSaveTimer)
   settingsSaveTimer = setTimeout(() => {
-    const { settings, phase, status, remainingMs, totalMs } = state
+    const { settings, phase, status, remainingMs, totalMs } = base.getState()
     saveSettings(settings).catch(() => {})
     saveTimer({ phase, status, remainingMs, totalMs }).catch(() => {})
   }, SETTINGS_SAVE_MS)
 }
 
 export const pomodoroStore = {
-  getState: (): PomodoroState => state,
-  subscribe(listener: () => void): () => void {
-    listeners.add(listener)
-    return () => listeners.delete(listener)
-  },
-  set,
-  reset(): void {
-    state = initialState()
-    emit()
-  },
+  ...base,
   load({ settings, timer, stats }: PersistedPomodoroState): void {
     const mergedSettings: PomodoroSettings = { ...DEFAULT_SETTINGS, ...settings }
     const phase: Phase =
@@ -89,7 +69,7 @@ export const pomodoroStore = {
     // A finished phase can't be resumed; anything else is restored.
     const status: TimerStatus =
       timer?.status === 'running' || timer?.status === 'paused' ? timer.status : 'idle'
-    set({
+    base.set({
       settings: mergedSettings,
       phase,
       status,
@@ -105,63 +85,70 @@ export const pomodoroStore = {
 }
 
 export function usePomodoroStore<T>(selector: (state: PomodoroState) => T): T {
-  return useSyncExternalStore(pomodoroStore.subscribe, () => selector(pomodoroStore.getState()))
+  return useStore(pomodoroStore, selector)
 }
 
-export const pomodoroActions: StorePomodoroActions = {
+export const pomodoroActions = {
   start(): void {
+    const state = base.getState()
     if (state.status === 'running') return
     if (state.remainingMs <= 0) {
       const totalMs = durationFor(state.phase, state.settings)
-      set({ remainingMs: totalMs, totalMs, status: 'running', endAt: Date.now() + totalMs })
+      base.set({ remainingMs: totalMs, totalMs, status: 'running', endAt: Date.now() + totalMs })
       persistTimer(true)
       return
     }
     // Resume counts down from the current remaining time with a fresh deadline.
-    set({ status: 'running', endAt: Date.now() + state.remainingMs })
+    base.set({ status: 'running', endAt: Date.now() + state.remainingMs })
     persistTimer(true)
   },
 
   pause(): void {
+    const state = base.getState()
     if (state.status !== 'running' || state.endAt == null) return
     // Snapshot true remaining time so pausing is correct even if ticks were throttled.
     const remainingMs = Math.max(0, state.endAt - Date.now())
-    set({ status: 'paused', remainingMs, endAt: null })
+    base.set({ status: 'paused', remainingMs, endAt: null })
     persistTimer(true)
   },
 
   reset(): void {
+    const state = base.getState()
     const totalMs = durationFor(state.phase, state.settings)
-    set({ status: 'idle', remainingMs: totalMs, totalMs, endAt: null })
+    base.set({ status: 'idle', remainingMs: totalMs, totalMs, endAt: null })
     persistTimer(true)
   },
 
   skip(): void {
+    const state = base.getState()
     const nextPhase: Phase = state.phase === PHASES.FOCUS ? PHASES.SHORT_BREAK : PHASES.FOCUS
     const totalMs = durationFor(nextPhase, state.settings)
-    set({ phase: nextPhase, remainingMs: totalMs, totalMs, status: 'idle', endAt: null })
+    base.set({ phase: nextPhase, remainingMs: totalMs, totalMs, status: 'idle', endAt: null })
     persistTimer(true)
   },
 
   setPhase(phase: Phase): void {
+    const state = base.getState()
     const totalMs = durationFor(phase, state.settings)
-    set({ phase, remainingMs: totalMs, totalMs, status: 'idle', endAt: null })
+    base.set({ phase, remainingMs: totalMs, totalMs, status: 'idle', endAt: null })
     persistTimer(true)
   },
 
   setSettings(patch: Partial<PomodoroSettings>): void {
+    const state = base.getState()
     const settings = { ...state.settings, ...patch }
     const totalMs = durationFor(state.phase, settings)
-    set({ settings, remainingMs: totalMs, totalMs, status: 'idle', endAt: null })
+    base.set({ settings, remainingMs: totalMs, totalMs, status: 'idle', endAt: null })
     scheduleSettingsSave()
   },
 
   tick(): void {
     // Wall-clock countdown: WebView2 throttles setInterval in the background,
     // so remaining is derived from the absolute deadline.
+    const state = base.getState()
     if (state.status !== 'running' || state.endAt == null) return
     const remainingMs = Math.max(0, state.endAt - Date.now())
-    set(
+    base.set(
       remainingMs <= 0
         ? { remainingMs: 0, status: 'finished', endAt: null }
         : { remainingMs },
@@ -170,7 +157,7 @@ export const pomodoroActions: StorePomodoroActions = {
   },
 
   completePhase(): void {
-    const { phase, settings, sessionsCompleted, round } = state
+    const { phase, settings, sessionsCompleted, round } = base.getState()
     let nextPhase: Phase = PHASES.FOCUS
     let nextSessions = sessionsCompleted
     let nextRound = round
@@ -190,7 +177,7 @@ export const pomodoroActions: StorePomodoroActions = {
       (nextPhase !== PHASES.FOCUS && settings.autoStartBreaks)
 
     const completedAt = Date.now()
-    set({
+    base.set({
       phase: nextPhase,
       sessionsCompleted: nextSessions,
       round: nextRound,
@@ -203,8 +190,8 @@ export const pomodoroActions: StorePomodoroActions = {
     })
     persistTimer(true)
     saveStats({
-      sessionsCompleted: state.sessionsCompleted,
-      round: state.round,
+      sessionsCompleted: nextSessions,
+      round: nextRound,
       lastCompletedAt: completedAt,
     }).catch(() => {})
   },

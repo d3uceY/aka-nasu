@@ -1,38 +1,14 @@
 // Sound file paths + volumes; playback goes through utils/audio.ts.
 
-export const SOUND_FILES = {
-  complete: '/sounds/complete.mp3',
-  dialRatchetTick: '/sounds/dial-ratchet-tick.mp3',
-  clickIntoPlace: '/sounds/click-into-place.wav',
-  resetSpring: '/sounds/reset-spring.mp3',
-  gearClick: '/sounds/gear-click.mp3',
-  pop: '/sounds/pop.mp3',
-  ding: '/sounds/ding.mp3',
-  swish: '/sounds/swish.mp3',
+export const SOUNDS = {
+  complete: { file: '/sounds/complete.mp3', volume: 1 },
+  dialRatchetTick: { file: '/sounds/dial-ratchet-tick.mp3', volume: 1 },
+  clickIntoPlace: { file: '/sounds/click-into-place.wav', volume: 0.3 },
+  resetSpring: { file: '/sounds/reset-spring.mp3', volume: 1 },
+  gearClick: { file: '/sounds/gear-click.mp3', volume: 1 },
+  pop: { file: '/sounds/pop.mp3', volume: 1 },
+  ding: { file: '/sounds/ding.mp3', volume: 1 },
+  swish: { file: '/sounds/swish.mp3', volume: 1 },
 } as const
 
-export const SOUND_VOLUMES = {
-  complete: 1,
-  dialRatchetTick: 1,
-  clickIntoPlace: 0.3,
-  resetSpring: 1,
-  gearClick: 1,
-  pop: 1,
-  ding: 1,
-  swish: 1,
-} as const
-
-export type SoundName = keyof typeof SOUND_FILES
-
-export interface SoundDef {
-  file: string
-  volume: number
-}
-
-// Combined lookup: name -> { file, volume } used by playSound().
-export const SOUNDS = Object.fromEntries(
-  Object.entries(SOUND_FILES).map(([name, file]) => [
-    name,
-    { file, volume: SOUND_VOLUMES[name as SoundName] },
-  ]),
-) as Record<SoundName, SoundDef>
+export type SoundName = keyof typeof SOUNDS

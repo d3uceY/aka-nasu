@@ -16,20 +16,16 @@ func (s *Service) GetTodos() ([]config.Todo, error) {
 	return store.Todos()
 }
 
-func (s *Service) list() ([]config.Todo, error) {
-	return store.Todos()
-}
-
 // AddTodo inserts a new task. The frontend passes active=true when this is the
 // only task, so it becomes the current task immediately.
 func (s *Service) AddTodo(text string, active bool) ([]config.Todo, error) {
 	if text == "" {
-		return s.list()
+		return store.Todos()
 	}
 	if _, err := store.AddTodo(text, active); err != nil {
 		return nil, err
 	}
-	return s.list()
+	return store.Todos()
 }
 
 // ToggleTodo flips done. The frontend passes the id to make active next ("" =
@@ -38,7 +34,7 @@ func (s *Service) ToggleTodo(id, nextActive string) ([]config.Todo, error) {
 	if err := store.ToggleTodo(id, nextActive); err != nil {
 		return nil, err
 	}
-	return s.list()
+	return store.Todos()
 }
 
 // RemoveTodo deletes a task. The frontend passes the id to make active next
@@ -47,7 +43,7 @@ func (s *Service) RemoveTodo(id, nextActive string) ([]config.Todo, error) {
 	if err := store.RemoveTodo(id, nextActive); err != nil {
 		return nil, err
 	}
-	return s.list()
+	return store.Todos()
 }
 
 // UpdateTodo edits a task's text and notes.
@@ -55,7 +51,7 @@ func (s *Service) UpdateTodo(id, text, notes string) ([]config.Todo, error) {
 	if err := store.UpdateTodo(id, text, notes); err != nil {
 		return nil, err
 	}
-	return s.list()
+	return store.Todos()
 }
 
 // SetActiveTodo pins id as the current task (empty id clears the pin).
@@ -63,5 +59,5 @@ func (s *Service) SetActiveTodo(id string) ([]config.Todo, error) {
 	if err := store.SetActiveTodo(id); err != nil {
 		return nil, err
 	}
-	return s.list()
+	return store.Todos()
 }

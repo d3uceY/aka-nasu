@@ -1,14 +1,12 @@
-import * as SettingsService from '../../bindings/aka-nasu/backend/settings/service.js'
+import * as ConfigService from '../../bindings/aka-nasu/backend/config/service.js'
 import * as TodoService from '../../bindings/aka-nasu/backend/todos/service.js'
-import * as StatsService from '../../bindings/aka-nasu/backend/stats/service.js'
-import * as TimerService from '../../bindings/aka-nasu/backend/timer/service.js'
 import * as VersionService from '../../bindings/aka-nasu/backend/version/service.js'
 import * as NotifyService from '../../bindings/aka-nasu/backend/notify/service.js'
 import { Settings, TimerState, Stats, Todo } from '../../bindings/aka-nasu/backend/config/models.js'
 import type { Phase } from '../features/pomodoro/types.js'
 
 // True when a native Wails bridge is present (not a plain-browser preview).
-function hasBridge(): boolean {
+export function hasBridge(): boolean {
   return Boolean(
     window.chrome?.webview?.postMessage ||
       window.webkit?.messageHandlers?.['external']?.postMessage ||
@@ -39,10 +37,10 @@ function resolve<T>(value: T): Promise<T> {
 export async function loadAppState(): Promise<AppState> {
   if (!hasBridge()) return BROWSER_DEFAULTS
   const [settings, timer, todos, stats] = await Promise.all([
-    SettingsService.GetSettings(),
-    TimerService.GetTimerState(),
+    ConfigService.GetSettings(),
+    ConfigService.GetTimerState(),
     TodoService.GetTodos(),
-    StatsService.GetStats(),
+    ConfigService.GetStats(),
   ])
   return { settings, timer, todos, stats }
 }
@@ -53,11 +51,11 @@ export async function getAppVersion(): Promise<string | null> {
 }
 
 export const saveSettings = (settings: Settings): Promise<Settings> =>
-  hasBridge() ? SettingsService.UpdateSettings(settings) : resolve(settings)
+  hasBridge() ? ConfigService.UpdateSettings(settings) : resolve(settings)
 export const saveTimer = (state: TimerState): Promise<TimerState> =>
-  hasBridge() ? TimerService.UpdateTimerState(state) : resolve(state)
+  hasBridge() ? ConfigService.UpdateTimerState(state) : resolve(state)
 export const saveStats = (stats: Stats): Promise<Stats> =>
-  hasBridge() ? StatsService.UpdateStats(stats) : resolve(stats)
+  hasBridge() ? ConfigService.UpdateStats(stats) : resolve(stats)
 export const addTodo = (text: string, active: boolean): Promise<Todo[]> =>
   hasBridge() ? TodoService.AddTodo(text, active) : resolve([])
 export const toggleTodo = (id: string, nextActive: string): Promise<Todo[]> =>

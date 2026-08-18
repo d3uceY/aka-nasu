@@ -1,23 +1,13 @@
-import { useSyncExternalStore } from 'react'
+import { createStore, useStore } from '../../../lib/createStore.js'
 import type { ReleaseInfo, UpdateState } from '../types.js'
 
 // Remember the dismissed release so the modal stops asking on later launches.
 const DISMISS_KEY = 'aka-nasu:dismissed-update'
 
-let state: UpdateState = {
+const base = createStore<UpdateState>(() => ({
   release: null, // latest stable release worth offering, or null
   visible: false,
-}
-const listeners = new Set<() => void>()
-
-function emit(): void {
-  for (const listener of listeners) listener()
-}
-
-function set(next: Partial<UpdateState>): void {
-  state = { ...state, ...next }
-  emit()
-}
+}))
 
 function readDismissed(): string | null {
   try {
@@ -36,32 +26,29 @@ function writeDismissed(tag: string): void {
 }
 
 export const updateStore = {
-  getState: (): UpdateState => state,
-  subscribe(listener: () => void): () => void {
-    listeners.add(listener)
-    return () => listeners.delete(listener)
-  },
+  ...base,
   // Back to the fresh-launch state (mainly for tests).
   reset(): void {
-    set({ release: null, visible: false })
+    base.reset()
   },
   // Called once per launch with the release the check found. Skips a release
   // the user already dismissed on an earlier launch.
   setRelease(release: ReleaseInfo): void {
     if (!release || readDismissed() === release.tag) return
-    set({ release, visible: true })
+    base.set({ release, visible: true })
   },
   // "Not now": remember this release so we stop asking about it.
   dismiss(): void {
-    if (state.release) writeDismissed(state.release.tag)
-    set({ visible: false })
+    const release = base.getState().release
+    if (release) writeDismissed(release.tag)
+    base.set({ visible: false })
   },
   // Just close the modal for now; ask again next launch.
   close(): void {
-    set({ visible: false })
+    base.set({ visible: false })
   },
 }
 
 export function useUpdateStore<T>(selector: (state: UpdateState) => T): T {
-  return useSyncExternalStore(updateStore.subscribe, () => selector(updateStore.getState()))
+  return useStore(updateStore, selector)
 }

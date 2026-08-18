@@ -52,12 +52,4 @@ describe('usePomodoro', () => {
     vi.advanceTimersByTime(0)
     expect(notifyPhaseComplete).toHaveBeenCalledWith('focus')
   })
-
-  it('exposes actions that drive the store', () => {
-    const { result } = renderHook(() => usePomodoro())
-    act(() => result.current.actions.start())
-    expect(pomodoroStore.getState().status).toBe('running')
-    act(() => result.current.actions.pause())
-    expect(pomodoroStore.getState().status).toBe('paused')
-  })
 })

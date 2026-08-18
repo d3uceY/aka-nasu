@@ -1,37 +1,37 @@
 import { Button } from '../../../components/ui/Button.jsx'
 import { playSound } from '../../../utils/audio.js'
 import { dialSpun } from '../utils/dialSpun.js'
-import type { PomodoroActions, TimerStatus } from '../types.js'
+import { pomodoroActions } from '../state/pomodoroStore.js'
+import type { TimerStatus } from '../types.js'
 
 export interface TimerControlsProps {
   status: TimerStatus
-  actions: PomodoroActions
 }
 
-export function TimerControls({ status, actions }: TimerControlsProps) {
+export function TimerControls({ status }: TimerControlsProps) {
   const running = status === 'running'
 
   function handleTransport() {
     if (running) {
       // Pause freezes the dial: no spin, no sound.
-      if (dialSpun(() => actions.pause())) playSound('gearClick')
+      if (dialSpun(() => pomodoroActions.pause())) playSound('gearClick')
     } else if (status === 'paused') {
       // Resume continues from the same spot: no spin, no sound.
-      if (dialSpun(() => actions.start())) playSound('gearClick')
+      if (dialSpun(() => pomodoroActions.start())) playSound('gearClick')
     } else {
       // Start: only sound off if the dial travels to the running position.
-      if (dialSpun(() => actions.start())) playSound('gearClick')
+      if (dialSpun(() => pomodoroActions.start())) playSound('gearClick')
     }
   }
 
   function handleReset() {
     playSound('resetSpring')
-    actions.reset()
+    pomodoroActions.reset()
   }
 
   function handleSkip() {
     // Only sound off if the dial actually travels to the new phase's position.
-    if (dialSpun(() => actions.skip())) playSound('resetSpring')
+    if (dialSpun(() => pomodoroActions.skip())) playSound('resetSpring')
   }
 
   return (

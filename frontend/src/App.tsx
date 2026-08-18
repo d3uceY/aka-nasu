@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { AppLayout } from './components/layout/AppLayout.jsx'
 import { AppIntro } from './components/AppIntro.jsx'
 import { PomodoroTimer } from './features/pomodoro/components/PomodoroTimer.jsx'
 import { MiniTimer } from './features/pomodoro/components/MiniTimer.jsx'
@@ -28,14 +27,14 @@ export default function App() {
           <MiniTimer />
         ) : (
           <>
-            <AppLayout>
+            <main className="app-main">
               <section className="timer-column">
                 <PomodoroTimer />
               </section>
               <section className="content-column">
                 <TodoPanel />
               </section>
-            </AppLayout>
+            </main>
             <VersionBadge />
           </>
         )}

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Slider } from '../../../components/ui/Slider.jsx'
-import { usePomodoroStore } from '../state/pomodoroStore.js'
+import { usePomodoroStore, pomodoroActions } from '../state/pomodoroStore.js'
 import { playSound } from '../../../utils/audio.js'
-import type { PomodoroActions } from '../types.js'
 
 function GearIcon() {
   return (
@@ -24,7 +23,7 @@ function GearIcon() {
   )
 }
 
-export function TimerSettings({ actions }: { actions: PomodoroActions }) {
+export function TimerSettings() {
   const settings = usePomodoroStore((s) => s.settings)
   const status = usePomodoroStore((s) => s.status)
   const [open, setOpen] = useState(false)
@@ -72,7 +71,7 @@ export function TimerSettings({ actions }: { actions: PomodoroActions }) {
           disabled={locked}
           onChange={(v) => {
             playSound('dialRatchetTick', 50)
-            actions.setSettings({ focusMinutes: v })
+            pomodoroActions.setSettings({ focusMinutes: v })
           }}
         />
         <Slider
@@ -83,7 +82,7 @@ export function TimerSettings({ actions }: { actions: PomodoroActions }) {
           disabled={locked}
           onChange={(v) => {
             playSound('dialRatchetTick', 50)
-            actions.setSettings({ shortBreakMinutes: v })
+            pomodoroActions.setSettings({ shortBreakMinutes: v })
           }}
         />
         <Slider
@@ -94,7 +93,7 @@ export function TimerSettings({ actions }: { actions: PomodoroActions }) {
           disabled={locked}
           onChange={(v) => {
             playSound('dialRatchetTick', 50)
-            actions.setSettings({ longBreakMinutes: v })
+            pomodoroActions.setSettings({ longBreakMinutes: v })
           }}
         />
         <p className="settings__title">Automation</p>
@@ -106,7 +105,7 @@ export function TimerSettings({ actions }: { actions: PomodoroActions }) {
             disabled={locked}
             onChange={(e) => {
               playSound('gearClick')
-              actions.setSettings({ autoStartBreaks: e.target.checked })
+              pomodoroActions.setSettings({ autoStartBreaks: e.target.checked })
             }}
           />
         </label>
@@ -118,7 +117,7 @@ export function TimerSettings({ actions }: { actions: PomodoroActions }) {
             disabled={locked}
             onChange={(e) => {
               playSound('gearClick')
-              actions.setSettings({ autoStartFocus: e.target.checked })
+              pomodoroActions.setSettings({ autoStartFocus: e.target.checked })
             }}
           />
         </label>
@@ -129,7 +128,7 @@ export function TimerSettings({ actions }: { actions: PomodoroActions }) {
             type="checkbox"
             checked={settings.soundEnabled}
             disabled={locked}
-            onChange={(e) => actions.setSettings({ soundEnabled: e.target.checked })}
+            onChange={(e) => pomodoroActions.setSettings({ soundEnabled: e.target.checked })}
           />
         </label>
       </div>

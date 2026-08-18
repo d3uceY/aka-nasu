@@ -12,16 +12,18 @@ import {
   setActiveTodo,
   notifyPhaseComplete,
 } from './backend.js'
-import * as SettingsService from '../../bindings/aka-nasu/backend/settings/service.js'
+import * as ConfigService from '../../bindings/aka-nasu/backend/config/service.js'
 import * as TodoService from '../../bindings/aka-nasu/backend/todos/service.js'
-import * as StatsService from '../../bindings/aka-nasu/backend/stats/service.js'
-import * as TimerService from '../../bindings/aka-nasu/backend/timer/service.js'
 import * as VersionService from '../../bindings/aka-nasu/backend/version/service.js'
 import * as NotifyService from '../../bindings/aka-nasu/backend/notify/service.js'
 
-vi.mock('../../bindings/aka-nasu/backend/settings/service.js', () => ({
+vi.mock('../../bindings/aka-nasu/backend/config/service.js', () => ({
   GetSettings: vi.fn(),
   UpdateSettings: vi.fn(),
+  GetTimerState: vi.fn(),
+  UpdateTimerState: vi.fn(),
+  GetStats: vi.fn(),
+  UpdateStats: vi.fn(),
 }))
 vi.mock('../../bindings/aka-nasu/backend/todos/service.js', () => ({
   GetTodos: vi.fn(),
@@ -30,14 +32,6 @@ vi.mock('../../bindings/aka-nasu/backend/todos/service.js', () => ({
   RemoveTodo: vi.fn(),
   UpdateTodo: vi.fn(),
   SetActiveTodo: vi.fn(),
-}))
-vi.mock('../../bindings/aka-nasu/backend/stats/service.js', () => ({
-  GetStats: vi.fn(),
-  UpdateStats: vi.fn(),
-}))
-vi.mock('../../bindings/aka-nasu/backend/timer/service.js', () => ({
-  GetTimerState: vi.fn(),
-  UpdateTimerState: vi.fn(),
 }))
 vi.mock('../../bindings/aka-nasu/backend/version/service.js', () => ({
   GetVersion: vi.fn(),
@@ -72,23 +66,23 @@ describe('loadAppState', () => {
     expect(state.timer).toBeDefined()
     expect(state.todos).toEqual([])
     expect(state.stats).toBeDefined()
-    expect(SettingsService.GetSettings).not.toHaveBeenCalled()
+    expect(ConfigService.GetSettings).not.toHaveBeenCalled()
   })
 
   it('loads from all four services when the bridge is present', async () => {
     setBridge()
-    vi.mocked(SettingsService.GetSettings).mockResolvedValue({ focusMinutes: 40 } as never)
-    vi.mocked(TimerService.GetTimerState).mockResolvedValue({ status: 'idle' } as never)
+    vi.mocked(ConfigService.GetSettings).mockResolvedValue({ focusMinutes: 40 } as never)
+    vi.mocked(ConfigService.GetTimerState).mockResolvedValue({ status: 'idle' } as never)
     vi.mocked(TodoService.GetTodos).mockResolvedValue([{ id: '1', text: 'a' }] as never)
-    vi.mocked(StatsService.GetStats).mockResolvedValue({ round: 1 } as never)
+    vi.mocked(ConfigService.GetStats).mockResolvedValue({ round: 1 } as never)
 
     const state = await loadAppState()
     expect(state.settings.focusMinutes).toBe(40)
     expect(state.todos[0].id).toBe('1')
-    expect(SettingsService.GetSettings).toHaveBeenCalledTimes(1)
-    expect(TimerService.GetTimerState).toHaveBeenCalledTimes(1)
+    expect(ConfigService.GetSettings).toHaveBeenCalledTimes(1)
+    expect(ConfigService.GetTimerState).toHaveBeenCalledTimes(1)
     expect(TodoService.GetTodos).toHaveBeenCalledTimes(1)
-    expect(StatsService.GetStats).toHaveBeenCalledTimes(1)
+    expect(ConfigService.GetStats).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -121,9 +115,9 @@ describe('save wrappers', () => {
 
   it('delegate to the bindings with a bridge', async () => {
     setBridge()
-    vi.mocked(SettingsService.UpdateSettings).mockResolvedValue({} as never)
-    vi.mocked(TimerService.UpdateTimerState).mockResolvedValue({} as never)
-    vi.mocked(StatsService.UpdateStats).mockResolvedValue({} as never)
+    vi.mocked(ConfigService.UpdateSettings).mockResolvedValue({} as never)
+    vi.mocked(ConfigService.UpdateTimerState).mockResolvedValue({} as never)
+    vi.mocked(ConfigService.UpdateStats).mockResolvedValue({} as never)
     vi.mocked(TodoService.AddTodo).mockResolvedValue([])
     vi.mocked(TodoService.ToggleTodo).mockResolvedValue([])
     vi.mocked(TodoService.RemoveTodo).mockResolvedValue([])
@@ -139,9 +133,9 @@ describe('save wrappers', () => {
     await updateTodo('3', 'new', 'note')
     await setActiveTodo('4')
 
-    expect(SettingsService.UpdateSettings).toHaveBeenCalledWith({ focusMinutes: 25 })
-    expect(TimerService.UpdateTimerState).toHaveBeenCalled()
-    expect(StatsService.UpdateStats).toHaveBeenCalled()
+    expect(ConfigService.UpdateSettings).toHaveBeenCalledWith({ focusMinutes: 25 })
+    expect(ConfigService.UpdateTimerState).toHaveBeenCalled()
+    expect(ConfigService.UpdateStats).toHaveBeenCalled()
     expect(TodoService.AddTodo).toHaveBeenCalledWith('x', true)
     expect(TodoService.ToggleTodo).toHaveBeenCalledWith('1', '')
     expect(TodoService.RemoveTodo).toHaveBeenCalledWith('2', '')

@@ -1,15 +1,13 @@
 import * as THREE from 'three'
 import gsap from 'gsap'
 import { playSound } from '../../../utils/audio.js'
-import { GROUND, SEAM, getSeamY, getCrossR } from '../constants/three.js'
+import { CAMERA, GROUND, SEAM, STEM, getCapTopY, getSeamY, getCrossR } from '../constants/three.js'
 import { createTomatoMaterials } from './materials/tomatoMaterials.js'
 import type { TomatoMaterials } from './materials/tomatoMaterials.js'
 import { setupLighting } from './lighting/setupLighting.js'
 import type { SceneLights } from './lighting/setupLighting.js'
-import { setupCamera } from './camera/setupCamera.js'
 import { createTomatoLobes } from './objects/createTomatoLobes.js'
 import { createCap } from './objects/createCap.js'
-import { createStem } from './objects/createStem.js'
 import { createLeaves } from './objects/createLeaves.js'
 import { createPointer } from './objects/createPointer.js'
 import { attachDialDrag } from './interaction/dialDrag.js'
@@ -132,7 +130,10 @@ export class TomatoTimerScene {
   }
 
   _buildCamera(): void {
-    this.camera = setupCamera()
+    // Front-facing, slightly elevated; the tomato fills most of the frame.
+    this.camera = new THREE.PerspectiveCamera(CAMERA.fov, 1, 0.1, 100)
+    this.camera.position.set(...CAMERA.position)
+    this.camera.lookAt(...CAMERA.lookAt)
   }
 
   _buildLights(): void {
@@ -190,7 +191,17 @@ export class TomatoTimerScene {
 
     const { mesh: capMesh } = createCap(materials)
     topGroup.add(capMesh)
-    topGroup.add(createStem(materials))
+
+    // Green stalk on the cap dome; rotates with the cap.
+    const stem = new THREE.Mesh(
+      new THREE.CylinderGeometry(STEM.radiusTop, STEM.radiusBottom, STEM.height, 12),
+      materials.stem,
+    )
+    stem.position.y = getCapTopY() + 0.07
+    stem.castShadow = true
+    stem.name = 'stem'
+    topGroup.add(stem)
+
     topGroup.add(createLeaves(materials))
 
     // ---- Timer root -----------------------------------------------------

@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { createStore, useStore } from '../../../lib/createStore.js'
 import {
   addTodo,
   toggleTodo,
@@ -10,12 +10,7 @@ import type { Todo } from '../types.js'
 
 // Backend owns the list; every mutation is optimistic (applied locally now)
 // and then reconciled with the authoritative list the backend returns.
-let todos: Todo[] = []
-const listeners = new Set<() => void>()
-
-function emit(): void {
-  for (const listener of listeners) listener()
-}
+const base = createStore<{ todos: Todo[] }>(() => ({ todos: [] }))
 
 // The bindings mark notes/active optional; normalize so components never
 // have to guard against undefined.
@@ -33,8 +28,7 @@ function apply(list: Todo[]): void {
     const fallback = next.find((t) => !t.done) ?? next[0]
     next = next.map((t) => ({ ...t, active: t.id === fallback.id }))
   }
-  todos = next
-  emit()
+  base.set({ todos: next })
 }
 
 // Optimistic update: apply the local change now, reconcile with the server's
@@ -43,14 +37,12 @@ function apply(list: Todo[]): void {
 // rollback wins. Fine for a single-user local app; per-op snapshots if ever
 // needed.
 function mutate(optimistic: () => void, call: () => Promise<Todo[]>): void {
-  const prev = todos
+  const prev = base.getState().todos
   optimistic()
-  emit()
   call()
     .then(apply)
     .catch(() => {
-      todos = prev
-      emit()
+      base.set({ todos: prev })
     })
 }
 
@@ -79,11 +71,8 @@ function nextActiveFor(list: Todo[], fromIndex: number): string {
 }
 
 export const todoStore = {
-  getTodos: (): Todo[] => todos,
-  subscribe(listener: () => void): () => void {
-    listeners.add(listener)
-    return () => listeners.delete(listener)
-  },
+  getTodos: (): Todo[] => base.getState().todos,
+  subscribe: base.subscribe,
   load(list: Todo[]): void {
     apply(list)
   },
@@ -92,9 +81,10 @@ export const todoStore = {
     if (!value) return
     // The very first task is made current by the backend; later adds never steal
     // the pin. The backend owns ids/timestamps, so a new task can't be optimistic.
-    addTodo(value, todos.length === 0).then(apply).catch(() => {})
+    addTodo(value, base.getState().todos.length === 0).then(apply).catch(() => {})
   },
   toggle(id: string): void {
+    const todos = base.getState().todos
     const target = todos.find((t) => t.id === id)
     if (!target) return
     const becomingDone = !target.done
@@ -104,15 +94,17 @@ export const todoStore = {
     const nextActive = becomingDone && target.active ? topOfList(todos) : ''
     mutate(
       () => {
-        todos = todos.map((t) => (t.id === id ? { ...t, done: becomingDone } : t))
+        let next = todos.map((t) => (t.id === id ? { ...t, done: becomingDone } : t))
         if (nextActive) {
-          todos = todos.map((t) => ({ ...t, active: t.id === nextActive }))
+          next = next.map((t) => ({ ...t, active: t.id === nextActive }))
         }
+        base.set({ todos: next })
       },
       () => toggleTodo(id, nextActive),
     )
   },
   remove(id: string): void {
+    const todos = base.getState().todos
     const indexBefore = todos.findIndex((t) => t.id === id)
     const wasActive = todos[indexBefore]?.active ?? false
     const remaining = todos.filter((t) => t.id !== id)
@@ -122,10 +114,11 @@ export const todoStore = {
     const nextActive = wasActive ? nextActiveFor(remaining, indexBefore) : ''
     mutate(
       () => {
-        todos = remaining
+        let next = remaining
         if (nextActive) {
-          todos = todos.map((t) => ({ ...t, active: t.id === nextActive }))
+          next = next.map((t) => ({ ...t, active: t.id === nextActive }))
         }
+        base.set({ todos: next })
       },
       () => removeTodo(id, nextActive),
     )
@@ -133,7 +126,8 @@ export const todoStore = {
   update(id: string, text: string, notes: string): void {
     mutate(
       () => {
-        todos = todos.map((t) => (t.id === id ? { ...t, text, notes } : t))
+        const todos = base.getState().todos.map((t) => (t.id === id ? { ...t, text, notes } : t))
+        base.set({ todos })
       },
       () => updateTodo(id, text, notes),
     )
@@ -141,10 +135,11 @@ export const todoStore = {
   setActive(id: string): void {
     // Exactly one task is always active while tasks exist, so there is no
     // "unpin": tapping the current task is a no-op.
-    if (todos.find((t) => t.id === id)?.active) return
+    if (base.getState().todos.find((t) => t.id === id)?.active) return
     mutate(
       () => {
-        todos = todos.map((t) => ({ ...t, active: t.id === id }))
+        const todos = base.getState().todos.map((t) => ({ ...t, active: t.id === id }))
+        base.set({ todos })
       },
       () => setActiveTodo(id),
     )
@@ -152,5 +147,5 @@ export const todoStore = {
 }
 
 export function useTodos(): Todo[] {
-  return useSyncExternalStore(todoStore.subscribe, () => todoStore.getTodos())
+  return useStore(base, (s) => s.todos)
 }

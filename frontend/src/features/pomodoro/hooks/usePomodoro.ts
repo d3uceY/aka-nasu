@@ -3,12 +3,9 @@ import { pomodoroActions, usePomodoroStore } from '../state/pomodoroStore.js'
 import { useTimer } from './useTimer.js'
 import { playSound } from '../../../utils/audio.js'
 import { notifyPhaseComplete } from '../../../lib/backend.js'
-import type { Phase, PomodoroActions, TimerStatus } from '../types.js'
+import type { Phase } from '../types.js'
 
-export function usePomodoro({ onComplete }: { onComplete?: () => void } = {}): {
-  status: TimerStatus
-  actions: PomodoroActions
-} {
+export function usePomodoro({ onComplete }: { onComplete?: () => void } = {}): void {
   useTimer()
   const status = usePomodoroStore((s) => s.status)
   const phase = usePomodoroStore((s) => s.phase)
@@ -33,15 +30,4 @@ export function usePomodoro({ onComplete }: { onComplete?: () => void } = {}): {
     }
     prevStatus.current = status
   }, [status])
-
-  const actions: PomodoroActions = {
-    start: () => pomodoroActions.start(),
-    pause: () => pomodoroActions.pause(),
-    reset: () => pomodoroActions.reset(),
-    skip: () => pomodoroActions.skip(),
-    setPhase: (phase) => pomodoroActions.setPhase(phase),
-    setSettings: (patch) => pomodoroActions.setSettings(patch),
-  }
-
-  return { status, actions }
 }

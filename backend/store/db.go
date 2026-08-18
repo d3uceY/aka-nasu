@@ -35,8 +35,6 @@ func InitDB(path string) error {
 	DB.SetMaxOpenConns(1)
 	DB.SetMaxIdleConns(1)
 
-	fmt.Println("DB initialized on Bro")
-
 	return DB.Ping()
 }
 

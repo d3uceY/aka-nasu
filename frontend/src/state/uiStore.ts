@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { createStore, useStore } from '../lib/createStore.js'
 
 export type UIMode = 'full' | 'mini'
 
@@ -8,35 +8,21 @@ export interface UIState {
 }
 
 // App-level UI state: window layout (full/mini) and whether the intro has played.
-let state: UIState = {
+const base = createStore<UIState>(() => ({
   mode: 'full',
   introDone: false,
-}
-const listeners = new Set<() => void>()
-
-function emit(): void {
-  for (const listener of listeners) listener()
-}
-
-function set(next: Partial<UIState>): void {
-  state = { ...state, ...next }
-  emit()
-}
+}))
 
 export const uiStore = {
-  getState: (): UIState => state,
-  subscribe(listener: () => void): () => void {
-    listeners.add(listener)
-    return () => listeners.delete(listener)
-  },
+  ...base,
   setMode(mode: UIMode): void {
-    set({ mode })
+    base.set({ mode })
   },
   markIntroDone(): void {
-    set({ introDone: true })
+    base.set({ introDone: true })
   },
 }
 
 export function useUIStore<T>(selector: (state: UIState) => T): T {
-  return useSyncExternalStore(uiStore.subscribe, () => selector(uiStore.getState()))
+  return useStore(uiStore, selector)
 }

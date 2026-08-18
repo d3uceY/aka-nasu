@@ -36,19 +36,3 @@ export interface DialCallbacks {
   handleDialChange?: (minutes: number) => void
   getInteractionEnabled: () => boolean
 }
-
-// Actions returned by usePomodoro and passed to the controls.
-export interface PomodoroActions {
-  start: () => void
-  pause: () => void
-  reset: () => void
-  skip: () => void
-  setPhase: (phase: Phase) => void
-  setSettings: (patch: Partial<PomodoroSettings>) => void
-}
-
-// Full store actions, incl. the internals components never call.
-export interface StorePomodoroActions extends PomodoroActions {
-  tick: () => void
-  completePhase: () => void
-}

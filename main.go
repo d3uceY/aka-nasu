@@ -6,10 +6,7 @@ import (
 
 	"aka-nasu/backend/config"
 	"aka-nasu/backend/notify"
-	"aka-nasu/backend/settings"
-	"aka-nasu/backend/stats"
 	"aka-nasu/backend/store"
-	"aka-nasu/backend/timer"
 	"aka-nasu/backend/todos"
 	"aka-nasu/backend/version"
 
@@ -51,10 +48,8 @@ func main() {
 		Name:        "aka-nasu",
 		Description: "A minimal 3D tomato focus timer.",
 		Services: []application.Service{
-			application.NewService(settings.NewService(cfgStore)),
+			application.NewService(config.NewService(cfgStore)),
 			application.NewService(todos.NewService()),
-			application.NewService(stats.NewService(cfgStore)),
-			application.NewService(timer.NewService(cfgStore)),
 			application.NewService(version.NewService(Version)),
 			// Native OS notifications; best-effort and crash-proof (see backend/notify).
 			application.NewService(notify.NewService()),

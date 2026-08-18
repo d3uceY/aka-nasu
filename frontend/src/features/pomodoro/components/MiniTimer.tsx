@@ -9,7 +9,7 @@ import { exitMiniMode } from '../../../lib/window.js'
 import { uiStore } from '../../../state/uiStore.js'
 import { usePomodoro } from '../hooks/usePomodoro.js'
 import { useDialRotation } from '../hooks/useDialRotation.js'
-import { usePomodoroStore } from '../state/pomodoroStore.js'
+import { usePomodoroStore, pomodoroActions } from '../state/pomodoroStore.js'
 import { PHASE_LABELS } from '../constants/timer.js'
 import { formatTime } from '../utils/formatTime.js'
 import { dialSpun } from '../utils/dialSpun.js'
@@ -91,7 +91,7 @@ export function MiniTimer() {
   const status = usePomodoroStore((s) => s.status)
   const remainingMs = usePomodoroStore((s) => s.remainingMs)
   const dial = useDialRotation()
-  const { actions } = usePomodoro({ onComplete: () => sceneRef.current?.pulse() })
+  usePomodoro({ onComplete: () => sceneRef.current?.pulse() })
 
   const running = status === 'running'
 
@@ -130,13 +130,13 @@ export function MiniTimer() {
   function handleTransport() {
     // Only sound off if the dial actually travels: pause/resume freeze the
     // dial, and a fresh idle start parks it where it already is.
-    if (dialSpun(() => (running ? actions.pause() : actions.start()))) {
+    if (dialSpun(() => (running ? pomodoroActions.pause() : pomodoroActions.start()))) {
       playSound('gearClick')
     }
   }
 
   function handleSkip() {
-    if (dialSpun(() => actions.skip())) playSound('resetSpring')
+    if (dialSpun(() => pomodoroActions.skip())) playSound('resetSpring')
   }
 
   return (
@@ -175,7 +175,7 @@ export function MiniTimer() {
             className="mini-window__ctl"
             onClick={() => {
               playSound('resetSpring')
-              actions.reset()
+              pomodoroActions.reset()
             }}
             disabled={status === 'idle'}
             aria-label="Reset timer"
