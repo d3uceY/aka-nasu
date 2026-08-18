@@ -22,8 +22,7 @@ function MiniIcon() {
   )
 }
 
-// Fades the whole shell out so the window shrink + layout swap never show a
-// squished frame, then hands off to the compact layout.
+// Fade the shell out so the window shrink + layout swap never show a squished frame.
 function switchToMini(): void {
   playSound('gearClick')
   const shell = document.querySelector('.app-shell')

@@ -12,10 +12,8 @@ export function durationFor(phase: Phase, settings: PomodoroSettings): number {
   }
 }
 
-// The minute the 3D dial points at for a given store snapshot. Mirrors the
-// dial's own logic (see useDialRotation.getDialMinute): running / paused /
-// finished show the remaining time (fractional minutes give the smooth
-// sweep); idle rests at the selected focus length.
+// The dial minute for a store snapshot: remaining time while running/paused/
+// finished, focus length while idle.
 export function dialMinuteFor(status: TimerStatus, remainingMs: number, focusMinutes: number): number {
   if (status === 'running' || status === 'paused' || status === 'finished') {
     return remainingMs / 60000

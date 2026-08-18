@@ -1,6 +1,4 @@
-// Central sound config: every sound file path and its playback volume lives
-// here. All playback goes through src/utils/audio.ts (playSound), which also
-// honours the "Play sounds" setting in the timer settings.
+// Sound file paths + volumes; playback goes through utils/audio.ts.
 
 export const SOUND_FILES = {
   complete: '/sounds/complete.mp3',

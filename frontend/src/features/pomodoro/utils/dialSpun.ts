@@ -1,13 +1,10 @@
 import { pomodoroStore } from '../state/pomodoroStore.js'
 import { dialMinuteFor } from './timerMath.js'
 
-// Only treat a dial change as a real "spin" when it moves more than a few
-// degrees. Pause/resume freeze the dial exactly, so they won't qualify.
+// A "spin" requires more than a few minutes of travel (pause/resume freeze the dial).
 const SPIN_EPSILON_MIN = 0.05
 
-// Applies an action and reports whether the 3D dial actually spun from its
-// previous position to its new one (using the same dialMinuteFor logic the
-// scene pulls from every frame).
+// Apply an action; report whether the dial actually moved (per dialMinuteFor).
 export function dialSpun(apply: () => void): boolean {
   const before = pomodoroStore.getState()
   const beforeMinute = dialMinuteFor(

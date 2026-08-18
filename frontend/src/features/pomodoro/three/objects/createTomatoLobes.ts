@@ -3,11 +3,8 @@ import { BODY, COLORS, getCapThetaSplit } from '../../constants/three.js'
 import { lobeAmount, applyLobes } from './lobeMath.js'
 import type { TomatoMaterials } from '../materials/tomatoMaterials.js'
 
-// Lower portion of a squashed sphere, from the equator down to the south
-// pole.  The cap covers the top half and is always 3.5 % larger, so no body
-// vertices can ever poke through.  Lobes are strongest in the upper-middle,
-// fade to zero well above the band, and are zero at the equator and below.
-// Vertex colours make the groove valleys read as darker creases.
+// Lower half of a squashed sphere (equator → south pole). Lobes fade to zero
+// above the band; vertex colours make the grooves read as dark creases.
 export function createTomatoLobes(materials: TomatoMaterials): THREE.Mesh {
   const { radius, scaleY, lobeDepth, segments } = BODY
   const thetaSplit = getCapThetaSplit() // π/2 (equator)

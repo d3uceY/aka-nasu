@@ -4,10 +4,7 @@ import { PHASE_LABELS, PHASES } from '../constants/timer.js'
 import { FocusDuration } from './FocusDuration.jsx'
 import type { Phase, TimerStatus } from '../types.js'
 
-/** The caption under the number never unmounts. It swaps copy in place per
- *  state (nowrap + centred in CSS), so the controls below never jump when
- *  text shows up or disappears on start / pause / skip. Each copy is kept
- *  short enough to always sit on a single line. */
+/** The caption never unmounts; copy swaps in place so the controls below never jump. */
 const STATUS_HINTS: Record<Phase, Record<TimerStatus, string>> = {
   [PHASES.FOCUS]: {
     idle: 'spin the tomato to set your focus',
@@ -29,9 +26,7 @@ const STATUS_HINTS: Record<Phase, Record<TimerStatus, string>> = {
   },
 }
 
-/** Each glyph sits in a fixed 1ch slot (ch = width of "0") so the monumental
- *  serif number stays perfectly still while it ticks. True tabular behaviour
- *  without needing tabular figures in the font. Shared with the mini timer. */
+/** Each glyph sits in a fixed 1ch slot so the number stays still while it ticks. */
 export function TimeSlots({ text }: { text: string }) {
   return text.split('').map((ch, i) =>
     ch === ':' ? (

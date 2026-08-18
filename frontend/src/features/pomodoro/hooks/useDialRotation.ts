@@ -4,9 +4,8 @@ import { pomodoroActions, usePomodoroStore } from '../state/pomodoroStore.js'
 import { dialMinuteFor } from '../utils/timerMath.js'
 import type { DialCallbacks, TimerStatus } from '../types.js'
 
-// Bridges the 3D dial to the pomodoro store.
-// The scene *pulls* the target minute each frame via getDialMinute (smooth
-// per-frame countdown), and reports manual dial changes via handleDialChange.
+// Bridges the 3D dial to the pomodoro store: the scene pulls the target
+// minute each frame; manual changes come back via handleDialChange.
 export function useDialRotation(): DialCallbacks {
   const status = usePomodoroStore((s) => s.status)
   const remainingMs = usePomodoroStore((s) => s.remainingMs)

@@ -20,10 +20,8 @@ function GithubMark({ size = 12 }: { size?: number }) {
   )
 }
 
-// A quiet version readout pinned to the bottom corner of the app. It asks the
-// Go side for the build version once on mount, and renders nothing when
-// there's no bridge (plain browser preview has no binding to ask). Clicking
-// the badge opens the author's GitHub profile.
+// Quiet version readout in the corner; asks the Go side once on mount, renders
+// nothing when there's no bridge. Clicking opens the author's GitHub.
 export function VersionBadge() {
   const [version, setVersion] = useState<string | null>(null)
 

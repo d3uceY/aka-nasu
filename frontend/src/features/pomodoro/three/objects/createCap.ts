@@ -3,15 +3,9 @@ import { BODY, BAND, getCapThetaSplit, getCapRadius } from '../../constants/thre
 import { applyLobes } from './lobeMath.js'
 import type { TomatoMaterials } from '../materials/tomatoMaterials.js'
 
-// ---------------------------------------------------------------------------
-// createCap
-//
-// One partial-sphere mesh (pole → equator) that carries a canvas texture
-// with the dark band, 60 ticks, 12 numerals, and a baked seam line.
-// The SAME lobe function used on the body is applied here so the cap is
-// always a strict superset of the body's radius (CAP_CLEARANCE = 1.035×).
+// Partial sphere (pole → equator) textured with the band, ticks, numerals,
+// and seam. Same lobe function as the body so the cap always clears it;
 // polygonOffset prevents seam z-fighting.
-// ---------------------------------------------------------------------------
 
 export interface CapMesh {
   mesh: THREE.Mesh

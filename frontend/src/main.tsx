@@ -19,7 +19,7 @@ loadAppState()
   })
   .catch((err) => console.error('Could not load app config:', err))
 
-// Check GitHub for a newer release and offer it once, if one exists.
+// Offer a newer GitHub release once, if one exists.
 runUpdateCheck()
 
 createRoot(document.getElementById('root')!).render(

@@ -1,7 +1,7 @@
 // Package config holds the persisted application state and the JSON file store.
 package config
 
-// Config is the entire persisted app state, mirrored one-to-one as JSON.
+// Config is the persisted app state.
 type Config struct {
 	Settings Settings    `json:"settings"`
 	Timer    TimerState  `json:"timer"`
@@ -19,7 +19,7 @@ type Settings struct {
 	AutoStartFocus    bool `json:"autoStartFocus"`
 }
 
-// TimerState is the live timer position, persisted so it resumes after restart.
+// TimerState is the live timer position.
 type TimerState struct {
 	Phase       string `json:"phase"`       // focus | shortBreak | longBreak
 	Status      string `json:"status"`      // idle | running | paused | finished

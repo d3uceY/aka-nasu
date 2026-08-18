@@ -17,10 +17,8 @@ function initialState(): PomodoroState {
     status: 'idle', // idle | running | paused | finished
     remainingMs: durationFor(PHASES.FOCUS, DEFAULT_SETTINGS),
     totalMs: durationFor(PHASES.FOCUS, DEFAULT_SETTINGS),
-    // Absolute wall-clock deadline for the current running segment. The
-    // countdown reads this (via Date.now()) instead of decrementing a fixed
-    // amount per tick, so webview timer throttling in the background can't
-    // make the timer run slow. Null unless status === 'running'.
+    // Absolute wall-clock deadline; countdown reads Date.now() so background
+    // timer throttling can't slow the timer. Null unless running.
     endAt: null,
     settings: { ...DEFAULT_SETTINGS },
     sessionsCompleted: 0,
@@ -36,8 +34,7 @@ const listeners = new Set<() => void>()
 let lastTimerSave = 0
 const TIMER_SAVE_MS = 1000
 
-// Settings writes (sliders + dial) fire continuously while dragging; coalesce
-// them into one flush shortly after the last change.
+// Coalesce rapid settings writes (sliders + dial) into one flush.
 let settingsSaveTimer: number | undefined
 const SETTINGS_SAVE_MS = 250
 
@@ -58,8 +55,7 @@ function persistTimer(immediate = false): void {
   saveTimer({ phase, status, remainingMs, totalMs }).catch(() => {})
 }
 
-// Trailing debounce for settings + idle-timer writes. Reads the latest state
-// when it fires, so a pending flush never writes stale values.
+// Trailing debounce; reads latest state so a pending flush never writes stale values.
 function scheduleSettingsSave(): void {
   clearTimeout(settingsSaveTimer)
   settingsSaveTimer = setTimeout(() => {
@@ -90,8 +86,7 @@ export const pomodoroStore = {
         : PHASES.FOCUS
     const totalMs = timer?.totalMs && timer.totalMs > 0 ? timer.totalMs : durationFor(phase, mergedSettings)
     const remainingMs = Math.max(0, Math.min(timer?.remainingMs ?? totalMs, totalMs))
-    // A finished phase can't be resumed; anything else (incl. running) is
-    // restored so the timer picks up where it left off.
+    // A finished phase can't be resumed; anything else is restored.
     const status: TimerStatus =
       timer?.status === 'running' || timer?.status === 'paused' ? timer.status : 'idle'
     set({
@@ -100,8 +95,7 @@ export const pomodoroStore = {
       status,
       remainingMs,
       totalMs,
-      // A restored run counts down from the persisted remaining time with a
-      // fresh wall-clock deadline (we don't persist the absolute deadline).
+      // Restored runs get a fresh wall-clock deadline (the absolute one isn't persisted).
       endAt: status === 'running' ? Date.now() + remainingMs : null,
       sessionsCompleted: stats?.sessionsCompleted ?? 0,
       round: stats?.round ?? 1,
@@ -130,8 +124,7 @@ export const pomodoroActions: StorePomodoroActions = {
 
   pause(): void {
     if (state.status !== 'running' || state.endAt == null) return
-    // Snapshot the true remaining time; this is what makes pausing correct even
-    // if ticks were throttled while the app was backgrounded.
+    // Snapshot true remaining time so pausing is correct even if ticks were throttled.
     const remainingMs = Math.max(0, state.endAt - Date.now())
     set({ status: 'paused', remainingMs, endAt: null })
     persistTimer(true)
@@ -164,10 +157,8 @@ export const pomodoroActions: StorePomodoroActions = {
   },
 
   tick(): void {
-    // Wall-clock countdown. WebView2 throttles setInterval when the window is
-    // minimized or occluded, so decrementing a fixed amount per tick drifts
-    // slow in the background. Computing remaining from the absolute deadline
-    // keeps it accurate no matter how rarely a tick actually fires.
+    // Wall-clock countdown: WebView2 throttles setInterval in the background,
+    // so remaining is derived from the absolute deadline.
     if (state.status !== 'running' || state.endAt == null) return
     const remainingMs = Math.max(0, state.endAt - Date.now())
     set(

@@ -1,13 +1,7 @@
 // Tomato pomodoro timer, mechanical kitchen-timer style.
 //
-// The body is a full squashed sphere with 5 lobes via vertex displacement.
-// The cap is a partial sphere (pole → equator) that carries a canvas texture
-// with 60 ticks, 12 numerals, and a seam line.  Both body AND cap use the
-// SAME lobe function. The cap is always 3.5 % larger so it can never clip
-// into the body regardless of lobe strength.  The cap, stem, and leaves
-// rotate together as topGroup; the body and pointer stay fixed as staticGroup.
-//
-// Split at the true equator (CAP_FRACTION = 0): the top HALF is the cap.
+// Body + cap share one lobe function; the cap is always 3.5% larger so it
+// never clips the body. Cap/stem/leaves rotate as topGroup, body/pointer are static.
 
 export const COLORS = {
   tomato: 0xe8442e,       // ripe red (matches --tomato)
@@ -26,15 +20,13 @@ export const BODY = {
   segments: 64,
 } as const
 
-// Cap always sits outside the body.  1.035 = 3.5 % radial clearance.
+// 1.035 = 3.5% radial clearance so the cap always sits outside the body.
 export const CAP_CLEARANCE = 1.035
 
-// 0 = split at the equator; the top HALF is the textured cap.
+// 0 = split at the equator; the top half is the cap.
 export const CAP_FRACTION = 0
 
-// Lobe bell-curve ends well BEFORE the band starts (band is at 72 % of cap
-// theta).  LOBE_END_FRACTION = BAND.bandTop - 0.14 gives a real margin where
-// the band sits on a perfectly circular cross-section.
+// Lobes end well before the band so it sits on a perfectly circular cross-section.
 export const LOBE_END_FRACTION = 0.58 // derived: 0.72 - 0.14
 
 // ---- Derived helpers -------------------------------------------------------

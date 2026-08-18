@@ -6,9 +6,7 @@ const LATEST_RELEASE_URL = `https://api.github.com/repos/${REPO}/releases/latest
 // Tags carrying any of these markers are pre-releases. Never offer one.
 const PRE_RELEASE_MARKERS = ['beta', 'alpha', 'test', 'rc', 'pre', 'dev']
 
-// Fetches the latest published release. Returns null when the repo has no
-// releases yet (the /releases/latest endpoint 404s) or GitHub is unreachable,
-// so a network hiccup never surfaces an error in the UI.
+// Fetch the latest release; null on 404 or network error (never surfaces in the UI).
 export async function fetchLatestRelease(): Promise<ReleaseInfo | null> {
   try {
     const res = await fetch(LATEST_RELEASE_URL, {
@@ -46,8 +44,7 @@ function isNewerThan(a: [number, number, number], b: [number, number, number]): 
   return false
 }
 
-// Decides whether the latest release is worth offering for the running
-// version. Returns the release, or null when there's nothing to offer.
+// Return the release worth offering for the running version, or null.
 export async function checkForUpdate(currentVersion: string): Promise<ReleaseInfo | null> {
   if (!currentVersion) return null
   const release = await fetchLatestRelease()

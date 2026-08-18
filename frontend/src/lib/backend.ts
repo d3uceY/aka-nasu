@@ -7,9 +7,7 @@ import * as NotifyService from '../../bindings/aka-nasu/backend/notify/service.j
 import { Settings, TimerState, Stats, Todo } from '../../bindings/aka-nasu/backend/config/models.js'
 import type { Phase } from '../features/pomodoro/types.js'
 
-// True when a native Wails bridge is present. In a plain browser (Vite
-// preview) there's no bridge, so binding calls would just 404 against the
-// dev server. Browser preview then runs on defaults instead.
+// True when a native Wails bridge is present (not a plain-browser preview).
 function hasBridge(): boolean {
   return Boolean(
     window.chrome?.webview?.postMessage ||
@@ -26,8 +24,7 @@ export interface AppState {
   stats: Stats
 }
 
-// Shape the stores can load when the bridge is absent. Each store merges
-// these over its own defaults, so an empty shell is all they need.
+// Defaults for when the bridge is absent; stores merge over their own.
 const BROWSER_DEFAULTS: AppState = {
   settings: new Settings(),
   timer: new TimerState(),

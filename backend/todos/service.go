@@ -1,5 +1,4 @@
-// Package todos owns the daily checklist; mutations return the full list so
-// the frontend always mirrors the backend (single source of truth).
+// Package todos owns the daily checklist; mutations return the full list.
 package todos
 
 import (

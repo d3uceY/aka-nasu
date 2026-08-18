@@ -13,16 +13,13 @@ export function TimerControls({ status, actions }: TimerControlsProps) {
 
   function handleTransport() {
     if (running) {
-      // Pause freezes the dial in place: no spin, no sound.
+      // Pause freezes the dial: no spin, no sound.
       if (dialSpun(() => actions.pause())) playSound('gearClick')
     } else if (status === 'paused') {
       // Resume continues from the same spot: no spin, no sound.
       if (dialSpun(() => actions.start())) playSound('gearClick')
     } else {
-      // Start: only sound off if the dial actually travels to the running
-      // position (e.g. a finished phase spinning back up to the focus length).
-      // A fresh idle start keeps the dial parked where it already is, so
-      // there's nothing to announce.
+      // Start: only sound off if the dial travels to the running position.
       if (dialSpun(() => actions.start())) playSound('gearClick')
     }
   }

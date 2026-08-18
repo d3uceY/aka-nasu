@@ -1,5 +1,4 @@
-// Aka Nasu brand mark: a minimal flat tomato with a ripe red body, five-leaf
-// calyx, a shy highlight. Replaces the 🍅 emoji everywhere.
+// Aka Nasu brand mark: a minimal flat tomato. Replaces the 🍅 emoji.
 
 export interface TomatoMarkProps {
   size?: number

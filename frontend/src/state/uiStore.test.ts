@@ -3,8 +3,7 @@ import { uiStore } from './uiStore.js'
 
 beforeEach(() => {
   uiStore.setMode('full')
-  // introDone can't be unset; recreate fresh module state via explicit reset
-  // below is not available, so drive assertions from setMode/markIntroDone.
+  // introDone can't be unset; drive assertions from setMode/markIntroDone.
 })
 
 describe('uiStore', () => {

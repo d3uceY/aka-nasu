@@ -1,20 +1,9 @@
 import { Screens, System, Window } from '@wailsio/runtime'
 
-// Thin wrapper over the Wails v3 window runtime for the mini-timer mode.
-//
-// Every call is guarded so the app still runs in a plain browser (Vite dev
-// preview), where the Wails bridge is absent. The native calls are skipped
-// and the UI layout still swaps, so the feature stays testable in the browser.
+// Wails window runtime for Mini Mode; every call is guarded so it also works in a plain browser.
 
-// Wails v3 (beta.6) only supports per-pixel transparency as a window-creation
-// option (`BackgroundType: BackgroundTypeTransparent`) — there is no runtime
-// setter, so the native window is created transparent and Mini Mode just flips
-// the page background (see App.tsx / globals.css).
-//
-// Native transparency is Windows + macOS only. Linux is excluded: the default
-// GTK4 build no-ops `BackgroundTypeTransparent` (and Linux transparency needs a
-// compositing WM even on GTK3), so on Linux the mini card keeps its opaque
-// background as a graceful fallback instead of revealing the desktop.
+// Transparent window = Windows + macOS only; the GTK4 Linux build no-ops it,
+// so the mini card keeps its opaque background there.
 export const supportsTransparentMini = !System.IsLinux()
 
 export const MAX_SIZE_FOR_MINI = { width: 264, height: 325 }
@@ -28,8 +17,7 @@ interface SavedWindow {
   position: { x: number; y: number } | undefined
 }
 
-// The window geometry captured on entering mini mode, so leaving it restores
-// the exact size and position the user had before.
+// Window geometry captured on entering mini, restored on exit.
 let savedWindow: SavedWindow | null = null
 
 async function safe<T>(fn: () => Promise<T>): Promise<T | undefined> {

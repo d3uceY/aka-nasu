@@ -13,11 +13,8 @@ export default function App() {
   const mode = useUIStore((s) => s.mode)
   const introDone = useUIStore((s) => s.introDone)
 
-  // The native window is per-pixel transparent from creation (see main.go).
-  // Normal Mode stays opaque because the page paints an opaque background; in
-  // Mini Mode we flip `html/body/#root` to transparent so the desktop shows
-  // through the rounded card's corners. Skipped on Linux, where native window
-  // transparency is a no-op and the card keeps its opaque background instead.
+  // The native window is transparent from creation; Mini Mode flips the page
+  // background to transparent (skipped on Linux, where it's a no-op).
   useEffect(() => {
     const miniTransparent = mode === 'mini' && supportsTransparentMini
     document.body.classList.toggle('body--mini', miniTransparent)

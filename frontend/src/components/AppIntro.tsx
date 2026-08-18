@@ -12,10 +12,8 @@ gsap.registerPlugin(useGSAP)
 const reducedMotion = (): boolean =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// The opening beat: the brand lockup and the tomato arrive at the centre of
-// the screen, the wordmark departs, then the tomato carries the attention
-// from the middle of the screen to its resting seat in the app. Nothing
-// appears at once, and every move answers "why does it move?".
+// Opening beat: lockup + tomato arrive centre-screen, the tomato then flies
+// to its resting seat in the app.
 export function AppIntro() {
   const rootRef = useRef<HTMLDivElement>(null)
   const tomatoRef = useRef<HTMLDivElement>(null)
@@ -24,8 +22,7 @@ export function AppIntro() {
   // The intro tomato is only for show; it's never draggable.
   const introDial = { ...dial, getInteractionEnabled: () => false }
 
-  // Size the intro tomato relative to the viewport (never larger than the app
-  // halo, so the flight to its seat is a gentle settle, not a violent zoom).
+  // Size the tomato to the viewport, never larger than the app halo.
   const [size] = useState(() =>
     Math.max(220, Math.min(window.innerWidth * 0.5, window.innerHeight * 0.5, 440)),
   )
@@ -34,9 +31,7 @@ export function AppIntro() {
     () => {
       const tomato = tomatoRef.current
 
-      // Reduced motion: no tomato, no flight, just a quick calm fade out. This
-      // must run before the tomato guard below (no tomato is rendered then).
-      // The root is targeted directly (scoped selectors skip the scope root).
+      // Reduced motion: quick fade, no tomato/flight.
       if (reducedMotion()) {
         const root = rootRef.current
         if (!root) return
@@ -49,9 +44,7 @@ export function AppIntro() {
 
       if (!tomato) return
 
-      // The app tomato's resting spot (full layout). Measured via function-
-      // based values so it's sampled at flight time (after the app's own
-      // entrance has settled), never mid-animation.
+      // The tomato's resting spot (full layout), measured at flight time.
       const measure = () => {
         const el = tomato.getBoundingClientRect()
         const halo = document.querySelector('.timer-column .tomato-halo')

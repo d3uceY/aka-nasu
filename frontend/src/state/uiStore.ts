@@ -7,12 +7,9 @@ export interface UIState {
   introDone: boolean
 }
 
-// App-level UI state: which window layout is showing and whether the intro
-// brand animation has already played. The native window driver (resize,
-// frameless, always-on-top) lives in lib/window.ts. This store only tracks
-// intent so components re-render when the layout swaps.
+// App-level UI state: window layout (full/mini) and whether the intro has played.
 let state: UIState = {
-  mode: 'full', // 'full' | 'mini'
+  mode: 'full',
   introDone: false,
 }
 const listeners = new Set<() => void>()

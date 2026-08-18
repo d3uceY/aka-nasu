@@ -15,9 +15,8 @@ export function usePomodoro({ onComplete }: { onComplete?: () => void } = {}): {
   const onCompleteRef = useRef(onComplete)
   onCompleteRef.current = onComplete
 
-  // Mirror the current phase so the completion effect can capture which phase
-  // just ran out (it must be read BEFORE completePhase() advances it) without
-  // adding `phase` to the effect's dependencies.
+  // Mirror phase in a ref so the completion effect can read it before
+  // completePhase() advances it.
   const phaseRef = useRef<Phase>(phase)
   phaseRef.current = phase
 
@@ -25,13 +24,11 @@ export function usePomodoro({ onComplete }: { onComplete?: () => void } = {}): {
   useEffect(() => {
     if (prevStatus.current === 'running' && status === 'finished') {
       const completed = phaseRef.current
-      // Commit the phase advance + persistence first...
+      // Commit the phase advance first...
       pomodoroActions.completePhase()
       playSound('complete')
       onCompleteRef.current?.()
-      // ...then fire the native notification, deferred so it never runs in
-      // the same tick as the store mutation/render and can't block or crash
-      // the UI. Best-effort on both sides (see notifyPhaseComplete).
+      // ...then fire the notification, deferred out of the render tick.
       setTimeout(() => notifyPhaseComplete(completed), 0)
     }
     prevStatus.current = status

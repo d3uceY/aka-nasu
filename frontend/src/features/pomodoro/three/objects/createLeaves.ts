@@ -2,8 +2,7 @@ import * as THREE from 'three'
 import { getCapTopY } from '../../constants/three.js'
 import type { TomatoMaterials } from '../materials/tomatoMaterials.js'
 
-// 5 realistic calyx leaves (sepals) fanning out from the stem base, resting
-// on the top of the cap dome.
+// 5 calyx leaves fanning out from the stem base on the cap dome.
 function leafShape(): THREE.Shape {
   const s = new THREE.Shape()
   s.moveTo(0, 0)

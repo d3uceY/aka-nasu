@@ -25,17 +25,10 @@ import {
 // ---------------------------------------------------------------------------
 // TomatoTimerScene
 //
-// The mechanical pomodoro kitchen timer: a fixed lower tomato body with a
-// white pointer, and a rotating upper cap (textured with band, ticks, and
-// numerals) that carries the stem and calyx leaves.  Turning the cap winds
-// the timer. The pointer on the static body always points to the current
-// minute on the rotating band beneath it.
-//
-// Every frame it *pulls* the target minute from `getDialMinute()` and eases
-// the cap toward it (smooth and frame-rate independent, no setInterval). Manual
-// drag / wheel / keyboard rotation is only allowed while `getInteractionEnabled()`
-// returns true (idle), and the cap springs/snaps to the nearest minute on
-// release, reporting the new focus length via `onDialChange`.
+// A fixed tomato body with a white pointer and a rotating cap (band, ticks,
+// numerals) that winds the timer. Every frame it pulls the target minute via
+// getDialMinute() and eases the cap toward it; drag / wheel / keyboard act
+// only while idle, snapping to the nearest minute on release.
 // ---------------------------------------------------------------------------
 
 export interface TomatoTimerSceneOptions {
@@ -133,8 +126,7 @@ export class TomatoTimerScene {
 
   _buildScene(): void {
     const scene = new THREE.Scene()
-    // Transparent background: the CSS gradient shows through.
-    // No environment map; matches the reference's simple, punchy lighting.
+    // Transparent background (CSS gradient shows through); no env map.
     scene.background = null
     this.scene = scene
   }
@@ -148,7 +140,7 @@ export class TomatoTimerScene {
   }
 
   _buildGround(): void {
-    // Soft radial contact shadow under the tomato (product-render look).
+    // Soft radial contact shadow under the tomato.
     const c = document.createElement('canvas')
     c.width = 256
     c.height = 256
@@ -245,7 +237,7 @@ export class TomatoTimerScene {
   // --- rotation control -----------------------------------------------------
 
   _setTargetDeg(deg: number): void {
-    // Keep the rotation continuous (no wrap) so dragging/snapping never jumps.
+    // Keep rotation continuous (no wrap) so dragging/snapping never jumps.
     this.targetDeg = this.currentDeg + shortestAngleDeg(this.currentDeg, normalizeDegrees(deg))
   }
 
@@ -272,9 +264,8 @@ export class TomatoTimerScene {
       ease: 'back.out(1.5)',
     })
     this._lastTickMinute = snapped
-    // The dial springs into place: ratchet as it starts to spin, then the
-    // clunk as it clicks onto the minute (spin first, clunk after). The tick
-    // is skipped for a dead-center release (no real rotation).
+    // Ratchet as it spins, clunk as it clicks onto the minute; skipped for a
+    // dead-center release (no real rotation).
     this._snapTween.eventCallback('onStart', () => {
       if (dist > 0.5) playSound('dialRatchetTick', 50)
     })
@@ -288,8 +279,7 @@ export class TomatoTimerScene {
     return normalizeDegrees(this.targetDeg) / DEGREES_PER_MINUTE // 0..60
   }
 
-  // Plays one ratchet tick each time the pointer crosses a whole minute while
-  // the dial is being dragged (wheel/keyboard steps tick in _userRotate).
+  // Ratchet tick each time the pointer crosses a whole minute while dragging.
   _tickOnMinuteChange(): void {
     const minute = Math.round(this.minuteUnderPointer())
     if (minute === this._lastTickMinute) return

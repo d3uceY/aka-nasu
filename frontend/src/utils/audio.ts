@@ -2,8 +2,7 @@ import { SOUNDS } from '../constants/sounds.js'
 import type { SoundName } from '../constants/sounds.js'
 import { pomodoroStore } from '../features/pomodoro/state/pomodoroStore.js'
 
-// Reads the "Play sounds" toggle from the pomodoro settings on every call so
-// it stays in sync even in non-React code (e.g. the 3D dial).
+// Reads the sound toggle on every call so non-React code stays in sync.
 export function isSoundEnabled(): boolean {
   return pomodoroStore.getState().settings.soundEnabled !== false
 }

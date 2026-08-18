@@ -1,11 +1,7 @@
-// Pomodoro feature types. The feature owns its types here (modular, imported
-// per-feature); the generated Go bindings are the source for the persisted
-// model shapes, extended with frontend-only fields where needed.
+// Pomodoro feature types; persisted shapes come from the Go bindings.
 import type { Settings, Stats, TimerState } from '../../../bindings/aka-nasu/backend/config/models.js'
 
-// Frontend-only setting: `soundEnabled` lives in the frontend (see
-// utils/audio.ts) and is NOT part of the Go Settings model, so it's added
-// here on top of the persisted settings.
+// soundEnabled is frontend-only (see utils/audio.ts); not in the Go model.
 export interface PomodoroSettings extends Settings {
   soundEnabled: boolean
 }
@@ -19,8 +15,7 @@ export interface PomodoroState {
   status: TimerStatus
   remainingMs: number
   totalMs: number
-  // Absolute wall-clock deadline for the current running segment. Null unless
-  // status === 'running'.
+  // Wall-clock deadline for the running segment; null unless running.
   endAt: number | null
   settings: PomodoroSettings
   sessionsCompleted: number
@@ -28,8 +23,7 @@ export interface PomodoroState {
   lastCompletedAt: number | null
 }
 
-// Shape accepted by pomodoroStore.load(); every field is optional so a partial
-// persisted config (or the browser-preview shell) merges over defaults.
+// Accepted by load(); partial so a partial config merges over defaults.
 export interface PersistedPomodoroState {
   settings?: Partial<Settings>
   timer?: Partial<TimerState>
@@ -43,7 +37,7 @@ export interface DialCallbacks {
   getInteractionEnabled: () => boolean
 }
 
-// The user-facing action set returned by usePomodoro and passed to controls.
+// Actions returned by usePomodoro and passed to the controls.
 export interface PomodoroActions {
   start: () => void
   pause: () => void
@@ -53,7 +47,7 @@ export interface PomodoroActions {
   setSettings: (patch: Partial<PomodoroSettings>) => void
 }
 
-// The full store action set, adding the internals components never call.
+// Full store actions, incl. the internals components never call.
 export interface StorePomodoroActions extends PomodoroActions {
   tick: () => void
   completePhase: () => void

@@ -1,6 +1,4 @@
-// Pointer drag on the dial. Horizontal movement rotates the lower dial around
-// Y; the dial follows the pointer with damping applied by the scene's own
-// animation loop. Only the dial moves; the tomato stays put.
+// Pointer drag rotates the dial around Y; damping comes from the scene loop.
 
 export interface DialDragOptions {
   domElement: HTMLElement

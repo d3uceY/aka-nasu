@@ -11,7 +11,7 @@ export interface TomatoMaterials {
 }
 
 export function createTomatoMaterials(): TomatoMaterials {
-  // Vertex-colored body with roughness tuned for a slightly waxy tomato skin.
+  // Vertex-colored body, slightly waxy roughness.
   const bodyVertex = new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.55,

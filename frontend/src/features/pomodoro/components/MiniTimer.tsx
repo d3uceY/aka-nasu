@@ -81,9 +81,8 @@ function SkipIcon() {
   )
 }
 
-// The compact always-on-top timer. Top rail is the frameless drag handle
-// (Wails `--wails-draggable: drag`); only the most-used actions survive:
-// start/pause, reset, skip, and the tomato itself to wind the focus length.
+// Compact always-on-top timer: frameless drag rail plus start/pause, reset,
+// skip, and the tomato to wind the focus length.
 export function MiniTimer() {
   const rootRef = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<TomatoTimerScene | null>(null)

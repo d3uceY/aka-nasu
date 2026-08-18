@@ -10,13 +10,11 @@ function displayVersion(tag: string): string {
   return String(tag).replace(/^v/i, '')
 }
 
-// A paper card over a soft scrim, asking whether the user wants the newer
-// release. Rendered only in full mode after the intro has played.
+// Card over a scrim asking if the user wants the newer release (full mode only).
 export function UpdateModal() {
   const release = useUpdateStore((s) => s.release)
   const visible = useUpdateStore((s) => s.visible)
-  // dismiss/close live on the store, not the state slice, so call them
-  // directly (reading them through the selector would yield undefined).
+  // Call store methods directly; reading them via the selector would be undefined.
   const dismiss = () => updateStore.dismiss()
   const close = () => updateStore.close()
 

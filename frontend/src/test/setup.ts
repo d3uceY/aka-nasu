@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 
-// jsdom has no ResizeObserver; the 3D scene and any layout observer rely on
-// it, so stub it out so component tests can mount freely.
+// Stub ResizeObserver; jsdom lacks it and the 3D scene relies on it.
 class ResizeObserverStub {
   observe(): void {}
   unobserve(): void {}
@@ -12,9 +11,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
   globalThis.ResizeObserver = ResizeObserverStub as unknown as typeof ResizeObserver
 }
 
-// jsdom has no real matchMedia; the magnetic Button and the GSAP entrances
-// feature-detect it. A non-matching MediaQueryList keeps animation branches
-// (and the Button's pointer-tracking) out of the way in tests.
+// Stub matchMedia; a non-matching MediaQueryList keeps animations out of tests.
 if (typeof window.matchMedia !== 'function') {
   window.matchMedia = (query: string): MediaQueryList =>
     ({

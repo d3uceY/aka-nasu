@@ -2,8 +2,7 @@ import { useSyncExternalStore } from 'react'
 import { addTodo, toggleTodo, removeTodo } from '../../../lib/backend.js'
 import type { Todo } from '../types.js'
 
-// The backend owns the list; every mutation replaces local state with the
-// returned list so the store always mirrors the config file.
+// Backend owns the list; every mutation replaces local state with the returned list.
 let todos: Todo[] = []
 const listeners = new Set<() => void>()
 

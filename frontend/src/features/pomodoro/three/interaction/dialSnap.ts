@@ -5,8 +5,7 @@ export function snapToMinute(value: number): number {
   return Math.round(value)
 }
 
-// Springy GSAP tween of a numeric property toward a target, used for the
-// mechanical "click into place" when the user releases the dial.
+// Springy GSAP tween used for the mechanical "click into place" on release.
 export function tweenSnap(
   target: object,
   prop: string,

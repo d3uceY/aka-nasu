@@ -7,9 +7,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'md' | 'sm' | 'lg'
 }
 
-// Magnetic pill: the button leans toward the cursor on hover and springs back
-// on leave. Applied to `transform` only (CSS `scale` stays free for press).
-// Skipped for touch devices and reduced-motion users.
+// Magnetic pill: leans toward the cursor on hover, springs back on leave
+// (transform only; skipped for touch + reduced motion).
 export function Button({ variant = 'primary', size = 'md', className = '', children, ...props }: ButtonProps) {
   const ref = useRef<HTMLButtonElement>(null)
 

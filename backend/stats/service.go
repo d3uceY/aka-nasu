@@ -3,8 +3,7 @@ package stats
 
 import "aka-nasu/backend/config"
 
-// Service persists the stats slice of the config. The frontend computes the
-// counters (it owns the phase logic) and hands them over to persist.
+// Service persists the stats slice of the config (frontend computes the counters).
 type Service struct {
 	store *config.Store
 }

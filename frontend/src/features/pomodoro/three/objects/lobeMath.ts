@@ -1,22 +1,13 @@
 import * as THREE from 'three'
 import { BODY, getLobeEnd } from '../../constants/three.js'
 
-// ---------------------------------------------------------------------------
-// Shared lobe math, used identically by both the body and the cap so the
-// cap is always a strict superset of the body's radius (no clipping).
-//
-// The lobe amplitude follows a bell curve across phi ∈ [0, LOBE_END]:
-//   0 at the crown (phi=0) → peaks at LOBE_END/2 → 0 at LOBE_END
-// Beyond LOBE_END (which is well above the band), amplitude is hard-clamped
-// to 0. The band and everything below it are perfectly circular.
-// ---------------------------------------------------------------------------
+// Lobe displacement shared by body and cap (so the cap always clears the
+// body). A bell curve across phi ∈ [0, LOBE_END]; clamped to 0 beyond it,
+// so the band stays perfectly circular.
 
 const LOBE_END = getLobeEnd()
 
-/**
- * Returns the radial displacement (in world units) for a given azimuth theta
- * and polar angle phi.  Positive = lobe crest, negative = valley.
- */
+/** Radial displacement for azimuth theta and polar phi (+ crest, − valley). */
 export function lobeAmount(theta: number, phi: number): number {
   if (phi >= LOBE_END) return 0
   const t = phi / LOBE_END                           // 0 at crown .. 1 at LOBE_END
@@ -24,10 +15,7 @@ export function lobeAmount(theta: number, phi: number): number {
   return Math.cos(BODY.lobes * theta) * amplitude
 }
 
-/**
- * Displaces every vertex in `geo` radially by `lobeAmount(theta, phi)`.
- * Call computeVertexNormals() after this.
- */
+/** Displace every vertex in geo radially; call computeVertexNormals() after. */
 export function applyLobes(geo: THREE.BufferGeometry): void {
   const pos = geo.attributes.position
   for (let i = 0; i < pos.count; i++) {

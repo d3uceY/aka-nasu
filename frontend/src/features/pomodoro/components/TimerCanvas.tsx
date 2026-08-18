@@ -7,9 +7,8 @@ export interface TimerCanvasProps {
   onSceneReady?: (scene: TomatoTimerScene | null) => void
 }
 
-// Hosts the Three.js tomato. `config` is the stable set of callbacks from
-// useDialRotation; `onSceneReady` hands the scene instance up so the parent
-// can call pulse() etc.
+// Hosts the Three.js tomato. config = stable dial callbacks; onSceneReady
+// hands the scene up so the parent can call pulse().
 export function TimerCanvas({ config, onSceneReady }: TimerCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const configRef = useRef(config)

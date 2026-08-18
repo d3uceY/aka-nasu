@@ -7,16 +7,14 @@ import (
 	"sync"
 )
 
-// Store is the JSON config file on disk. One mutex guards every
-// read-modify-write so the frontend services never clobber each other.
+// Store is the JSON config file on disk, guarded by a single mutex.
 type Store struct {
 	mu   sync.Mutex
 	path string
 	cfg  Config
 }
 
-// NewStore resolves the config path under the OS user-config dir and loads it,
-// creating the file with defaults on first run.
+// NewStore loads the config from the OS user-config dir, creating defaults on first run.
 func NewStore() (*Store, error) {
 	dir, err := os.UserConfigDir()
 	if err != nil {
@@ -45,8 +43,7 @@ func (s *Store) load() error {
 	return json.Unmarshal(data, &s.cfg)
 }
 
-// write persists cfg atomically (temp file + rename) so a crash can't leave a
-// half-written config that loses the todos.
+// write persists cfg atomically (temp file + rename).
 func (s *Store) write(cfg Config) error {
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {

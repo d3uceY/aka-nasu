@@ -1,6 +1,4 @@
-// Ambient declarations for the non-standard globals the Wails bridge uses.
-// In a plain browser these are all undefined; hasBridge() in lib/backend.ts
-// and openExternal() in lib/externalLink.ts feature-detect them at runtime.
+// Ambient types for the Wails bridge globals; feature-detected at runtime.
 
 declare global {
   interface Window {

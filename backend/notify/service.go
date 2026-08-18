@@ -1,21 +1,8 @@
 // Package notify fires native OS notifications when a timer phase completes.
 //
-// It wraps the Wails v3 notifications service (github.com/wailsapp/wails/v3/
-// pkg/services/notifications) so the underlying Windows renderer — wintoast,
-// the git.sr.ht/~jackmordaunt/go-toast/v2 renderer — can never stall or crash
-// the app. That library is thread-affine (COM apartments + a blocking
-// PowerShell fallback), so firing it synchronously on the Wails call path at
-// the exact moment a phase completes is what previously turned the webview
-// white. Here every send is:
-//
-//  1. queued to a single worker goroutine and returns immediately, so the
-//     frontend promise resolves instantly and never blocks the UI;
-//  2. serialized on one OS-locked thread, so the toast COM apartment is
-//     stable across sends;
-//  3. wrapped in a recover, so a panic inside the toast library is contained
-//     and logged instead of taking the whole process down.
-//
-// Sends are best-effort: a failure to show a toast is logged and dropped.
+// The underlying wintoast renderer is thread-affine, so every send is queued
+// to one OS-locked worker goroutine and wrapped in a recover — never fired
+// synchronously on the Wails call path, so it can't stall or crash the app.
 package notify
 
 import (
@@ -29,7 +16,7 @@ import (
 	"github.com/wailsapp/wails/v3/pkg/services/notifications"
 )
 
-// Service exposes a single non-blocking Send(title, body) to the frontend.
+// Service exposes a non-blocking Send to the frontend.
 type Service struct {
 	wails *notifications.NotificationService
 
@@ -43,8 +30,7 @@ type sendRequest struct {
 	body  string
 }
 
-// NewService builds the notification service. The worker goroutine is started
-// in ServiceStartup, once Wails has created the application.
+// NewService creates the service; the worker starts in ServiceStartup.
 func NewService() *Service {
 	return &Service{
 		wails: notifications.New(),
@@ -54,9 +40,8 @@ func NewService() *Service {
 	}
 }
 
-// ServiceStartup delegates to the Wails notifications service (registers the
-// toast activator + app data) and starts the send worker. A startup failure is
-// non-fatal: toasts still degrade to the PowerShell fallback on Windows.
+// ServiceStartup registers the Wails notifications service and starts the worker.
+// Startup failure is non-fatal (toasts degrade to the PowerShell fallback).
 func (s *Service) ServiceStartup(ctx context.Context, options application.ServiceOptions) error {
 	if err := s.wails.ServiceStartup(ctx, options); err != nil {
 		log.Printf("notify: notifications service startup failed (notifications degraded): %v", err)
@@ -65,16 +50,14 @@ func (s *Service) ServiceStartup(ctx context.Context, options application.Servic
 	return nil
 }
 
-// ServiceShutdown stops the worker and shuts down the underlying service.
+// ServiceShutdown stops the worker and the underlying service.
 func (s *Service) ServiceShutdown() error {
 	close(s.stop)
 	<-s.done
 	return s.wails.ServiceShutdown()
 }
 
-// Send queues a native notification and returns immediately. Errors from the
-// toast path are logged, never surfaced — a notification must never break the
-// timer flow. If the worker is already backed up the toast is dropped.
+// Send queues a notification; never blocks or breaks the timer flow. Drops if busy.
 func (s *Service) Send(title, body string) {
 	select {
 	case s.reqs <- sendRequest{title: title, body: body}:
@@ -83,9 +66,7 @@ func (s *Service) Send(title, body string) {
 	}
 }
 
-// worker serializes sends on one OS-locked thread so the toast COM apartment
-// stays stable across sends, and recovers panics so a toast-library crash can't
-// take the app down.
+// worker serializes sends on one OS-locked thread and recovers panics.
 func (s *Service) worker() {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()

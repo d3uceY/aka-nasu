@@ -1,8 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import type { ReleaseInfo, UpdateState } from '../types.js'
 
-// Where we remember which release the user already dismissed, so the modal
-// stops asking about it on later launches.
+// Remember the dismissed release so the modal stops asking on later launches.
 const DISMISS_KEY = 'aka-nasu:dismissed-update'
 
 let state: UpdateState = {
