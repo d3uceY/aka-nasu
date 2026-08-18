@@ -3,6 +3,14 @@
    The top rail is the frameless drag handle (Wails `--wails-draggable: drag`);
    interactive children opt out with `--wails-draggable: no-drag` in JSX.
    =========================================================================== */
+
+/* In Mini Mode the page background is transparent (see globals.css), so the
+   app shell's tomato glow must not paint behind the card — otherwise it would
+   show in the rounded corners instead of the desktop. */
+.app-shell[data-mode='mini']::before {
+  display: none;
+}
+
 .mini-window {
   height: 100%;
   display: flex;

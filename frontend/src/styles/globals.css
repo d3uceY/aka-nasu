@@ -90,6 +90,16 @@ body {
   overflow: hidden;
 }
 
+/* Mini Mode reveals the desktop around the rounded card. The native window is
+   already per-pixel transparent (set at creation in main.go), so the page
+   layers must stop painting an opaque background. The class is toggled by
+   App.tsx and only added on platforms with native transparency support (see
+   lib/window.ts) — on Linux the card keeps its opaque background. */
+body.body--mini,
+body.body--mini #root {
+  background: transparent;
+}
+
 button,
 input {
   font: inherit;

@@ -67,11 +67,31 @@ func main() {
 		Height: 618,
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
-			Backdrop:                application.MacBackdropTranslucent,
-			TitleBar:                application.MacTitleBarHiddenInset,
+			// Fully clear (not frosted) so Mini Mode can reveal the desktop
+			// around the rounded card. Normal Mode is unaffected: the page
+			// paints an opaque background there.
+			Backdrop: application.MacBackdropTransparent,
+			TitleBar: application.MacTitleBarHiddenInset,
 		},
-		BackgroundColour: application.NewRGB(6, 7, 15),
-		URL:              "/",
+		// The native window is created per-pixel transparent (DirectComposition
+		// on Windows, RGBA visual on macOS / Linux GTK3) because Wails v3 has
+		// no runtime API to toggle the background type after creation. Normal
+		// Mode still looks opaque because the page background is opaque; Mini
+		// Mode flips the page background to transparent from the frontend
+		// instead of recreating the window.
+		BackgroundType:   application.BackgroundTypeTransparent,
+		BackgroundColour: application.NewRGBA(6, 7, 15, 0),
+		Windows: application.WindowsWindow{
+			// Mini Mode runs the window frameless + transparent. Wails extends
+			// the DWM frame into the client area for frameless windows by
+			// default, which draws the native "Aero shadow" (and Win11 rounded
+			// corners) around the window — over a per-pixel transparent window
+			// that renders as a black glow around the mini card. Disabling it
+			// lets the card's own CSS border-radius define the shape. Only
+			// affects the frameless state; normal (framed) mode is unchanged.
+			DisableFramelessWindowDecorations: true,
+		},
+		URL: "/",
 	})
 
 	if err := app.Run(); err != nil {

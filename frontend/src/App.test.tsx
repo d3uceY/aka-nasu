@@ -19,6 +19,8 @@ vi.mock('./lib/backend.js', () => ({
 vi.mock('./lib/window.js', () => ({
   enterMiniMode: vi.fn(() => Promise.resolve()),
   exitMiniMode: vi.fn(() => Promise.resolve()),
+  // Assume a transparency-capable platform so the mini-mode body toggle runs.
+  supportsTransparentMini: true,
 }))
 vi.mock('./features/pomodoro/three/TomatoTimerScene.js', () => ({
   TomatoTimerScene: class {
@@ -57,5 +59,16 @@ describe('App', () => {
     act(() => uiStore.setMode('mini'))
     act(() => uiStore.setMode('full'))
     expect(screen.getByRole('tab', { name: 'Check list' })).toBeInTheDocument()
+  })
+
+  it('flips the page background to transparent in mini mode', () => {
+    render(<App />)
+    // Full mode keeps the opaque page background.
+    expect(document.body.classList.contains('body--mini')).toBe(false)
+    act(() => uiStore.setMode('mini'))
+    expect(document.body.classList.contains('body--mini')).toBe(true)
+    // Back to full restores the opaque background.
+    act(() => uiStore.setMode('full'))
+    expect(document.body.classList.contains('body--mini')).toBe(false)
   })
 })
