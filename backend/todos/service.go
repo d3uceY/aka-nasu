@@ -20,25 +20,31 @@ func (s *Service) list() ([]config.Todo, error) {
 	return store.Todos()
 }
 
-func (s *Service) AddTodo(text string) ([]config.Todo, error) {
+// AddTodo inserts a new task. The frontend passes active=true when this is the
+// only task, so it becomes the current task immediately.
+func (s *Service) AddTodo(text string, active bool) ([]config.Todo, error) {
 	if text == "" {
 		return s.list()
 	}
-	if _, err := store.AddTodo(text); err != nil {
+	if _, err := store.AddTodo(text, active); err != nil {
 		return nil, err
 	}
 	return s.list()
 }
 
-func (s *Service) ToggleTodo(id string) ([]config.Todo, error) {
-	if err := store.ToggleTodo(id); err != nil {
+// ToggleTodo flips done. The frontend passes the id to make active next ("" =
+// leave the current pin unchanged).
+func (s *Service) ToggleTodo(id, nextActive string) ([]config.Todo, error) {
+	if err := store.ToggleTodo(id, nextActive); err != nil {
 		return nil, err
 	}
 	return s.list()
 }
 
-func (s *Service) RemoveTodo(id string) ([]config.Todo, error) {
-	if err := store.RemoveTodo(id); err != nil {
+// RemoveTodo deletes a task. The frontend passes the id to make active next
+// ("" = leave the current pin unchanged).
+func (s *Service) RemoveTodo(id, nextActive string) ([]config.Todo, error) {
+	if err := store.RemoveTodo(id, nextActive); err != nil {
 		return nil, err
 	}
 	return s.list()

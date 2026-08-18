@@ -786,52 +786,29 @@
   color: var(--ink-3);
 }
 
-/* Current-task header: always rendered (hint swaps with the pinned task) so
-   the card height never jumps. */
+/* Current-task line: always rendered (hint swaps with the task) so the card
+   height never jumps. Plain single line — no label, no pill; clamped so a long
+   title can never reflow the card. */
 .todo-active {
   min-height: 40px;
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  flex-wrap: wrap;
-  background: var(--tomato-wash);
-  border: 1px solid rgba(232, 68, 46, 0.18);
-  border-radius: var(--r-md);
-  padding: 8px 14px;
-  animation: todo-in 0.32s var(--ease-out);
-}
-
-.todo-active__label {
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--tomato-deep);
-  flex: none;
+  align-items: center;
+  padding: 0 2px;
 }
 
 .todo-active__text {
-  appearance: none;
-  border: none;
-  background: none;
   margin: 0;
-  padding: 0;
-  font: inherit;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 1.08rem;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.98rem;
+  font-weight: 500;
   color: var(--ink);
-  text-align: left;
-  cursor: pointer;
-  overflow-wrap: anywhere;
-  transition: color 0.2s var(--ease-out);
-}
-
-.todo-active__text:hover {
-  color: var(--tomato-deep);
 }
 
 .todo-active__hint {
+  margin: 0;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 0.95rem;
@@ -1081,49 +1058,76 @@
   background: var(--tomato-wash);
 }
 
-/* Inline edit form (replaces the row while editing). */
+/* Inline edit form (replaces the row while editing). A quiet paper panel with
+   a tomato rule; the title reads as an editorial line, notes as a note card. */
 .todo-edit {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 4px 0 6px;
+  gap: 12px;
+  margin: 4px 0 6px;
+  padding: 14px 16px 12px;
+  background: var(--paper-1);
+  border: 1px solid var(--line);
+  border-left: 3px solid rgba(232, 68, 46, 0.4);
+  border-radius: var(--r-md);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  animation: todo-edit-in 0.34s var(--ease-out) both;
 }
 
-.todo-edit .field {
-  width: 100%;
+@keyframes todo-edit-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.todo-edit .input {
+/* Editorial title: no box — a hairline that ripens on focus. */
+.todo-edit__title {
   width: 100%;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--r-sm);
-  background: #fff;
-  padding: 8px 12px;
-  font-size: 0.98rem;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  background: transparent;
+  padding: 2px 0 7px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.08rem;
+  font-weight: 500;
   color: var(--ink);
   outline: none;
-  transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+  transition: border-color 0.24s var(--ease-out), box-shadow 0.24s var(--ease-out);
 }
 
-.todo-edit .input:focus {
-  border-color: rgba(232, 68, 46, 0.5);
-  box-shadow: 0 0 0 3px rgba(232, 68, 46, 0.1);
+.todo-edit__title::placeholder {
+  color: var(--ink-3);
+}
+
+.todo-edit__title:focus {
+  border-color: rgba(232, 68, 46, 0.55);
+  box-shadow: 0 1px 0 0 rgba(232, 68, 46, 0.35);
 }
 
 .todo-edit__notes {
   width: 100%;
   border: 1px solid var(--line-strong);
   border-radius: var(--r-sm);
-  background: var(--paper-1);
-  padding: 8px 12px;
+  background: #fff;
+  padding: 9px 12px;
   font-family: inherit;
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--ink);
   resize: vertical;
-  min-height: 44px;
+  min-height: 46px;
   outline: none;
   transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+
+.todo-edit__notes::placeholder {
+  color: var(--ink-3);
 }
 
 .todo-edit__notes:focus {

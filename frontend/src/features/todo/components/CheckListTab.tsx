@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { FormEvent } from 'react'
+import type { FormEvent, KeyboardEvent } from 'react'
 import { Button } from '../../../components/ui/Button.jsx'
 import { Input } from '../../../components/ui/Input.jsx'
 import { todoStore, useTodos } from '../state/todoStore.js'
@@ -80,25 +80,15 @@ export function CheckListTab() {
 
   return (
     <div className="checklist">
-      {/* Always-rendered slot so the card never jumps; swaps hint <-> task. */}
+      {/* Always-rendered slot so the card never jumps; swaps hint <-> task.
+          Plain single-line text, clamped so a long title never reflows. */}
       <div className="todo-active" aria-live="polite">
         {active ? (
-          <>
-            <span className="todo-active__label">Now working on</span>
-            <button
-              type="button"
-              className="todo-active__text"
-              title="Clear the current task"
-              onClick={() => {
-                playSound('pop')
-                todoStore.setActive(active.id)
-              }}
-            >
-              {active.text}
-            </button>
-          </>
+          <p className="todo-active__text" title={active.text}>
+            {active.text}
+          </p>
         ) : (
-          <span className="todo-active__hint">Tap a task to make it current</span>
+          <p className="todo-active__hint">Tap a task to make it current</p>
         )}
       </div>
 
@@ -260,9 +250,16 @@ function TodoEditForm({ todo, onDone }: { todo: Todo; onDone: () => void }) {
     onDone()
   }
 
+  // Escape anywhere in the form cancels; Enter in the title submits (Enter in
+  // the notes inserts a newline, as expected).
+  function cancelOnEscape(e: KeyboardEvent<HTMLFormElement>) {
+    if (e.key === 'Escape') onDone()
+  }
+
   return (
-    <form className="todo-edit" onSubmit={save}>
-      <Input
+    <form className="todo-edit" onSubmit={save} onKeyDown={cancelOnEscape}>
+      <input
+        className="todo-edit__title"
         aria-label="Task text"
         placeholder="What needs doing?"
         value={text}

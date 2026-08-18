@@ -58,12 +58,12 @@ export const saveTimer = (state: TimerState): Promise<TimerState> =>
   hasBridge() ? TimerService.UpdateTimerState(state) : resolve(state)
 export const saveStats = (stats: Stats): Promise<Stats> =>
   hasBridge() ? StatsService.UpdateStats(stats) : resolve(stats)
-export const addTodo = (text: string): Promise<Todo[]> =>
-  hasBridge() ? TodoService.AddTodo(text) : resolve([])
-export const toggleTodo = (id: string): Promise<Todo[]> =>
-  hasBridge() ? TodoService.ToggleTodo(id) : resolve([])
-export const removeTodo = (id: string): Promise<Todo[]> =>
-  hasBridge() ? TodoService.RemoveTodo(id) : resolve([])
+export const addTodo = (text: string, active: boolean): Promise<Todo[]> =>
+  hasBridge() ? TodoService.AddTodo(text, active) : resolve([])
+export const toggleTodo = (id: string, nextActive: string): Promise<Todo[]> =>
+  hasBridge() ? TodoService.ToggleTodo(id, nextActive) : resolve([])
+export const removeTodo = (id: string, nextActive: string): Promise<Todo[]> =>
+  hasBridge() ? TodoService.RemoveTodo(id, nextActive) : resolve([])
 export const updateTodo = (id: string, text: string, notes: string): Promise<Todo[]> =>
   hasBridge() ? TodoService.UpdateTodo(id, text, notes) : resolve([])
 export const setActiveTodo = (id: string): Promise<Todo[]> =>

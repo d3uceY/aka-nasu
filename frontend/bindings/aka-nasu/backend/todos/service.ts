@@ -14,8 +14,12 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 // @ts-ignore: Unused imports
 import * as config$0 from "../config/models.js";
 
-export function AddTodo(text: string): $CancellablePromise<config$0.Todo[]> {
-    return $Call.ByID(154452291, text).then(($result: any) => {
+/**
+ * AddTodo inserts a new task. The frontend passes active=true when this is the
+ * only task, so it becomes the current task immediately.
+ */
+export function AddTodo(text: string, active: boolean): $CancellablePromise<config$0.Todo[]> {
+    return $Call.ByID(154452291, text, active).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -26,8 +30,12 @@ export function GetTodos(): $CancellablePromise<config$0.Todo[]> {
     });
 }
 
-export function RemoveTodo(id: string): $CancellablePromise<config$0.Todo[]> {
-    return $Call.ByID(2143946512, id).then(($result: any) => {
+/**
+ * RemoveTodo deletes a task. The frontend passes the id to make active next
+ * ("" = leave the current pin unchanged).
+ */
+export function RemoveTodo(id: string, nextActive: string): $CancellablePromise<config$0.Todo[]> {
+    return $Call.ByID(2143946512, id, nextActive).then(($result: any) => {
         return $$createType1($result);
     });
 }
@@ -41,8 +49,12 @@ export function SetActiveTodo(id: string): $CancellablePromise<config$0.Todo[]> 
     });
 }
 
-export function ToggleTodo(id: string): $CancellablePromise<config$0.Todo[]> {
-    return $Call.ByID(1376018004, id).then(($result: any) => {
+/**
+ * ToggleTodo flips done. The frontend passes the id to make active next ("" =
+ * leave the current pin unchanged).
+ */
+export function ToggleTodo(id: string, nextActive: string): $CancellablePromise<config$0.Todo[]> {
+    return $Call.ByID(1376018004, id, nextActive).then(($result: any) => {
         return $$createType1($result);
     });
 }

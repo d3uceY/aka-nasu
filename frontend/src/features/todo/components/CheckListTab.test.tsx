@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { CheckListTab } from './CheckListTab.jsx'
 import { todoStore } from '../state/todoStore.js'
@@ -41,7 +41,8 @@ describe('CheckListTab', () => {
   it('lists open and done todos separately', () => {
     todoStore.load([openTodo, doneTodo])
     render(<CheckListTab />)
-    expect(screen.getByText('buy milk')).toBeInTheDocument()
+    // The pinned open task appears in the current-task line AND its row.
+    expect(screen.getAllByText('buy milk').length).toBeGreaterThan(0)
     expect(screen.getByText('water plants')).toBeInTheDocument()
   })
 
@@ -52,7 +53,8 @@ describe('CheckListTab', () => {
       target: { value: '  buy milk  ' },
     })
     fireEvent.click(screen.getByRole('button', { name: 'Add' }))
-    expect(mockAdd).toHaveBeenCalledWith('buy milk')
+    // Empty list -> the first task is told to be active.
+    expect(mockAdd).toHaveBeenCalledWith('buy milk', true)
   })
 
   it('disables Add for an empty draft', () => {
@@ -65,7 +67,8 @@ describe('CheckListTab', () => {
     mockToggle.mockResolvedValue([{ ...openTodo, done: true }])
     render(<CheckListTab />)
     fireEvent.click(screen.getByRole('button', { name: 'Mark as done' }))
-    expect(mockToggle).toHaveBeenCalledWith('1')
+    // Load pinned the only task; it is the top of the list, so it keeps the pin.
+    expect(mockToggle).toHaveBeenCalledWith('1', '1')
   })
 
   it('removes a todo through the store', () => {
@@ -73,18 +76,40 @@ describe('CheckListTab', () => {
     mockRemove.mockResolvedValue([])
     render(<CheckListTab />)
     fireEvent.click(screen.getByRole('button', { name: 'Remove task' }))
-    expect(mockRemove).toHaveBeenCalledWith('1')
+    expect(mockRemove).toHaveBeenCalledWith('1', '')
   })
 
-  it('pins the clicked task in the current-task header', () => {
-    todoStore.load([openTodo])
+  it('pins the clicked task in the current-task line', () => {
+    // Load pins the newest open task, so pin a different one by hand.
+    todoStore.load([
+      { id: '2', text: 'water plants', done: false, active: true, createdAt: 2 },
+      { ...openTodo, active: false },
+    ])
     mockSetActive.mockResolvedValue([{ ...openTodo, active: true }])
     render(<CheckListTab />)
     fireEvent.click(screen.getByRole('button', { name: 'Make current: buy milk' }))
     expect(mockSetActive).toHaveBeenCalledWith('1')
-    // Optimistic: the header updates immediately.
-    expect(screen.getByText('Now working on')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'buy milk' })).toBeInTheDocument()
+    // Optimistic: the line updates immediately.
+    const activeLine = within(document.querySelector('.todo-active') as HTMLElement)
+    expect(activeLine.getByText('buy milk')).toBeInTheDocument()
+  })
+
+  it('shows the active task as plain clamped text, no label or clear button', () => {
+    todoStore.load([{ ...openTodo, active: true }])
+    render(<CheckListTab />)
+    expect(screen.queryByText('Now working on')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Clear the current task' })).not.toBeInTheDocument()
+    const activeLine = within(document.querySelector('.todo-active') as HTMLElement)
+    expect(activeLine.getByText('buy milk')).toBeInTheDocument()
+  })
+
+  it('tapping the already-current task leaves it current (no unpin)', () => {
+    todoStore.load([{ ...openTodo, active: true }])
+    render(<CheckListTab />)
+    fireEvent.click(screen.getByRole('button', { name: 'Make current: buy milk' }))
+    expect(mockSetActive).not.toHaveBeenCalled()
+    const activeLine = within(document.querySelector('.todo-active') as HTMLElement)
+    expect(activeLine.getByText('buy milk')).toBeInTheDocument()
   })
 
   it('shows saved notes below the task', () => {
@@ -119,7 +144,8 @@ describe('CheckListTab', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(mockUpdate).not.toHaveBeenCalled()
-    expect(screen.getByText('buy milk')).toBeInTheDocument()
+    // Back in the row (the pinned task also shows in the current-task line).
+    expect(screen.getAllByText('buy milk').length).toBeGreaterThan(0)
   })
 
   it('deletes a todo from inside the edit form', () => {
@@ -128,6 +154,7 @@ describe('CheckListTab', () => {
     render(<CheckListTab />)
     fireEvent.click(screen.getByRole('button', { name: 'Edit task' }))
     fireEvent.click(screen.getByRole('button', { name: 'Delete task' }))
-    expect(mockRemove).toHaveBeenCalledWith('1')
+    // Load pinned the only task; deleting it leaves nothing to pin.
+    expect(mockRemove).toHaveBeenCalledWith('1', '')
   })
 })

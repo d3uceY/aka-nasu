@@ -2,6 +2,7 @@ package store
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"encoding/hex"
 	"fmt"
 	"time"
@@ -31,25 +32,68 @@ func Todos() ([]config.Todo, error) {
 	return out, rows.Err()
 }
 
-// AddTodo inserts a new open todo and returns it.
-func AddTodo(text string) (config.Todo, error) {
-	t := config.Todo{ID: newID(), Text: text, CreatedAt: time.Now().UnixMilli()}
-	_, err := DB.Exec(`
+// AddTodo inserts a new open todo and returns it. The frontend owns the
+// current-task pin: pass active=true when this is the only task (it becomes the
+// current task automatically); active=false never steals the pin.
+func AddTodo(text string, active bool) (config.Todo, error) {
+	t := config.Todo{ID: newID(), Text: text, CreatedAt: time.Now().UnixMilli(), Active: active}
+	tx, err := DB.Begin()
+	if err != nil {
+		return t, err
+	}
+	defer tx.Rollback()
+	if active {
+		// "Make this the current task" — no other task may stay pinned.
+		if _, err := tx.Exec(`UPDATE todos SET active = 0`); err != nil {
+			return t, err
+		}
+	}
+	if _, err := tx.Exec(`
 		INSERT INTO todos (id, text, done, notes, active, created_at)
-		VALUES (?, ?, 0, '', 0, ?)`, t.ID, t.Text, t.CreatedAt)
-	return t, err
+		VALUES (?, ?, 0, '', ?, ?)`, t.ID, t.Text, boolInt(active), t.CreatedAt); err != nil {
+		return t, err
+	}
+	return t, tx.Commit()
 }
 
-// ToggleTodo flips the done flag in one statement.
-func ToggleTodo(id string) error {
-	_, err := DB.Exec(`UPDATE todos SET done = 1 - done WHERE id = ?`, id)
-	return err
+// ToggleTodo flips the done flag. The frontend owns the current-task pin: pass
+// the id of the task to make active next, or "" to leave the pin unchanged
+// (completing the current task with no next keeps it pinned).
+func ToggleTodo(id, nextActive string) error {
+	tx, err := DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if _, err := tx.Exec(`UPDATE todos SET done = 1 - done WHERE id = ?`, id); err != nil {
+		return err
+	}
+	if nextActive != "" {
+		if err := setActive(tx, nextActive); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
 }
 
-// RemoveTodo deletes the todo (and clears it as the active task).
-func RemoveTodo(id string) error {
-	_, err := DB.Exec(`DELETE FROM todos WHERE id = ?`, id)
-	return err
+// RemoveTodo deletes the todo. The frontend owns the current-task pin: pass the
+// id of the task to make active next, or "" to leave the pin unchanged (the
+// removed task wasn't current, or the list is now empty).
+func RemoveTodo(id, nextActive string) error {
+	tx, err := DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if _, err := tx.Exec(`DELETE FROM todos WHERE id = ?`, id); err != nil {
+		return err
+	}
+	if nextActive != "" {
+		if err := setActive(tx, nextActive); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
 }
 
 // UpdateTodo replaces the text and notes.
@@ -58,16 +102,34 @@ func UpdateTodo(id, text, notes string) error {
 	return err
 }
 
-// SetActiveTodo makes id the current task; an empty id clears the selection.
+// SetActiveTodo makes id the current task.
 func SetActiveTodo(id string) error {
-	if _, err := DB.Exec(`UPDATE todos SET active = 0`); err != nil {
+	tx, err := DB.Begin()
+	if err != nil {
 		return err
 	}
-	if id == "" {
-		return nil
+	defer tx.Rollback()
+	if err := setActive(tx, id); err != nil {
+		return err
 	}
-	_, err := DB.Exec(`UPDATE todos SET active = 1 WHERE id = ?`, id)
+	return tx.Commit()
+}
+
+// setActive clears every pin and pins id.
+func setActive(tx *sql.Tx, id string) error {
+	if _, err := tx.Exec(`UPDATE todos SET active = 0`); err != nil {
+		return err
+	}
+	_, err := tx.Exec(`UPDATE todos SET active = 1 WHERE id = ?`, id)
 	return err
+}
+
+// boolInt converts a boolean to 0/1 for SQLite.
+func boolInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
 }
 
 // MigrateFromJson imports the legacy JSON list once, before config.MigrateFromJson flips.
@@ -91,6 +153,8 @@ func MigrateFromJson(list []config.Todo) error {
 			return err
 		}
 	}
+	// Legacy rows have no pin; the frontend restores the "one current task"
+	// rule when it loads the list.
 	return tx.Commit()
 }
 
