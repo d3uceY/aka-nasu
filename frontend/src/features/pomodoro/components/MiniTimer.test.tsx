@@ -81,8 +81,11 @@ describe('MiniTimer', () => {
     todoStore.load([{ id: '1', text: 'water the basil', done: false, active: true, createdAt: 1 }])
     render(<MiniTimer />)
     fireEvent.click(screen.getByRole('button', { name: 'Mark current task as done' }))
-    // The optimistic update flips the pin synchronously.
+    // The optimistic update flips done and clears the pin — no done task stays
+    // current, and the mini window falls back to its quiet hint.
     expect(todoStore.getTodos().find((t) => t.id === '1')?.done).toBe(true)
-    expect(screen.getByRole('button', { name: 'Mark current task as not done' })).toBeInTheDocument()
+    expect(todoStore.getTodos().find((t) => t.id === '1')?.active).toBe(false)
+    expect(screen.getByText('No current task')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'No current task' })).toBeDisabled()
   })
 })

@@ -67,8 +67,8 @@ describe('CheckListTab', () => {
     mockToggle.mockResolvedValue([{ ...openTodo, done: true }])
     render(<CheckListTab />)
     fireEvent.click(screen.getByRole('button', { name: 'Mark as done' }))
-    // Load pinned the only task; it is the top of the list, so it keeps the pin.
-    expect(mockToggle).toHaveBeenCalledWith('1', '1')
+    // Load pinned the only open task; completing it leaves nothing open to pin.
+    expect(mockToggle).toHaveBeenCalledWith('1', '')
   })
 
   it('removes a todo through the store', () => {

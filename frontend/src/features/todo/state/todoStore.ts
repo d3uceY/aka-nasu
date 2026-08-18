@@ -18,15 +18,23 @@ function normalize(t: Todo): Todo {
   return { notes: '', active: false, ...t }
 }
 
-// The frontend owns the "exactly one current task" rule. Every list that lands
-// here is normalized, and a list that arrived without a pin while tasks exist
-// (legacy import, a repaired DB) gets one: the newest open task, else the
-// newest. The backend is a dumb store — it only does what we tell it to.
+// The frontend owns the "one current task" rule. Every list that lands here is
+// normalized, and the pin is repaired to point at an open (not done) task: a
+// missing pin — or a stale pin left on a done task — goes to the newest open
+// task, and when nothing is open nothing can be current. The backend is a dumb
+// store — it only does what we tell it to.
 function apply(list: Todo[]): void {
   let next = (Array.isArray(list) ? list : []).map(normalize)
-  if (next.length > 0 && !next.some((t) => t.active)) {
-    const fallback = next.find((t) => !t.done) ?? next[0]
-    next = next.map((t) => ({ ...t, active: t.id === fallback.id }))
+  const open = next.filter((t) => !t.done)
+  if (open.length === 0) {
+    // No open task -> nothing can be current.
+    next = next.map((t) => ({ ...t, active: false }))
+  } else {
+    const pinned = next.find((t) => t.active)
+    if (!pinned || pinned.done) {
+      const fallback = open[0] // newest open task
+      next = next.map((t) => ({ ...t, active: t.id === fallback.id }))
+    }
   }
   base.set({ todos: next })
 }
@@ -53,11 +61,11 @@ function nextOpenAfter(list: Todo[], fromIndex: number): string {
   return list.slice(fromIndex).find((t) => !t.done)?.id ?? ''
 }
 
-// The list is newest-first; completing the current task hands the pin to the
-// top of the list — the newest todo. Returns "" only when the list is empty,
-// so the caller keeps the current pin in that case.
-function topOfList(list: Todo[]): string {
-  return list[0]?.id ?? ''
+// The list is newest-first; the topmost open (not done) todo is the first item
+// of the "To-do" list — where the current pin moves when its task is done.
+// Returns "" when nothing is open.
+function topOfOpen(list: Todo[]): string {
+  return list.find((t) => !t.done)?.id ?? ''
 }
 
 // The id the backend should pin after removing the current task: the next open
@@ -66,8 +74,8 @@ function topOfList(list: Todo[]): string {
 function nextActiveFor(list: Todo[], fromIndex: number): string {
   const next = nextOpenAfter(list, fromIndex)
   if (next) return next
-  const fallback = list.find((t) => !t.done) ?? list[0]
-  return fallback ? fallback.id : ''
+  // Only done tasks remain -> nothing to pin (a done task is never current).
+  return list.find((t) => !t.done)?.id ?? ''
 }
 
 export const todoStore = {
@@ -88,14 +96,16 @@ export const todoStore = {
     const target = todos.find((t) => t.id === id)
     if (!target) return
     const becomingDone = !target.done
-    // Completing the current task hands the pin to the top of the list — the
-    // newest todo. When the completed task is itself at the top, it keeps the
-    // pin (it is todos[0]).
-    const nextActive = becomingDone && target.active ? topOfList(todos) : ''
+    // Completing the current task hands the pin to the top open todo — the
+    // first item of the "To-do" list — so the pin never lands on a done task.
+    // With no open task left there is nothing to pin, so the pin clears.
+    const nextActive =
+      becomingDone && target.active ? topOfOpen(todos.filter((t) => t.id !== id)) : ''
     mutate(
       () => {
         let next = todos.map((t) => (t.id === id ? { ...t, done: becomingDone } : t))
-        if (nextActive) {
+        if (becomingDone && target.active) {
+          // Pin the next open task, or clear the pin when none is left.
           next = next.map((t) => ({ ...t, active: t.id === nextActive }))
         }
         base.set({ todos: next })

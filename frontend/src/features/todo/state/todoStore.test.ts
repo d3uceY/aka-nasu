@@ -40,6 +40,22 @@ describe('todoStore', () => {
     expect(todoStore.getTodos().filter((t) => t.active).map((t) => t.id)).toEqual(['2'])
   })
 
+  it('repairs a stale pin left on a done task to the newest open task', () => {
+    todoStore.load([
+      { id: '2', text: 'done-ish', done: true, active: true, createdAt: 2 },
+      { id: '1', text: 'open one', done: false, createdAt: 1 },
+    ])
+    expect(todoStore.getTodos().filter((t) => t.active).map((t) => t.id)).toEqual(['1'])
+  })
+
+  it('clears the pin when every loaded task is done', () => {
+    todoStore.load([
+      { id: '2', text: 'old', done: true, active: true, createdAt: 2 },
+      { id: '1', text: 'newer', done: true, createdAt: 1 },
+    ])
+    expect(todoStore.getTodos().filter((t) => t.active)).toEqual([])
+  })
+
   it('treats a non-array load as empty', () => {
     // @ts-expect-error testing malformed input
     todoStore.load('nope')
@@ -77,10 +93,10 @@ describe('todoStore', () => {
     todoStore.load([{ id: '1', text: 'a', done: false, createdAt: 1 }])
     mockToggle.mockResolvedValue([{ id: '1', text: 'a', done: true, createdAt: 1 }])
     todoStore.toggle('1')
-    // Optimistic: flipped before the backend resolves. Load pinned it, and it
-    // is the top of the list, so completing it keeps the pin (nextActive = '1').
+    // Optimistic: flipped before the backend resolves. Load pinned the only
+    // open task; completing it leaves nothing open to pin (nextActive = '').
     expect(todoStore.getTodos()[0].done).toBe(true)
-    expect(mockToggle).toHaveBeenCalledWith('1', '1')
+    expect(mockToggle).toHaveBeenCalledWith('1', '')
     await vi.waitFor(() => expect(todoStore.getTodos()[0].done).toBe(true))
   })
 
@@ -154,34 +170,53 @@ describe('todoStore', () => {
     await vi.waitFor(() => expect(todoStore.getTodos().find((t) => t.id === '3')?.active).toBe(true))
   })
 
-  it('completing the last open todo keeps one pinned', async () => {
+  it('completing the last open todo clears the pin (a done task is never current)', async () => {
     todoStore.load([{ id: '1', text: 'a', done: false, active: true, createdAt: 1 }])
     mockToggle.mockResolvedValue([{ id: '1', text: 'a', done: true, active: true, createdAt: 1 }])
     todoStore.toggle('1')
-    // It is the top of the list — it stays pinned (done), invariant intact.
-    expect(mockToggle).toHaveBeenCalledWith('1', '1')
-    expect(todoStore.getTodos().filter((t) => t.active).map((t) => t.id)).toEqual(['1'])
+    // Nothing is left open to hand the pin to, so the done task is unpinned.
+    expect(mockToggle).toHaveBeenCalledWith('1', '')
+    expect(todoStore.getTodos().filter((t) => t.active)).toEqual([])
     expect(todoStore.getTodos()[0].done).toBe(true)
-    await vi.waitFor(() => expect(todoStore.getTodos()[0].active).toBe(true))
+    await vi.waitFor(() => expect(todoStore.getTodos().filter((t) => t.active)).toEqual([]))
   })
 
-  it('completing the active hands the pin to the top of the list, even when it is done', async () => {
-    // Newest-first: [c(done), b(open), a(active)]. Completing a pins c — the
-    // top of the list — even though c is done.
+  it('completing the active task hands the pin to the newest open, skipping done ones', async () => {
+    // Newest-first: [c(done), b(open), a(active)]. Completing a pins b — the
+    // top open todo — never the done task c.
     todoStore.load([
       { id: '3', text: 'c', done: true, createdAt: 3 },
       { id: '2', text: 'b', done: false, active: false, createdAt: 2 },
       { id: '1', text: 'a', done: false, active: true, createdAt: 1 },
     ])
     mockToggle.mockResolvedValue([
-      { id: '3', text: 'c', done: true, active: true, createdAt: 3 },
-      { id: '2', text: 'b', done: false, active: false, createdAt: 2 },
+      { id: '3', text: 'c', done: true, active: false, createdAt: 3 },
+      { id: '2', text: 'b', done: false, active: true, createdAt: 2 },
       { id: '1', text: 'a', done: true, active: false, createdAt: 1 },
     ])
     todoStore.toggle('1')
-    expect(mockToggle).toHaveBeenCalledWith('1', '3')
-    expect(todoStore.getTodos().filter((t) => t.active).map((t) => t.id)).toEqual(['3'])
-    await vi.waitFor(() => expect(todoStore.getTodos().find((t) => t.id === '3')?.active).toBe(true))
+    expect(mockToggle).toHaveBeenCalledWith('1', '2')
+    expect(todoStore.getTodos().filter((t) => t.active).map((t) => t.id)).toEqual(['2'])
+    await vi.waitFor(() => expect(todoStore.getTodos().find((t) => t.id === '2')?.active).toBe(true))
+  })
+
+  it('completing the current task moves the pin to the top open todo below done ones', async () => {
+    // Newest-first: [a(active, newest), b(done), c(open)]. Completing a pins c —
+    // the top of the "To-do" (open) list — not the done task above it.
+    todoStore.load([
+      { id: '3', text: 'a', done: false, active: true, createdAt: 3 },
+      { id: '2', text: 'b', done: true, createdAt: 2 },
+      { id: '1', text: 'c', done: false, createdAt: 1 },
+    ])
+    mockToggle.mockResolvedValue([
+      { id: '3', text: 'a', done: true, active: false, createdAt: 3 },
+      { id: '2', text: 'b', done: true, active: false, createdAt: 2 },
+      { id: '1', text: 'c', done: false, active: true, createdAt: 1 },
+    ])
+    todoStore.toggle('3')
+    expect(mockToggle).toHaveBeenCalledWith('3', '1')
+    expect(todoStore.getTodos().filter((t) => t.active).map((t) => t.id)).toEqual(['1'])
+    await vi.waitFor(() => expect(todoStore.getTodos().find((t) => t.id === '1')?.active).toBe(true))
   })
 
   it('removing the active task hands the pin to the next open todo', async () => {
@@ -202,16 +237,17 @@ describe('todoStore', () => {
     await vi.waitFor(() => expect(todoStore.getTodos().find((t) => t.id === '1')?.active).toBe(true))
   })
 
-  it('removing the last open todo keeps one pinned when done tasks remain', async () => {
-    // Newest-first: [b(done), a(open, active)]. Removing a keeps b pinned.
+  it('removing the last open task clears the pin when only done tasks remain', async () => {
+    // Newest-first: [b(done), a(open, active)]. Removing a leaves no open task
+    // to pin, so the done task b is unpinned.
     todoStore.load([
       { id: '2', text: 'b', done: true, createdAt: 2 },
       { id: '1', text: 'a', done: false, active: true, createdAt: 1 },
     ])
     mockRemove.mockResolvedValue([{ id: '2', text: 'b', done: true, active: true, createdAt: 2 }])
     todoStore.remove('1')
-    expect(mockRemove).toHaveBeenCalledWith('1', '2')
-    expect(todoStore.getTodos().filter((t) => t.active).map((t) => t.id)).toEqual(['2'])
-    await vi.waitFor(() => expect(todoStore.getTodos().find((t) => t.id === '2')?.active).toBe(true))
+    expect(mockRemove).toHaveBeenCalledWith('1', '')
+    expect(todoStore.getTodos().filter((t) => t.active)).toEqual([])
+    await vi.waitFor(() => expect(todoStore.getTodos().filter((t) => t.active)).toEqual([]))
   })
 })
