@@ -10,14 +10,22 @@ tomato sitting on it — monumental editorial typography over precise, minimal U
 
 ## Canvas & color (Restrained)
 - **Paper:** warm gallery white, never sterile. `--paper-0 #fcfbf9` →
-  `--paper-1 #f5f3ef`. A single faint radial kiss of tomato (`--tomato-glow
-  0.09`) behind the stage. No leaf glow, no drenched gradient.
+  `--paper-1 #f5f3ef`. The paper never changes; only the *light* does.
+- **The room's light follows the phase** — one faint radial kiss behind the
+  stage, driven by `body[data-phase]` (synced from the timer store) and
+  cross-faded via registered `<color>` custom properties (`@property
+  --phase-accent / -deep / -wash / -glow`). Focus = tomato red, short break =
+  leaf green, long break = **golden hour** `#d9942c`. Each glow stays around
+  0.08–0.09 alpha — a whisper, never a drenched gradient.
 - **Ink:** warm, never pure black — `--ink #2b211b`, `--ink-2 #6e615a`,
   `--ink-3 #7d7066` (all ≥ 4.5:1 on paper for their tiers).
-- **One accent:** ripe tomato `#e8442e` on the primary CTA, phase dot, sliders,
-  selection, focus ring. **Leaf green `#2f9e54` is a state color only** — break
-  phase + done checks. Never decoration.
-- Shadows are neutral warm ink; tomato-tinted shadows appear only on the CTA.
+- **Three state accents, one identity:** ripe tomato `#e8442e` (focus), leaf
+  `#2f9e54` (short break), gold `#d9942c` (long break) — used on the primary
+  CTA, phase dot, and sliders. Tomato stays the brand on selection, focus
+  ring, and the whole todo "harvest" panel; leaf also marks done checks.
+  Never decoration outside those roles.
+- Shadows are neutral warm ink; the CTA's shadow is tinted by its own accent
+  via `color-mix`.
 
 ## Typography (the architecture)
 - **Fraunces** (variable serif) is the voice:
@@ -45,5 +53,6 @@ tomato sitting on it — monumental editorial typography over precise, minimal U
   "Nothing planted yet. Add a seed above.").
 
 ## Non-goals (v2)
-- No Baloo 2 (rounded voice retired), no cream-drenched field, no green
-  atmosphere, no backdrop-blur frosted glass.
+- No Baloo 2 (rounded voice retired), no cream-drenched field, no drenched
+  phase atmosphere (the phase light stays a faint kiss), no backdrop-blur
+  frosted glass.

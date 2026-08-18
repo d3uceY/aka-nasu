@@ -7,10 +7,12 @@ import { UpdateModal } from './features/update/components/UpdateModal.jsx'
 import { VersionBadge } from './components/ui/VersionBadge.jsx'
 import { useUIStore } from './state/uiStore.js'
 import { supportsTransparentMini } from './lib/window.js'
+import { usePomodoroStore } from './features/pomodoro/state/pomodoroStore.js'
 
 export default function App() {
   const mode = useUIStore((s) => s.mode)
   const introDone = useUIStore((s) => s.introDone)
+  const phase = usePomodoroStore((s) => s.phase)
 
   // The native window is transparent from creation; Mini Mode flips the page
   // background to transparent (skipped on Linux, where it's a no-op).
@@ -19,6 +21,15 @@ export default function App() {
     document.body.classList.toggle('body--mini', miniTransparent)
     return () => document.body.classList.remove('body--mini')
   }, [mode])
+
+  // Mirror the timer phase onto <body> so the phase accent (focus red,
+  // short-break green, long-break gold) can wash the whole page background.
+  useEffect(() => {
+    document.body.dataset.phase = phase
+    return () => {
+      delete document.body.dataset.phase
+    }
+  }, [phase])
 
   return (
     <>

@@ -4,10 +4,41 @@
    Aka Nasu: design tokens
    "Tomato on paper": a gallery-white studio wall where the tomato is the single
    living red object. Near-white warm paper, warm ink, and ONE ripe tomato
-   accent. Leaf green is a state color only (the break phase), never
-   decoration. Typography: Fraunces (editorial serif) for the roaring timer
-   number and quiet accents, Instrument Sans for precise, readable UI.
+   accent. The room's light follows the phase — focus red, short-break green,
+   long-break golden hour — so each timer state gets its own quiet atmosphere
+   while the paper stays the same. Leaf green and gold are state colors only
+   (the breaks), never decoration. Typography: Fraunces (editorial serif) for
+   the roaring timer number and quiet accents, Instrument Sans for precise,
+   readable UI.
    =========================================================================== */
+/* ===========================================================================
+   Phase-driven ambient tokens (registered <color> custom properties).
+   Each timer phase owns an accent + a paper-glow — focus = tomato, short
+   break = leaf, long break = golden hour. Registering the phase vars as
+   <color> lets `body` cross-fade the whole atmosphere when data-phase flips:
+   the room's light breathes with the timer instead of snapping.
+   =========================================================================== */
+@property --phase-accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #e8442e;
+}
+@property --phase-accent-deep {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #c5361f;
+}
+@property --phase-wash {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fbe9e3;
+}
+@property --phase-glow {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(232, 68, 46, 0.09);
+}
+
 :root {
   color-scheme: light;
 
@@ -32,6 +63,12 @@
   --leaf-deep: #1f7039;
   --leaf-wash: #e7f3ea;
   --leaf-glow: rgba(47, 158, 84, 0.08);
+
+  /* ---- long-break state only: golden hour ---- */
+  --gold: #d9942c;
+  --gold-deep: #a86b13;
+  --gold-wash: #f9efd9;
+  --gold-glow: rgba(217, 148, 44, 0.09);
 
   /* ---- surfaces & lines ---- */
   --line: rgba(43, 33, 27, 0.08);
@@ -80,14 +117,43 @@ body,
 body {
   margin: 0;
   color: var(--ink);
-  /* Whitish paper with a faint kiss of tomato behind the stage. */
+  /* Whitish paper with a faint kiss of light behind the stage. The kiss is
+     phase-driven — focus red, short-break green, long-break gold — so the
+     room's atmosphere breathes with the timer without ever leaving the paper. */
   background:
-    radial-gradient(54% 46% at 78% -12%, var(--tomato-glow), transparent 62%),
+    radial-gradient(54% 46% at 78% -12%, var(--phase-glow), transparent 62%),
     linear-gradient(168deg, var(--paper-0) 0%, var(--paper-1) 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow: hidden;
+  /* Phase accent defaults (focus). Registered as <color> above, so flipping
+     data-phase interpolates these instead of snapping. */
+  --phase-accent: var(--tomato);
+  --phase-accent-deep: var(--tomato-deep);
+  --phase-wash: var(--tomato-wash);
+  --phase-glow: var(--tomato-glow);
+  transition:
+    --phase-glow 1.6s var(--ease-out),
+    --phase-accent 0.7s var(--ease-out),
+    --phase-accent-deep 0.7s var(--ease-out),
+    --phase-wash 0.7s var(--ease-out);
+}
+
+/* Each phase re-tunes the room's light. App.tsx mirrors the timer phase onto
+   <body> as data-phase (and the timer stage already carries it). */
+body[data-phase='shortBreak'] {
+  --phase-accent: var(--leaf);
+  --phase-accent-deep: var(--leaf-deep);
+  --phase-wash: var(--leaf-wash);
+  --phase-glow: var(--leaf-glow);
+}
+
+body[data-phase='longBreak'] {
+  --phase-accent: var(--gold);
+  --phase-accent-deep: var(--gold-deep);
+  --phase-wash: var(--gold-wash);
+  --phase-glow: var(--gold-glow);
 }
 
 /* Mini Mode reveals the desktop around the rounded card. The native window is

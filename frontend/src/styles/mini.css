@@ -20,7 +20,7 @@
   box-shadow: var(--shadow-pop);
   overflow: hidden;
   background:
-    radial-gradient(58% 40% at 50% 28%, var(--tomato-glow), transparent 64%),
+    radial-gradient(58% 40% at 50% 28%, var(--phase-glow), transparent 64%),
     linear-gradient(168deg, var(--paper-0) 0%, var(--paper-1) 100%);
   will-change: transform, opacity;
 }
@@ -64,13 +64,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--tomato);
+  background: var(--phase-accent);
   transition: background 0.4s var(--ease-out);
-}
-
-.mini-window[data-phase='shortBreak'] .mini-window__phase::before,
-.mini-window[data-phase='longBreak'] .mini-window__phase::before {
-  background: var(--leaf);
 }
 
 .mini-window__exit {

@@ -18,7 +18,7 @@
   opacity: 0;
 }
 
-/* one faint kiss of tomato behind the stage, the only atmosphere */
+/* one faint kiss of the phase's light behind the stage — the only atmosphere */
 .app-shell::before {
   content: '';
   position: absolute;
@@ -31,7 +31,7 @@
   max-height: 700px;
   left: -6%;
   top: 12%;
-  background: radial-gradient(circle at 50% 45%, var(--tomato-glow), transparent 66%);
+  background: radial-gradient(circle at 50% 45%, var(--phase-glow), transparent 66%);
 }
 
 /* version readout in the bottom corner: quiet, but a real link to the
@@ -142,7 +142,7 @@
   position: absolute;
   inset: 4%;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 40%, var(--tomato-glow) 0%, rgba(255, 255, 255, 0) 68%);
+  background: radial-gradient(circle at 50% 40%, var(--phase-glow) 0%, rgba(255, 255, 255, 0) 68%);
   z-index: 0;
 }
 
@@ -199,13 +199,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--tomato);
+  background: var(--phase-accent);
   transition: background 0.4s var(--ease-out);
-}
-
-.timer-stage[data-phase='shortBreak'] .timer-display__phase::before,
-.timer-stage[data-phase='longBreak'] .timer-display__phase::before {
-  background: var(--leaf);
 }
 
 .timer-display__time {
@@ -369,15 +364,11 @@
 }
 
 .btn--primary {
-  background: linear-gradient(180deg, var(--tomato) 0%, var(--tomato-deep) 100%);
+  background: linear-gradient(180deg, var(--phase-accent) 0%, var(--phase-accent-deep) 100%);
   color: #fff;
-  box-shadow: 0 14px 28px -14px rgba(197, 54, 31, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-.timer-stage[data-phase='shortBreak'] .btn--primary,
-.timer-stage[data-phase='longBreak'] .btn--primary {
-  background: linear-gradient(180deg, var(--leaf) 0%, var(--leaf-deep) 100%);
-  box-shadow: 0 14px 28px -14px rgba(31, 112, 57, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 14px 28px -14px color-mix(in srgb, var(--phase-accent-deep) 70%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .btn--ghost {
@@ -523,13 +514,8 @@
   height: 5px;
   border-radius: 999px;
   appearance: none;
-  background: linear-gradient(90deg, var(--tomato-wash), var(--tomato));
+  background: linear-gradient(90deg, var(--phase-wash), var(--phase-accent));
   outline: none;
-}
-
-.timer-stage[data-phase='shortBreak'] .slider,
-.timer-stage[data-phase='longBreak'] .slider {
-  background: linear-gradient(90deg, var(--leaf-wash), var(--leaf));
 }
 
 .slider::-webkit-slider-thumb {
@@ -538,15 +524,10 @@
   height: 17px;
   border-radius: 50%;
   background: #fff;
-  border: 3px solid var(--tomato);
-  box-shadow: 0 4px 10px -4px rgba(197, 54, 31, 0.6);
+  border: 3px solid var(--phase-accent);
+  box-shadow: 0 4px 10px -4px color-mix(in srgb, var(--phase-accent-deep) 60%, transparent);
   cursor: pointer;
   transition: transform 0.18s var(--ease-spring);
-}
-
-.timer-stage[data-phase='shortBreak'] .slider::-webkit-slider-thumb,
-.timer-stage[data-phase='longBreak'] .slider::-webkit-slider-thumb {
-  border-color: var(--leaf);
 }
 
 .slider::-webkit-slider-thumb:hover {
