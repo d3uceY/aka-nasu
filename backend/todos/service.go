@@ -1,71 +1,61 @@
 // Package todos owns the daily checklist; mutations return the full list.
+// Todos are stored in SQLite (backend/store), not the JSON config.
 package todos
 
 import (
-	"crypto/rand"
-	"encoding/hex"
-	"fmt"
-	"time"
-
 	"aka-nasu/backend/config"
+	"aka-nasu/backend/store"
 )
 
-// Service persists the todo list slice of the config.
-type Service struct {
-	store *config.Store
-}
+// Service exposes the SQLite-backed checklist to the frontend.
+type Service struct{}
 
-func NewService(store *config.Store) *Service {
-	return &Service{store: store}
-}
+func NewService() *Service { return &Service{} }
 
 func (s *Service) GetTodos() ([]config.Todo, error) {
-	return s.store.Snapshot().Todos, nil
+	return store.Todos()
 }
 
-func (s *Service) list() []config.Todo {
-	return s.store.Snapshot().Todos
+func (s *Service) list() ([]config.Todo, error) {
+	return store.Todos()
 }
 
 func (s *Service) AddTodo(text string) ([]config.Todo, error) {
 	if text == "" {
-		return s.list(), nil
+		return s.list()
 	}
-	todo := config.Todo{ID: newID(), Text: text, CreatedAt: time.Now().UnixMilli()}
-	err := s.store.Update(func(c *config.Config) {
-		c.Todos = append([]config.Todo{todo}, c.Todos...)
-	})
-	return s.list(), err
+	if _, err := store.AddTodo(text); err != nil {
+		return nil, err
+	}
+	return s.list()
 }
 
 func (s *Service) ToggleTodo(id string) ([]config.Todo, error) {
-	err := s.store.Update(func(c *config.Config) {
-		for i := range c.Todos {
-			if c.Todos[i].ID == id {
-				c.Todos[i].Done = !c.Todos[i].Done
-				break
-			}
-		}
-	})
-	return s.list(), err
+	if err := store.ToggleTodo(id); err != nil {
+		return nil, err
+	}
+	return s.list()
 }
 
 func (s *Service) RemoveTodo(id string) ([]config.Todo, error) {
-	err := s.store.Update(func(c *config.Config) {
-		for i := range c.Todos {
-			if c.Todos[i].ID == id {
-				c.Todos = append(c.Todos[:i], c.Todos[i+1:]...)
-				break
-			}
-		}
-	})
-	return s.list(), err
+	if err := store.RemoveTodo(id); err != nil {
+		return nil, err
+	}
+	return s.list()
 }
 
-func newID() string {
-	b := make([]byte, 8)
-	if _, err := rand.Read(b); err != nil {
-		return fmt.Sprintf("t%d", time.Now().UnixNano())
+// UpdateTodo edits a task's text and notes.
+func (s *Service) UpdateTodo(id, text, notes string) ([]config.Todo, error) {
+	if err := store.UpdateTodo(id, text, notes); err != nil {
+		return nil, err
 	}
-	return hex.EncodeToString(b)
+	return s.list()
+}
+
+// SetActiveTodo pins id as the current task (empty id clears the pin).
+func (s *Service) SetActiveTodo(id string) ([]config.Todo, error) {
+	if err := store.SetActiveTodo(id); err != nil {
+		return nil, err
+	}
+	return s.list()
 }

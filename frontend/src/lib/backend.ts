@@ -64,6 +64,10 @@ export const toggleTodo = (id: string): Promise<Todo[]> =>
   hasBridge() ? TodoService.ToggleTodo(id) : resolve([])
 export const removeTodo = (id: string): Promise<Todo[]> =>
   hasBridge() ? TodoService.RemoveTodo(id) : resolve([])
+export const updateTodo = (id: string, text: string, notes: string): Promise<Todo[]> =>
+  hasBridge() ? TodoService.UpdateTodo(id, text, notes) : resolve([])
+export const setActiveTodo = (id: string): Promise<Todo[]> =>
+  hasBridge() ? TodoService.SetActiveTodo(id) : resolve([])
 
 // Native OS notification for a finished phase. The Go side (backend/notify)
 // queues the send onto a contained worker goroutine, so this resolves

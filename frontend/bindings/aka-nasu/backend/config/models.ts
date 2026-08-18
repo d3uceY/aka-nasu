@@ -82,7 +82,7 @@ export class Stats {
 }
 
 /**
- * TimerState is the live timer position, persisted so it resumes after restart.
+ * TimerState is the live timer position.
  */
 export class TimerState {
     /**
@@ -125,12 +125,14 @@ export class TimerState {
 }
 
 /**
- * Todo is a single daily checklist item.
+ * Todo is a single daily checklist item, persisted in SQLite.
  */
 export class Todo {
     "id": string;
     "text": string;
     "done": boolean;
+    "notes"?: string;
+    "active"?: boolean;
     "createdAt": number;
 
     /** Creates a new Todo instance. */

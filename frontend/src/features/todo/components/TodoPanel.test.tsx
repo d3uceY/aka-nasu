@@ -8,6 +8,8 @@ vi.mock('../../../lib/backend.js', () => ({
   addTodo: vi.fn(),
   toggleTodo: vi.fn(),
   removeTodo: vi.fn(),
+  updateTodo: vi.fn(),
+  setActiveTodo: vi.fn(),
   saveSettings: vi.fn(() => Promise.resolve()),
   saveTimer: vi.fn(() => Promise.resolve()),
   saveStats: vi.fn(() => Promise.resolve()),

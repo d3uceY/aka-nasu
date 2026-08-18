@@ -8,6 +8,8 @@ import {
   addTodo,
   toggleTodo,
   removeTodo,
+  updateTodo,
+  setActiveTodo,
   notifyPhaseComplete,
 } from './backend.js'
 import * as SettingsService from '../../bindings/aka-nasu/backend/settings/service.js'
@@ -26,6 +28,8 @@ vi.mock('../../bindings/aka-nasu/backend/todos/service.js', () => ({
   AddTodo: vi.fn(),
   ToggleTodo: vi.fn(),
   RemoveTodo: vi.fn(),
+  UpdateTodo: vi.fn(),
+  SetActiveTodo: vi.fn(),
 }))
 vi.mock('../../bindings/aka-nasu/backend/stats/service.js', () => ({
   GetStats: vi.fn(),
@@ -111,6 +115,8 @@ describe('save wrappers', () => {
     await expect(addTodo('x')).resolves.toEqual([])
     await expect(toggleTodo('1')).resolves.toEqual([])
     await expect(removeTodo('1')).resolves.toEqual([])
+    await expect(updateTodo('1', 'x', 'n')).resolves.toEqual([])
+    await expect(setActiveTodo('1')).resolves.toEqual([])
   })
 
   it('delegate to the bindings with a bridge', async () => {
@@ -121,6 +127,8 @@ describe('save wrappers', () => {
     vi.mocked(TodoService.AddTodo).mockResolvedValue([])
     vi.mocked(TodoService.ToggleTodo).mockResolvedValue([])
     vi.mocked(TodoService.RemoveTodo).mockResolvedValue([])
+    vi.mocked(TodoService.UpdateTodo).mockResolvedValue([])
+    vi.mocked(TodoService.SetActiveTodo).mockResolvedValue([])
 
     await saveSettings({ focusMinutes: 25 } as never)
     await saveTimer({ status: 'idle' } as never)
@@ -128,6 +136,8 @@ describe('save wrappers', () => {
     await addTodo('x')
     await toggleTodo('1')
     await removeTodo('2')
+    await updateTodo('3', 'new', 'note')
+    await setActiveTodo('4')
 
     expect(SettingsService.UpdateSettings).toHaveBeenCalledWith({ focusMinutes: 25 })
     expect(TimerService.UpdateTimerState).toHaveBeenCalled()
@@ -135,6 +145,8 @@ describe('save wrappers', () => {
     expect(TodoService.AddTodo).toHaveBeenCalledWith('x')
     expect(TodoService.ToggleTodo).toHaveBeenCalledWith('1')
     expect(TodoService.RemoveTodo).toHaveBeenCalledWith('2')
+    expect(TodoService.UpdateTodo).toHaveBeenCalledWith('3', 'new', 'note')
+    expect(TodoService.SetActiveTodo).toHaveBeenCalledWith('4')
   })
 })
 

@@ -3,10 +3,15 @@ package config
 
 // Config is the persisted app state.
 type Config struct {
-	Settings Settings    `json:"settings"`
-	Timer    TimerState  `json:"timer"`
-	Todos    []Todo      `json:"todos"`
-	Stats    Stats       `json:"stats"`
+	Settings Settings `json:"settings"`
+	Timer    TimerState `json:"timer"`
+	// Todos is legacy: the checklist now lives in SQLite (backend/store).
+	// Kept so a first launch after the switch can migrate it in, then it is
+	// cleared.
+	Todos []Todo `json:"todos"`
+	// MigrateFromJson is true once the JSON todos have been copied to SQLite
+	MigrateFromJson bool `json:"migrateFromJson"`
+	Stats Stats       `json:"stats"`
 }
 
 // Settings are the timer durations and automation toggles.
@@ -27,11 +32,13 @@ type TimerState struct {
 	TotalMs     int64  `json:"totalMs"`
 }
 
-// Todo is a single daily checklist item.
+// Todo is a single daily checklist item, persisted in SQLite.
 type Todo struct {
 	ID        string `json:"id"`
 	Text      string `json:"text"`
 	Done      bool   `json:"done"`
+	Notes     string `json:"notes,omitempty"`
+	Active    bool   `json:"active,omitempty"`
 	CreatedAt int64  `json:"createdAt"`
 }
 

@@ -8,6 +8,7 @@ import (
 	"aka-nasu/backend/notify"
 	"aka-nasu/backend/settings"
 	"aka-nasu/backend/stats"
+	"aka-nasu/backend/store"
 	"aka-nasu/backend/timer"
 	"aka-nasu/backend/todos"
 	"aka-nasu/backend/version"
@@ -22,20 +23,38 @@ var Version = "0.1.1"
 var assets embed.FS
 
 func main() {
-// Load persisted config (creating defaults on first run); share the store across services.
-	store, err := config.NewStore()
+	// Load persisted config (creating defaults on first run); share the store across services.
+	cfgStore, err := config.NewStore()
 	if err != nil {
 		log.Fatalf("config: %v", err)
+	}
+
+	// SQLite holds the checklist now. Open it, ensure the schema, and run the
+	// one-time JSON -> SQLite migration when config.MigrateFromJson is false.
+	if err := store.InitDB(store.DefaultPath()); err != nil {
+		log.Fatalf("store: %v", err)
+	}
+	store.CreateTables()
+	if cfg := cfgStore.Snapshot(); !cfg.MigrateFromJson {
+		if err := store.MigrateFromJson(cfg.Todos); err != nil {
+			// Leave the flag false + JSON intact so the next launch retries.
+			log.Printf("store: todo migration failed: %v", err)
+		} else {
+			_ = cfgStore.Update(func(c *config.Config) {
+				c.MigrateFromJson = true
+				c.Todos = nil
+			})
+		}
 	}
 
 	app := application.New(application.Options{
 		Name:        "aka-nasu",
 		Description: "A minimal 3D tomato focus timer.",
 		Services: []application.Service{
-			application.NewService(settings.NewService(store)),
-			application.NewService(todos.NewService(store)),
-			application.NewService(stats.NewService(store)),
-			application.NewService(timer.NewService(store)),
+			application.NewService(settings.NewService(cfgStore)),
+			application.NewService(todos.NewService()),
+			application.NewService(stats.NewService(cfgStore)),
+			application.NewService(timer.NewService(cfgStore)),
 			application.NewService(version.NewService(Version)),
 			// Native OS notifications; best-effort and crash-proof (see backend/notify).
 			application.NewService(notify.NewService()),
