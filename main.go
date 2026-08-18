@@ -14,7 +14,7 @@ import (
 )
 
 // Version is stamped into the binary at release via -ldflags "-X main.Version=vX.Y.Z".
-var Version = "0.1.1"
+var Version = "0.2.0"
 
 //go:embed all:frontend/dist
 var assets embed.FS
