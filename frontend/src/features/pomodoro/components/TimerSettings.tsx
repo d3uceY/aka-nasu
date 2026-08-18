@@ -98,6 +98,23 @@ export function TimerSettings() {
             pomodoroActions.setSettings({ longBreakMinutes: v })
           }}
         />
+        <p className="settings__title">Color</p>
+        <div
+          className="palette-grid"
+          role="radiogroup"
+          aria-label="Tomato color"
+        >
+          {TOMATO_PALETTES.map((p) => (
+            <PaletteSwatch
+              key={p.id}
+              palette={p}
+              selected={settings.palette === p.id}
+              disabled={locked}
+              onSelect={() => pomodoroActions.setSettings({ palette: p.id })}
+            />
+          ))}
+        </div>
+
         <p className="settings__title">Automation</p>
         <label className="toggle">
           <span>Auto-start breaks</span>
@@ -143,22 +160,6 @@ export function TimerSettings() {
           disabled={locked}
           onChange={(v) => pomodoroActions.setSettings({ soundVolume: v / 100 })}
         />
-        <p className="settings__title">Color</p>
-        <div
-          className="palette-grid"
-          role="radiogroup"
-          aria-label="Tomato color"
-        >
-          {TOMATO_PALETTES.map((p) => (
-            <PaletteSwatch
-              key={p.id}
-              palette={p}
-              selected={settings.palette === p.id}
-              disabled={locked}
-              onSelect={() => pomodoroActions.setSettings({ palette: p.id })}
-            />
-          ))}
-        </div>
       </div>
     </section>
   )
