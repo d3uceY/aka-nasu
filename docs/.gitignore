@@ -1,0 +1,10 @@
+# Docusaurus build artifacts
+.docusaurus/
+build/
+
+# Dependencies
+node_modules/
+
+# Local files
+*.log
+.netlify

@@ -17,9 +17,9 @@ The whole app is built around one tomato. You spin it to set your focus time, th
 
 ## Screenshots
 
-![Aka Nasu home screen](docs/screenshots/home/home.png)
+![Aka Nasu home screen](docs/static/screenshots/home/home.png)
 
-![Aka Nasu update prompt](docs/screenshots/update/update-modal.png)
+![Aka Nasu update prompt](docs/static/screenshots/update/update-modal.png)
 
 ## Download
 
