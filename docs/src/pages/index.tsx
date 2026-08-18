@@ -414,6 +414,7 @@ export default function Home(): ReactElement {
         : os === 'linux'
           ? 'Download for Linux'
           : 'Download Aka Nasu'
+  const osName = os === 'windows' ? 'Windows' : os === 'macos' ? 'macOS' : os === 'linux' ? 'Linux' : null
   const detectedLabel =
     os === 'windows' ? 'Windows detected' : os === 'macos' ? 'macOS detected' : os === 'linux' ? 'Linux detected' : ''
 
@@ -440,7 +441,13 @@ export default function Home(): ReactElement {
             GitHub
           </a>
           <a className="lp-pill" href={primaryHref}>
-            {primaryLabel}
+            {osName ? (
+              <span className="lp-pill__label">
+                Download<span className="lp-pill__os"> for {osName}</span>
+              </span>
+            ) : (
+              primaryLabel
+            )}
           </a>
         </nav>
       </header>

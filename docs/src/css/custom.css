@@ -766,12 +766,48 @@ html.lenis body {
     width: 100%;
     max-width: 20rem;
   }
+  .lp-mag {
+    width: 100%;
+  }
   .lp-btn {
+    width: 100%;
     justify-content: center;
   }
   .lp-showcase__cap {
     flex-direction: column;
     gap: 0.4rem;
+  }
+
+  /* tighten the vertical rhythm so sections don't pile up huge gaps */
+  .lp-section {
+    padding-top: clamp(3rem, 7vh, 4.25rem);
+    padding-bottom: clamp(3rem, 7vh, 4.25rem);
+  }
+  .lp-showcase {
+    padding-top: 0;
+  }
+  .lp-section__head {
+    margin-bottom: 2rem;
+  }
+  .lp-story {
+    padding-top: clamp(3.5rem, 9vh, 5.5rem);
+    padding-bottom: clamp(3.5rem, 9vh, 5.5rem);
+  }
+  .lp-download__foot {
+    margin-top: 2rem;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .lp-run {
+    margin-top: 2.25rem;
+    padding: 1.35rem 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .lp-pill__os {
+    display: none;
   }
 }
 
