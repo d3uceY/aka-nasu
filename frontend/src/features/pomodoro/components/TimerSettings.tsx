@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Slider } from '../../../components/ui/Slider.jsx'
 import { usePomodoroStore, pomodoroActions } from '../state/pomodoroStore.js'
+import { TOMATO_PALETTES } from '../constants/palettes.js'
+import { PaletteSwatch } from './PaletteSwatch.jsx'
 import { playSound } from '../../../utils/audio.js'
 
 function GearIcon() {
@@ -141,6 +143,22 @@ export function TimerSettings() {
           disabled={locked}
           onChange={(v) => pomodoroActions.setSettings({ soundVolume: v / 100 })}
         />
+        <p className="settings__title">Color</p>
+        <div
+          className="palette-grid"
+          role="radiogroup"
+          aria-label="Tomato color"
+        >
+          {TOMATO_PALETTES.map((p) => (
+            <PaletteSwatch
+              key={p.id}
+              palette={p}
+              selected={settings.palette === p.id}
+              disabled={locked}
+              onSelect={() => pomodoroActions.setSettings({ palette: p.id })}
+            />
+          ))}
+        </div>
       </div>
     </section>
   )

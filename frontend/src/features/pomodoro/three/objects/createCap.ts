@@ -1,5 +1,7 @@
 import * as THREE from 'three'
 import { BODY, BAND, getCapThetaSplit, getCapRadius } from '../../constants/three.js'
+import type { TomatoPalette } from '../../constants/palettes.js'
+import { hexColor } from '../../constants/palettes.js'
 import { applyLobes } from './lobeMath.js'
 import type { TomatoMaterials } from '../materials/tomatoMaterials.js'
 
@@ -10,32 +12,35 @@ import type { TomatoMaterials } from '../materials/tomatoMaterials.js'
 export interface CapMesh {
   mesh: THREE.Mesh
   texture: THREE.CanvasTexture
+  canvas: HTMLCanvasElement
 }
 
-export function createCap(_materials: TomatoMaterials): CapMesh {
-  const capRadius = getCapRadius()
-  const thetaSplit = getCapThetaSplit() // π/2 (equator)
-
-  // ---- build the canvas texture -------------------------------------------
+// Paint the cap's baked texture (base color, band backing, seam) for a
+// palette. Reuses `existing` when provided so a live texture can be repainted
+// in place on a palette switch.
+export function drawCapCanvas(
+  palette: TomatoPalette,
+  existing?: HTMLCanvasElement,
+): HTMLCanvasElement {
   const { texW, texH, bandTop, seamPx, minorH, majorH, wrapMargin, labels, zeroTickIndex } = BAND
   const bandTopPx = Math.round(texH * bandTop)
   const bandHeight = texH - bandTopPx
   const minorPx = bandHeight * minorH
   const majorPx = bandHeight * majorH
 
-  const canvas = document.createElement('canvas')
+  const canvas = existing ?? document.createElement('canvas')
   canvas.width = texW
   canvas.height = texH
   const ctx = canvas.getContext('2d')!
 
-  // Base cap colour.
-  ctx.fillStyle = '#db4a3e'
+  // Base cap colour (the palette's body) …
+  ctx.fillStyle = hexColor(palette.body)
   ctx.fillRect(0, 0, texW, texH)
-  // Dark backing strip for the band.
-  ctx.fillStyle = '#8a1f1f'
+  // Dark backing strip for the band (the palette's groove) …
+  ctx.fillStyle = hexColor(palette.groove)
   ctx.fillRect(0, bandTopPx, texW, bandHeight + seamPx)
   // Baked seam line at the equator.
-  ctx.fillStyle = '#4c1010'
+  ctx.fillStyle = hexColor(palette.seam)
   ctx.fillRect(0, texH - seamPx, texW, seamPx)
 
   function place(x: number, drawFn: (xx: number) => void): void {
@@ -66,6 +71,14 @@ export function createCap(_materials: TomatoMaterials): CapMesh {
     place(x, (xx) => ctx.fillText(label, xx, bandTopPx - 6))
   }
 
+  return canvas
+}
+
+export function createCap(_materials: TomatoMaterials, palette: TomatoPalette): CapMesh {
+  const capRadius = getCapRadius()
+  const thetaSplit = getCapThetaSplit() // π/2 (equator)
+
+  const canvas = drawCapCanvas(palette)
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace
   texture.anisotropy = 8
@@ -91,5 +104,5 @@ export function createCap(_materials: TomatoMaterials): CapMesh {
   capMesh.scale.set(1, BODY.scaleY, 1)
   capMesh.name = 'cap'
 
-  return { mesh: capMesh, texture }
+  return { mesh: capMesh, texture, canvas }
 }

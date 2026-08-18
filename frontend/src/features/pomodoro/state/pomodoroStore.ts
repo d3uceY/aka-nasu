@@ -1,5 +1,6 @@
 import { createStore, useStore } from '../../../lib/createStore.js'
 import { DEFAULT_SETTINGS, PHASES } from '../constants/timer.js'
+import { DEFAULT_PALETTE_ID, isPaletteId } from '../constants/palettes.js'
 import { durationFor } from '../utils/timerMath.js'
 import { saveSettings, saveTimer, saveStats } from '../../../lib/backend.js'
 import type {
@@ -58,6 +59,11 @@ export const pomodoroStore = {
   ...base,
   load({ settings, timer, stats }: PersistedPomodoroState): void {
     const mergedSettings: PomodoroSettings = { ...DEFAULT_SETTINGS, ...settings }
+    // A persisted palette may be empty (older configs / browser defaults) or
+    // point at a removed palette — always fall back to a known id.
+    mergedSettings.palette = isPaletteId(mergedSettings.palette)
+      ? mergedSettings.palette
+      : DEFAULT_PALETTE_ID
     const phase: Phase =
       timer?.phase === PHASES.FOCUS ||
       timer?.phase === PHASES.SHORT_BREAK ||
@@ -137,8 +143,19 @@ export const pomodoroActions = {
   setSettings(patch: Partial<PomodoroSettings>): void {
     const state = base.getState()
     const settings = { ...state.settings, ...patch }
-    const totalMs = durationFor(state.phase, settings)
-    base.set({ settings, remainingMs: totalMs, totalMs, status: 'idle', endAt: null })
+    // Only a duration change needs to reset the countdown; visual/behavior
+    // settings (palette, sound) must not disturb a running timer.
+    const durationChanged =
+      settings.focusMinutes !== state.settings.focusMinutes ||
+      settings.shortBreakMinutes !== state.settings.shortBreakMinutes ||
+      settings.longBreakMinutes !== state.settings.longBreakMinutes ||
+      settings.longBreakInterval !== state.settings.longBreakInterval
+    if (durationChanged) {
+      const totalMs = durationFor(state.phase, settings)
+      base.set({ settings, remainingMs: totalMs, totalMs, status: 'idle', endAt: null })
+    } else {
+      base.set({ settings })
+    }
     scheduleSettingsSave()
   },
 

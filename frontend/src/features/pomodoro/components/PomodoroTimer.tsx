@@ -4,6 +4,7 @@ import { useGSAP } from '@gsap/react'
 import { usePomodoro } from '../hooks/usePomodoro.js'
 import { useDialRotation } from '../hooks/useDialRotation.js'
 import { usePomodoroStore } from '../state/pomodoroStore.js'
+import { getPalette } from '../constants/palettes.js'
 import { TimerCanvas } from './TimerCanvas.jsx'
 import { TimerDisplay } from './TimerDisplay.jsx'
 import { TimerControls } from './TimerControls.jsx'
@@ -19,6 +20,7 @@ export function PomodoroTimer() {
 
   const phase = usePomodoroStore((s) => s.phase)
   const status = usePomodoroStore((s) => s.status)
+  const palette = getPalette(usePomodoroStore((s) => s.settings.palette))
 
   const dial = useDialRotation()
   usePomodoro({
@@ -72,7 +74,7 @@ export function PomodoroTimer() {
         <TimerSettings />
       </div>
       <div className="tomato-halo">
-        <TimerCanvas config={dial} onSceneReady={(s) => (sceneRef.current = s)} />
+        <TimerCanvas config={dial} palette={palette} onSceneReady={(s) => (sceneRef.current = s)} />
       </div>
       <TimerDisplay />
       <TimerControls status={status} />

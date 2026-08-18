@@ -17,6 +17,7 @@ vi.mock('../three/TomatoTimerScene.js', () => ({
   TomatoTimerScene: class {
     dispose(): void {}
     pulse(): void {}
+    setPalette(): void {}
   },
 }))
 

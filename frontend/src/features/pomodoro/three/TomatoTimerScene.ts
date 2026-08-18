@@ -2,12 +2,14 @@ import * as THREE from 'three'
 import gsap from 'gsap'
 import { playSound } from '../../../utils/audio.js'
 import { CAMERA, GROUND, SEAM, STEM, getCapTopY, getSeamY, getCrossR } from '../constants/three.js'
+import { DEFAULT_PALETTE_ID, getPalette } from '../constants/palettes.js'
+import type { TomatoPalette } from '../constants/palettes.js'
 import { createTomatoMaterials } from './materials/tomatoMaterials.js'
 import type { TomatoMaterials } from './materials/tomatoMaterials.js'
 import { setupLighting } from './lighting/setupLighting.js'
 import type { SceneLights } from './lighting/setupLighting.js'
-import { createTomatoLobes } from './objects/createTomatoLobes.js'
-import { createCap } from './objects/createCap.js'
+import { createTomatoLobes, paintTomatoBody } from './objects/createTomatoLobes.js'
+import { createCap, drawCapCanvas } from './objects/createCap.js'
 import { createLeaves } from './objects/createLeaves.js'
 import { createPointer } from './objects/createPointer.js'
 import { attachDialDrag } from './interaction/dialDrag.js'
@@ -33,6 +35,7 @@ export interface TomatoTimerSceneOptions {
   getDialMinute?: () => number
   onDialChange?: (minutes: number) => void
   getInteractionEnabled?: () => boolean
+  palette?: TomatoPalette
 }
 
 export class TomatoTimerScene {
@@ -40,6 +43,7 @@ export class TomatoTimerScene {
   getDialMinute: () => number
   onDialChange: (minutes: number) => void
   getInteractionEnabled: () => boolean
+  palette: TomatoPalette
 
   renderer!: THREE.WebGLRenderer
   scene!: THREE.Scene
@@ -58,6 +62,9 @@ export class TomatoTimerScene {
   private _elapsed = 0
   private _snapTween: gsap.core.Tween | null = null
   private _pulseTween: gsap.core.Timeline | null = null
+  private _capCanvas: HTMLCanvasElement | null = null
+  private _capTexture: THREE.CanvasTexture | null = null
+  private _paletteTween: gsap.core.Timeline | null = null
   private _lastTime = 0
   private _disposed = false
   private _ro!: ResizeObserver
@@ -71,6 +78,7 @@ export class TomatoTimerScene {
     this.getDialMinute = options.getDialMinute ?? (() => 25)
     this.onDialChange = options.onDialChange ?? (() => {})
     this.getInteractionEnabled = options.getInteractionEnabled ?? (() => true)
+    this.palette = options.palette ?? getPalette(DEFAULT_PALETTE_ID)
 
     this._buildRenderer()
     this._buildScene()
@@ -165,13 +173,13 @@ export class TomatoTimerScene {
   }
 
   _buildTomato(): void {
-    const materials = createTomatoMaterials()
+    const materials = createTomatoMaterials(this.palette)
     this.materials = materials
 
     // ---- Static body: lower lobed sphere + pointer + seam ring -----------
     const staticGroup = new THREE.Group()
     staticGroup.name = 'StaticGroup'
-    staticGroup.add(createTomatoLobes(materials))
+    staticGroup.add(createTomatoLobes(materials, this.palette))
     staticGroup.add(createPointer(materials))
 
     const seamY = getSeamY()
@@ -189,7 +197,9 @@ export class TomatoTimerScene {
     const topGroup = new THREE.Group()
     topGroup.name = 'TopGroup'
 
-    const { mesh: capMesh } = createCap(materials)
+    const { mesh: capMesh, texture, canvas } = createCap(materials, this.palette)
+    this._capTexture = texture
+    this._capCanvas = canvas
     topGroup.add(capMesh)
 
     // Green stalk on the cap dome; rotates with the cap.
@@ -214,6 +224,33 @@ export class TomatoTimerScene {
     this.timerGroup = timerGroup
     this.staticGroup = staticGroup
     this.topGroup = topGroup
+  }
+
+  // Re-tint the tomato for a new palette: material colors, the body's vertex
+  // colors, and the cap's baked texture all update in place (rotation kept).
+  setPalette(palette: TomatoPalette): void {
+    if (this._disposed) return
+    this.palette = palette
+
+    this.materials.seam.color.set(palette.seam)
+    this.materials.stem.color.set(palette.stem)
+    this.materials.leaf.color.set(palette.leaf)
+    this.materials.pointer.color.set(palette.pointer)
+
+    const body = this.staticGroup.getObjectByName('tomatoBody') as THREE.Mesh | undefined
+    if (body) paintTomatoBody(body, palette)
+
+    if (this._capCanvas && this._capTexture) {
+      drawCapCanvas(palette, this._capCanvas)
+      this._capTexture.needsUpdate = true
+    }
+
+    // A quick ripening pop so the swap feels alive, never a jarring snap.
+    this._paletteTween?.kill()
+    this._paletteTween = gsap
+      .timeline()
+      .to(this.timerGroup.scale, { x: 1.05, y: 1.05, z: 1.05, duration: 0.22, ease: 'power2.out' })
+      .to(this.timerGroup.scale, { x: 1, y: 1, z: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' })
   }
 
   _buildInteraction(): void {
@@ -332,6 +369,7 @@ export class TomatoTimerScene {
     this._detachKeyboard?.()
     this._snapTween?.kill?.()
     this._pulseTween?.kill?.()
+    this._paletteTween?.kill?.()
 
     this.scene.traverse((obj) => {
       const mesh = obj as THREE.Mesh

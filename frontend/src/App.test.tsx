@@ -26,6 +26,7 @@ vi.mock('./features/pomodoro/three/TomatoTimerScene.js', () => ({
   TomatoTimerScene: class {
     dispose(): void {}
     pulse(): void {}
+    setPalette(): void {}
   },
 }))
 vi.mock('./components/AppIntro.jsx', () => ({

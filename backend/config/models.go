@@ -14,7 +14,8 @@ type Config struct {
 	Stats Stats       `json:"stats"`
 }
 
-// Settings are the timer durations, automation toggles, and sound volume.
+// Settings are the timer durations, automation toggles, sound volume, and the
+// selected tomato color palette.
 type Settings struct {
 	FocusMinutes      int     `json:"focusMinutes"`
 	ShortBreakMinutes int     `json:"shortBreakMinutes"`
@@ -22,7 +23,8 @@ type Settings struct {
 	LongBreakInterval int     `json:"longBreakInterval"`
 	AutoStartBreaks   bool    `json:"autoStartBreaks"`
 	AutoStartFocus    bool    `json:"autoStartFocus"`
-	SoundVolume float64 `json:"soundVolume"`
+	SoundVolume       float64 `json:"soundVolume"`
+	Palette           string  `json:"palette"`
 }
 
 // TimerState is the live timer position.
@@ -62,6 +64,7 @@ func DefaultConfig() Config {
 			AutoStartBreaks:   true,
 			AutoStartFocus:    false,
 			SoundVolume:       0.8,
+			Palette:           "classic",
 		},
 		Timer: TimerState{Phase: "focus", Status: "idle", RemainingMs: focus, TotalMs: focus},
 		Todos: []Todo{},

@@ -45,4 +45,19 @@ describe('TimerSettings', () => {
     fireEvent.click(soundToggle)
     expect(pomodoroStore.getState().settings.soundEnabled).toBe(false)
   })
+
+  it('renders the eight tomato color palettes', () => {
+    render(<TimerSettings />)
+    const swatches = screen.getAllByRole('radio', { name: /(Classic|Ember|Golden hour|Meadow|Lagoon|Grape|Berry|Cocoa)/ })
+    expect(swatches).toHaveLength(8)
+    expect(screen.getByRole('radio', { name: 'Classic' })).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('selects a palette through the store', () => {
+    render(<TimerSettings />)
+    fireEvent.click(screen.getByRole('radio', { name: 'Grape' }))
+    expect(pomodoroStore.getState().settings.palette).toBe('grape')
+    expect(screen.getByRole('radio', { name: 'Grape' })).toHaveAttribute('aria-checked', 'true')
+    expect(screen.getByRole('radio', { name: 'Classic' })).toHaveAttribute('aria-checked', 'false')
+  })
 })

@@ -2,15 +2,8 @@
 //
 // Body + cap share one lobe function; the cap is always 3.5% larger so it
 // never clips the body. Cap/stem/leaves rotate as topGroup, body/pointer are static.
-
-export const COLORS = {
-  tomato: 0xe8442e,       // ripe red (matches --tomato)
-  tomatoGroove: 0x9c2c1c, // darker groove between lobes
-  seam: 0x4a0f0c,         // very dark equator groove (torus ring)
-  stem: 0x2f9e54,
-  leaf: 0x25904a,
-  pointer: 0xffffff,
-} as const
+// (The tomato's colors now live in constants/palettes.ts; the scene is
+// re-tinted from the selected palette.)
 
 export const BODY = {
   radius: 1.15,

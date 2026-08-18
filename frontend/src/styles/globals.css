@@ -38,6 +38,29 @@
   inherits: true;
   initial-value: rgba(232, 68, 46, 0.09);
 }
+/* The tomato brand tokens are re-tinted by the selected color palette (App.tsx
+   sets them inline on <html>). Registered as <color> so swapping palette
+   cross-fades the whole focus atmosphere instead of snapping. */
+@property --tomato {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #e8442e;
+}
+@property --tomato-deep {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #c5361f;
+}
+@property --tomato-wash {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fbe9e3;
+}
+@property --tomato-glow {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(232, 68, 46, 0.09);
+}
 
 :root {
   color-scheme: light;
@@ -52,7 +75,7 @@
   --ink-2: #6e615a;
   --ink-3: #7d7066;
 
-  /* ---- accent: one ripe tomato ---- */
+  /* ---- accent: one ripe tomato (palette-tinted) ---- */
   --tomato: #e8442e;
   --tomato-deep: #c5361f;
   --tomato-wash: #fbe9e3;
@@ -95,6 +118,14 @@
   font-family: var(--font-ui);
   line-height: 1.5;
   font-weight: 500;
+
+  /* Palette swaps cross-fade the whole tomato identity (registered <color>
+     above) so the UI breathes with the 3D tomato instead of snapping. */
+  transition:
+    --tomato 0.6s var(--ease-out),
+    --tomato-deep 0.6s var(--ease-out),
+    --tomato-wash 0.6s var(--ease-out),
+    --tomato-glow 1s var(--ease-out);
 }
 
 *,
@@ -182,7 +213,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2.5px solid rgba(232, 68, 46, 0.42);
+  outline: 2.5px solid color-mix(in srgb, var(--tomato) 45%, transparent);
   outline-offset: 3px;
   border-radius: 8px;
 }

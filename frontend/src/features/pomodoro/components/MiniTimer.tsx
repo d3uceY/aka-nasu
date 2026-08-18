@@ -10,9 +10,11 @@ import { uiStore } from '../../../state/uiStore.js'
 import { usePomodoro } from '../hooks/usePomodoro.js'
 import { useDialRotation } from '../hooks/useDialRotation.js'
 import { usePomodoroStore, pomodoroActions } from '../state/pomodoroStore.js'
+import { getPalette } from '../constants/palettes.js'
 import { PHASE_LABELS } from '../constants/timer.js'
 import { formatTime } from '../utils/formatTime.js'
 import { dialSpun } from '../utils/dialSpun.js'
+import { todoStore, useTodos } from '../../todo/state/todoStore.js'
 import { TimeSlots } from './TimerDisplay.jsx'
 import { TimerCanvas } from './TimerCanvas.jsx'
 import type { TomatoTimerScene } from '../three/TomatoTimerScene.js'
@@ -82,7 +84,8 @@ function SkipIcon() {
 }
 
 // Compact always-on-top timer: frameless drag rail plus start/pause, reset,
-// skip, and the tomato to wind the focus length.
+// skip, the tomato to wind the focus length, and the current task (markable
+// done right from the mini window).
 export function MiniTimer() {
   const rootRef = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<TomatoTimerScene | null>(null)
@@ -90,10 +93,19 @@ export function MiniTimer() {
   const phase = usePomodoroStore((s) => s.phase)
   const status = usePomodoroStore((s) => s.status)
   const remainingMs = usePomodoroStore((s) => s.remainingMs)
+  const palette = getPalette(usePomodoroStore((s) => s.settings.palette))
+  const todos = useTodos()
+  const active = todos.find((t) => t.active)
   const dial = useDialRotation()
   usePomodoro({ onComplete: () => sceneRef.current?.pulse() })
 
   const running = status === 'running'
+
+  function handleToggleTodo() {
+    if (!active) return
+    playSound(active.done ? 'pop' : 'ding')
+    todoStore.toggle(active.id)
+  }
 
   useGSAP(
     () => {
@@ -163,7 +175,7 @@ export function MiniTimer() {
       </header>
       <div className="mini-window__body">
         <div className="mini-window__tomato">
-          <TimerCanvas config={dial} onSceneReady={(s) => (sceneRef.current = s)} />
+          <TimerCanvas config={dial} palette={palette} onSceneReady={(s) => (sceneRef.current = s)} />
         </div>
         <time className="mini-window__time" aria-label={formatTime(remainingMs)}>
           <TimeSlots text={formatTime(remainingMs)} />
@@ -196,6 +208,32 @@ export function MiniTimer() {
           >
             <SkipIcon />
           </Button>
+        </div>
+        {/* Always-rendered current-task slot so the window never jumps when
+            the pin moves or a task is completed; swaps hint <-> task. */}
+        <div className="mini-window__todo" aria-live="polite">
+          <span
+            className={`mini-window__todo-text${active ? '' : ' is-empty'}`}
+            title={active?.text}
+          >
+            {active ? active.text : 'No current task'}
+          </span>
+          <button
+            type="button"
+            className={`mini-window__todo-check${active?.done ? ' is-done' : ''}`}
+            onClick={handleToggleTodo}
+            disabled={!active}
+            aria-label={
+              active
+                ? active.done
+                  ? 'Mark current task as not done'
+                  : 'Mark current task as done'
+                : 'No current task'
+            }
+            title={active ? (active.done ? 'Undo done' : 'Mark done') : undefined}
+          >
+            ✓
+          </button>
         </div>
       </div>
     </div>

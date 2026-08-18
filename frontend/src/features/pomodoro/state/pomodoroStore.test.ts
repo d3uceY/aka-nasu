@@ -151,6 +151,28 @@ describe('setSettings', () => {
     expect(saveSettings).toHaveBeenCalledWith(expect.objectContaining({ focusMinutes: 30, shortBreakMinutes: 8 }))
     expect(saveTimer).toHaveBeenCalledTimes(1)
   })
+
+  it('a palette change does not reset a running timer', () => {
+    pomodoroActions.start()
+    vi.setSystemTime(T0 + 30_000)
+    pomodoroActions.tick() // fold the elapsed time into remainingMs
+    pomodoroActions.setSettings({ palette: 'grape' })
+    const s = pomodoroStore.getState()
+    expect(s.settings.palette).toBe('grape')
+    // Visual settings must never disturb the countdown.
+    expect(s.status).toBe('running')
+    expect(s.remainingMs).toBe(FOCUS_MS - 30_000)
+    expect(s.endAt).toBe(T0 + FOCUS_MS)
+  })
+
+  it('a duration change still resets the timer', () => {
+    pomodoroActions.start()
+    vi.setSystemTime(T0 + 30_000)
+    pomodoroActions.setSettings({ focusMinutes: 40 })
+    const s = pomodoroStore.getState()
+    expect(s.status).toBe('idle')
+    expect(s.remainingMs).toBe(40 * 60_000)
+  })
 })
 
 describe('completePhase', () => {
@@ -231,5 +253,17 @@ describe('load', () => {
     const s = pomodoroStore.getState()
     expect(s.phase).toBe(PHASES.FOCUS)
     expect(s.status).toBe('idle')
+  })
+
+  it('keeps a known persisted palette', () => {
+    pomodoroStore.load({ settings: { palette: 'lagoon' } })
+    expect(pomodoroStore.getState().settings.palette).toBe('lagoon')
+  })
+
+  it('falls back to classic for an unknown or empty palette', () => {
+    pomodoroStore.load({ settings: { palette: 'not-a-palette' } })
+    expect(pomodoroStore.getState().settings.palette).toBe('classic')
+    pomodoroStore.load({ settings: { palette: '' } })
+    expect(pomodoroStore.getState().settings.palette).toBe('classic')
   })
 })

@@ -6,7 +6,8 @@
 import { Create as $Create } from "@wailsio/runtime";
 
 /**
- * Settings are the timer durations, automation toggles, and sound volume.
+ * Settings are the timer durations, automation toggles, sound volume, and the
+ * selected tomato color palette.
  */
 export class Settings {
     "focusMinutes": number;
@@ -16,6 +17,7 @@ export class Settings {
     "autoStartBreaks": boolean;
     "autoStartFocus": boolean;
     "soundVolume": number;
+    "palette": string;
 
     /** Creates a new Settings instance. */
     constructor($$source: Partial<Settings> = {}) {
@@ -39,6 +41,9 @@ export class Settings {
         }
         if (!("soundVolume" in $$source)) {
             this["soundVolume"] = 0;
+        }
+        if (!("palette" in $$source)) {
+            this["palette"] = "";
         }
 
         Object.assign(this, $$source);

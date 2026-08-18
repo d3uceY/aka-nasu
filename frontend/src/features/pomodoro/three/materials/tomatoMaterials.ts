@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { COLORS } from '../../constants/three.js'
+import type { TomatoPalette } from '../../constants/palettes.js'
 
 // Shared PBR materials for every visible part of the timer.
 export interface TomatoMaterials {
@@ -10,7 +10,7 @@ export interface TomatoMaterials {
   pointer: THREE.MeshStandardMaterial
 }
 
-export function createTomatoMaterials(): TomatoMaterials {
+export function createTomatoMaterials(palette: TomatoPalette): TomatoMaterials {
   // Vertex-colored body, slightly waxy roughness.
   const bodyVertex = new THREE.MeshStandardMaterial({
     vertexColors: true,
@@ -19,26 +19,26 @@ export function createTomatoMaterials(): TomatoMaterials {
   })
 
   const seam = new THREE.MeshStandardMaterial({
-    color: COLORS.seam,
+    color: palette.seam,
     roughness: 0.65,
     metalness: 0,
   })
 
   const stem = new THREE.MeshStandardMaterial({
-    color: COLORS.stem,
+    color: palette.stem,
     roughness: 0.55,
     metalness: 0,
   })
 
   const leaf = new THREE.MeshStandardMaterial({
-    color: COLORS.leaf,
+    color: palette.leaf,
     roughness: 0.6,
     metalness: 0,
     side: THREE.DoubleSide,
   })
 
   const pointer = new THREE.MeshStandardMaterial({
-    color: COLORS.pointer,
+    color: palette.pointer,
     roughness: 0.35,
     metalness: 0,
   })

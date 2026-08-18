@@ -3,12 +3,18 @@ import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { MiniTimer } from './MiniTimer.jsx'
 import { pomodoroStore } from '../state/pomodoroStore.js'
 import { uiStore } from '../../../state/uiStore.js'
+import { todoStore } from '../../todo/state/todoStore.js'
 
 vi.mock('../../../lib/backend.js', () => ({
   saveSettings: vi.fn(() => Promise.resolve()),
   saveTimer: vi.fn(() => Promise.resolve()),
   saveStats: vi.fn(() => Promise.resolve()),
   notifyPhaseComplete: vi.fn(),
+  addTodo: vi.fn(() => Promise.resolve([])),
+  toggleTodo: vi.fn(() => Promise.resolve([])),
+  removeTodo: vi.fn(() => Promise.resolve([])),
+  updateTodo: vi.fn(() => Promise.resolve([])),
+  setActiveTodo: vi.fn(() => Promise.resolve([])),
 }))
 vi.mock('../../../lib/window.js', () => ({
   enterMiniMode: vi.fn(() => Promise.resolve()),
@@ -18,12 +24,14 @@ vi.mock('../three/TomatoTimerScene.js', () => ({
   TomatoTimerScene: class {
     dispose(): void {}
     pulse(): void {}
+    setPalette(): void {}
   },
 }))
 
 beforeEach(() => {
   pomodoroStore.reset()
   uiStore.setMode('mini')
+  todoStore.load([])
 })
 
 describe('MiniTimer', () => {
@@ -54,5 +62,27 @@ describe('MiniTimer', () => {
     render(<MiniTimer />)
     fireEvent.click(screen.getByRole('button', { name: 'Skip phase' }))
     expect(pomodoroStore.getState().phase).toBe('shortBreak')
+  })
+
+  it('shows a quiet hint when there is no current task', () => {
+    render(<MiniTimer />)
+    expect(screen.getByText('No current task')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'No current task' })).toBeDisabled()
+  })
+
+  it('shows the current task with a done toggle', () => {
+    todoStore.load([{ id: '1', text: 'water the basil', done: false, active: true, createdAt: 1 }])
+    render(<MiniTimer />)
+    expect(screen.getByText('water the basil')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Mark current task as done' })).toBeEnabled()
+  })
+
+  it('marks the current task done from the mini window', () => {
+    todoStore.load([{ id: '1', text: 'water the basil', done: false, active: true, createdAt: 1 }])
+    render(<MiniTimer />)
+    fireEvent.click(screen.getByRole('button', { name: 'Mark current task as done' }))
+    // The optimistic update flips the pin synchronously.
+    expect(todoStore.getTodos().find((t) => t.id === '1')?.done).toBe(true)
+    expect(screen.getByRole('button', { name: 'Mark current task as not done' })).toBeInTheDocument()
   })
 })

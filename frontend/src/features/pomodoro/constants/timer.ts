@@ -1,4 +1,5 @@
 import type { Phase, PomodoroSettings } from '../types.js'
+import { DEFAULT_PALETTE_ID } from './palettes.js'
 
 export const PHASES = {
   FOCUS: 'focus',
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS: PomodoroSettings = {
   autoStartFocus: false,
   soundEnabled: true,
   soundVolume: .8,
+  palette: DEFAULT_PALETTE_ID,
 }
 
 export const TIMER = {

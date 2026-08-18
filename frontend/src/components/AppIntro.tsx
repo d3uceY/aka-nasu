@@ -5,6 +5,8 @@ import type { CSSProperties } from 'react'
 import { TomatoMark } from './ui/TomatoMark.jsx'
 import { TimerCanvas } from '../features/pomodoro/components/TimerCanvas.jsx'
 import { useDialRotation } from '../features/pomodoro/hooks/useDialRotation.js'
+import { usePomodoroStore } from '../features/pomodoro/state/pomodoroStore.js'
+import { getPalette } from '../features/pomodoro/constants/palettes.js'
 import { uiStore } from '../state/uiStore.js'
 
 gsap.registerPlugin(useGSAP)
@@ -21,6 +23,7 @@ export function AppIntro() {
   const dial = useDialRotation()
   // The intro tomato is only for show; it's never draggable.
   const introDial = { ...dial, getInteractionEnabled: () => false }
+  const palette = getPalette(usePomodoroStore((s) => s.settings.palette))
 
   // Size the tomato to the viewport, never larger than the app halo.
   const [size] = useState(() =>
@@ -108,7 +111,7 @@ export function AppIntro() {
           <p className="intro__sub">トマトの時計</p>
         </div>
         <div className="intro__tomato" ref={tomatoRef} style={introSizeStyle}>
-          <TimerCanvas config={introDial} />
+          <TimerCanvas config={introDial} palette={palette} />
         </div>
       </div>
     </div>
