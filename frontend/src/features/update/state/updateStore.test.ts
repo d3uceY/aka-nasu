@@ -28,17 +28,22 @@ describe('updateStore', () => {
     window.localStorage.setItem(dismissedKey('v1.2.3'), '1')
     updateStore.setRelease(release)
     expect(updateStore.getState().visible).toBe(false)
+    // The release is still remembered so settings can flag the update.
+    expect(updateStore.getState().release).toEqual(release)
   })
 
   it('dismiss remembers the tag and hides the modal', () => {
     updateStore.setRelease(release)
     updateStore.dismiss()
     expect(updateStore.getState().visible).toBe(false)
+    // Dismissing keeps the release flagged for the settings indicator.
+    expect(updateStore.getState().release).toEqual(release)
     expect(window.localStorage.getItem(dismissedKey('v1.2.3'))).toBe('1')
-    // A later launch with the same release stays hidden.
+    // A later launch with the same release stays hidden but stays flagged.
     updateStore.reset()
     updateStore.setRelease(release)
     expect(updateStore.getState().visible).toBe(false)
+    expect(updateStore.getState().release).toEqual(release)
   })
 
   it('a newer release shows again even after dismissing an older one', () => {

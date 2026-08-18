@@ -413,6 +413,7 @@
   place-items: center;
   cursor: pointer;
   color: var(--ink-2);
+  position: relative;
   box-shadow: 0 8px 18px -14px rgba(43, 33, 27, 0.35);
   transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
@@ -512,6 +513,58 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: var(--ink-3);
+}
+
+/* A quiet gold dot on the gear: an update is available, even if the modal
+   was dismissed for this version. Purely a visual cue (title on hover). */
+.settings__update-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--surface-solid);
+  box-shadow: 0 0 0 1px var(--gold-deep);
+  pointer-events: none;
+}
+
+/* Update notice at the bottom of the popover: text + a "Go to website"
+   action that opens the download page in the system browser. */
+.settings__update {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--gold-wash);
+}
+
+.settings__update-text {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--ink-2);
+}
+
+.settings__update-link {
+  appearance: none;
+  border: 1px solid var(--gold-deep);
+  background: var(--surface-solid);
+  color: var(--gold-deep);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+
+.settings__update-link:hover {
+  background: var(--gold);
+  color: #fff;
 }
 
 /* Tomato color picker: a 4×2 grid of mini-tomato swatches, each previewing

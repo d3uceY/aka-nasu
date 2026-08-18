@@ -2,6 +2,8 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest'
 import { TimerSettings } from './TimerSettings.jsx'
 import { pomodoroStore } from '../state/pomodoroStore.js'
+import { updateStore } from '../../update/state/updateStore.js'
+import { openExternal } from '../../../lib/externalLink.js'
 
 vi.mock('../../../lib/backend.js', () => ({
   saveSettings: vi.fn(() => Promise.resolve()),
@@ -9,9 +11,19 @@ vi.mock('../../../lib/backend.js', () => ({
   saveStats: vi.fn(() => Promise.resolve()),
 }))
 
+vi.mock('../../../lib/externalLink.js', () => ({
+  openExternal: vi.fn(),
+}))
+
+const mockOpenExternal = vi.mocked(openExternal)
+const release = { tag: 'v1.2.3', name: 'v1.2.3', url: 'https://x', notes: '' }
+
 beforeEach(() => {
   vi.useFakeTimers()
   pomodoroStore.reset()
+  updateStore.reset()
+  window.localStorage.clear()
+  mockOpenExternal.mockClear()
 })
 
 afterEach(() => {
@@ -59,5 +71,32 @@ describe('TimerSettings', () => {
     expect(pomodoroStore.getState().settings.palette).toBe('grape')
     expect(screen.getByRole('radio', { name: 'Grape' })).toHaveAttribute('aria-checked', 'true')
     expect(screen.getByRole('radio', { name: 'Classic' })).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('shows an update badge on the gear when a release is set', () => {
+    updateStore.setRelease(release)
+    render(<TimerSettings />)
+    expect(document.querySelector('.settings__update-badge')).not.toBeNull()
+  })
+
+  it('hides the update badge without a release', () => {
+    render(<TimerSettings />)
+    expect(document.querySelector('.settings__update-badge')).toBeNull()
+  })
+
+  it('shows the update section inside the popover when a release is set', () => {
+    updateStore.setRelease(release)
+    render(<TimerSettings />)
+    fireEvent.click(screen.getByRole('button', { name: 'Timer settings' }))
+    expect(screen.getByText('Version 1.2.3 is available.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Go to website' })).toBeInTheDocument()
+  })
+
+  it('opens the download site from the update section', () => {
+    updateStore.setRelease(release)
+    render(<TimerSettings />)
+    fireEvent.click(screen.getByRole('button', { name: 'Timer settings' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Go to website' }))
+    expect(mockOpenExternal).toHaveBeenCalledWith('https://d3ucey.github.io/aka-nasu/#download')
   })
 })

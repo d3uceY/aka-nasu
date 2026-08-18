@@ -54,13 +54,14 @@ export const updateStore = {
   reset(): void {
     base.reset()
   },
-  // Called once per launch with the release the check found. Skips a release
-  // the user already dismissed on an earlier launch.
+  // Called once per launch with the release the check found. The release is
+  // always remembered so settings can flag the update, but the modal only
+  // pops when this version hasn't already been dismissed.
   setRelease(release: ReleaseInfo): void {
-    if (!release || readDismissed(release.tag)) return
-    base.set({ release, visible: true })
+    if (!release) return
+    base.set({ release, visible: !readDismissed(release.tag) })
   },
-  // "Not now": remember this release so we stop asking about it.
+  // "Not now": stop auto-popping this release, but keep it flagged in settings.
   dismiss(): void {
     const release = base.getState().release
     if (release) writeDismissed(release.tag)

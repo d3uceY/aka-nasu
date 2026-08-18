@@ -2,14 +2,7 @@ import { Button } from '../../../components/ui/Button.jsx'
 import { TomatoMark } from '../../../components/ui/TomatoMark.jsx'
 import { openExternal } from '../../../lib/externalLink.js'
 import { updateStore, useUpdateStore } from '../state/updateStore.js'
-
-// Where a newer build can be grabbed — the site's download section always
-// serves the latest release for the user's OS.
-const DOWNLOAD_URL = 'https://d3ucey.github.io/aka-nasu/#download'
-
-function displayVersion(tag: string): string {
-  return String(tag).replace(/^v/i, '')
-}
+import { DOWNLOAD_URL, displayVersion } from '../constants.js'
 
 // Card over a scrim asking if the user wants the newer release (full mode only).
 export function UpdateModal() {

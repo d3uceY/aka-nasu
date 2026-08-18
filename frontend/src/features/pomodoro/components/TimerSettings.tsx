@@ -4,6 +4,9 @@ import { usePomodoroStore, pomodoroActions } from '../state/pomodoroStore.js'
 import { TOMATO_PALETTES } from '../constants/palettes.js'
 import { PaletteSwatch } from './PaletteSwatch.jsx'
 import { playSound } from '../../../utils/audio.js'
+import { useUpdateStore } from '../../update/state/updateStore.js'
+import { DOWNLOAD_URL, displayVersion } from '../../update/constants.js'
+import { openExternal } from '../../../lib/externalLink.js'
 
 function GearIcon() {
   return (
@@ -28,6 +31,8 @@ function GearIcon() {
 export function TimerSettings() {
   const settings = usePomodoroStore((s) => s.settings)
   const status = usePomodoroStore((s) => s.status)
+  // Latest release found by the startup check (null when up to date).
+  const update = useUpdateStore((s) => s.release)
   const [open, setOpen] = useState(false)
 
   // Settings are locked while a timer is running or paused.
@@ -46,6 +51,13 @@ export function TimerSettings() {
         }}
       >
         <GearIcon />
+        {update && (
+          <span
+            className="settings__update-badge"
+            title={`Version ${displayVersion(update.tag)} available`}
+            aria-hidden="true"
+          />
+        )}
       </button>
       <button
         type="button"
@@ -160,6 +172,26 @@ export function TimerSettings() {
           disabled={locked}
           onChange={(v) => pomodoroActions.setSettings({ soundVolume: v / 100 })}
         />
+        {update && (
+          <>
+            <p className="settings__title">Update</p>
+            <div className="settings__update">
+              <p className="settings__update-text">
+                Version {displayVersion(update.tag)} is available.
+              </p>
+              <button
+                type="button"
+                className="settings__update-link"
+                onClick={() => {
+                  playSound('gearClick')
+                  openExternal(DOWNLOAD_URL)
+                }}
+              >
+                Go to website
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </section>
   )
