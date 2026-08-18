@@ -1,25 +1,48 @@
 import { createStore, useStore } from '../../../lib/createStore.js'
 import type { ReleaseInfo, UpdateState } from '../types.js'
 
-// Remember the dismissed release so the modal stops asking on later launches.
-const DISMISS_KEY = 'aka-nasu:dismissed-update'
+// Each release gets its own dismissal key so a newer update always re-prompts;
+// only the same tag stays suppressed after the user dismisses it. Dismissing a
+// new release prunes the older tags so localStorage doesn't accumulate them.
+const DISMISS_KEY_PREFIX = 'aka-nasu:dismissed-update'
 
 const base = createStore<UpdateState>(() => ({
   release: null, // latest stable release worth offering, or null
   visible: false,
 }))
 
-function readDismissed(): string | null {
+function dismissedKey(tag: string): string {
+  return `${DISMISS_KEY_PREFIX}:${tag}`
+}
+
+function readDismissed(tag: string): boolean {
   try {
-    return window.localStorage.getItem(DISMISS_KEY)
+    return window.localStorage.getItem(dismissedKey(tag)) !== null
   } catch {
-    return null
+    return false
+  }
+}
+
+// Forget every dismissed release except the one just dismissed, so old tags
+// don't pile up in localStorage.
+function pruneDismissed(keepTag: string): void {
+  try {
+    const keep = dismissedKey(keepTag)
+    for (let i = window.localStorage.length - 1; i >= 0; i--) {
+      const key = window.localStorage.key(i)
+      if (key && key.startsWith(`${DISMISS_KEY_PREFIX}:`) && key !== keep) {
+        window.localStorage.removeItem(key)
+      }
+    }
+  } catch {
+    // Storage can be unavailable (private mode); just skip cleanup.
   }
 }
 
 function writeDismissed(tag: string): void {
   try {
-    window.localStorage.setItem(DISMISS_KEY, tag)
+    window.localStorage.setItem(dismissedKey(tag), '1')
+    pruneDismissed(tag)
   } catch {
     // Storage can be unavailable (private mode); the modal just reappears.
   }
@@ -34,7 +57,7 @@ export const updateStore = {
   // Called once per launch with the release the check found. Skips a release
   // the user already dismissed on an earlier launch.
   setRelease(release: ReleaseInfo): void {
-    if (!release || readDismissed() === release.tag) return
+    if (!release || readDismissed(release.tag)) return
     base.set({ release, visible: true })
   },
   // "Not now": remember this release so we stop asking about it.
