@@ -3,8 +3,9 @@ import { TomatoMark } from '../../../components/ui/TomatoMark.jsx'
 import { openExternal } from '../../../lib/externalLink.js'
 import { updateStore, useUpdateStore } from '../state/updateStore.js'
 
-// Where the README explains how to install a build.
-const INSTALL_GUIDE_URL = 'https://github.com/d3uceY/aka-nasu#download'
+// Where a newer build can be grabbed — the site's download section always
+// serves the latest release for the user's OS.
+const DOWNLOAD_URL = 'https://d3ucey.github.io/aka-nasu/#download'
 
 function displayVersion(tag: string): string {
   return String(tag).replace(/^v/i, '')
@@ -33,15 +34,14 @@ export function UpdateModal() {
           {version}
         </h2>
         <p className="update-modal__body">
-          A newer build is out. Grab it from the release page, or follow the install guide in the
-          README.
+          A newer build is out. Grab the latest for your OS.
         </p>
         <div className="update-modal__actions">
           <Button
             variant="primary"
             size="md"
             onClick={() => {
-              openExternal(release.url)
+              openExternal(DOWNLOAD_URL)
               dismiss()
             }}
           >
@@ -51,7 +51,7 @@ export function UpdateModal() {
             variant="ghost"
             size="md"
             onClick={() => {
-              openExternal(INSTALL_GUIDE_URL)
+              openExternal(DOWNLOAD_URL)
               close()
             }}
           >

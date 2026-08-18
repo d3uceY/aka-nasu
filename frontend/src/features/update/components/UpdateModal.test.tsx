@@ -37,20 +37,20 @@ describe('UpdateModal', () => {
     expect(screen.getByRole('button', { name: 'Not now' })).toBeInTheDocument()
   })
 
-  it('opens the release and dismisses on "Get"', () => {
+  it('opens the download page and dismisses on "Get"', () => {
     updateStore.setRelease(release)
     render(<UpdateModal />)
     fireEvent.click(screen.getByRole('button', { name: 'Get 1.2.3' }))
-    expect(mockOpenExternal).toHaveBeenCalledWith('https://x/releases/tag/v1.2.3')
+    expect(mockOpenExternal).toHaveBeenCalledWith('https://d3ucey.github.io/aka-nasu/#download')
     expect(updateStore.getState().visible).toBe(false)
     expect(window.localStorage.getItem('aka-nasu:dismissed-update')).toBe('v1.2.3')
   })
 
-  it('opens the install guide and closes without persisting', () => {
+  it('opens the download page and closes without persisting', () => {
     updateStore.setRelease(release)
     render(<UpdateModal />)
     fireEvent.click(screen.getByRole('button', { name: 'Install guide' }))
-    expect(mockOpenExternal).toHaveBeenCalledWith('https://github.com/d3uceY/aka-nasu#download')
+    expect(mockOpenExternal).toHaveBeenCalledWith('https://d3ucey.github.io/aka-nasu/#download')
     expect(updateStore.getState().visible).toBe(false)
     expect(window.localStorage.getItem('aka-nasu:dismissed-update')).toBeNull()
   })
